@@ -3,7 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/exercise32",
+                "${workspaceFolder}/exercise32/src"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
