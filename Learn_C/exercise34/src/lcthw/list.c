@@ -8,6 +8,17 @@ List *List_create()
     return calloc(1, sizeof(List));
 }
 
+//创建链表的节点
+ListNode *ListNode_create(void *value) {
+    ListNode *node = malloc(sizeof(ListNode));
+    if (node) {
+        node->value = value;
+        node->next = NULL;
+        node->prev = NULL;
+    }
+    return node;
+}
+
 //销毁链表
 void List_destroy(List *list)
 {
@@ -20,6 +31,13 @@ void List_destroy(List *list)
 
     free(list->last);
     free(list);
+}
+
+//销毁链表
+void ListNode_destroy(ListNode *value)
+{
+
+    free(value);
 }
 
 //清除链表中的每个节点的值，但不销毁节点本身
@@ -37,6 +55,7 @@ void List_clear_destroy(List *list)
     List_clear(list);   //先清除链表中的值
     List_destroy(list); //再销毁链表
 }
+
 
 //在链表末尾添加新节点
 void List_push(List *list, void *value)
@@ -176,33 +195,25 @@ void List_concat(List *list1, List *list2) {
     list2->count = 0;
 }
 
-List *List_split(List *list, int index) {
-    if(index >= list->count || index < 0) return NULL;
+List *List_split(List *list, int index)
+{
+    // 将链表拆分为两部分
+    List *left = List_create();
+    List *right = List_create();
+    ListNode *current = list->first;
+    int i = 0;
 
-    List *new_list = List_create();
-    check_mem(new_list);
-
-    ListNode *node = list->first;
-    for(int i = 0; i < index; i++) {
-        node = node->next;
+    while (current) {
+        if (i < index) {
+            List_push(left, current->value);
+        } else {
+            List_push(right, current->value);
+        }
+        current = current->next;
+        i++;
     }
 
-    new_list->first = node;
-    new_list->last = list->last;
-    list->last = node->prev;
-
-    if(list->last) list->last->next = NULL;
-
-    node->prev = NULL;
-
-    new_list->count = list->count - index;
-    list->count = index;
-
-    return new_list;
-
-error:
-    if (new_list) List_destroy(new_list);
-    return NULL;
+    return left;
 }
 
 /*
@@ -216,3 +227,4 @@ error:
     优点：双向遍历；删除节点简单。
     缺点：占用内存多，每个节点要存储两个指针。
 */
+

@@ -4,6 +4,12 @@
         "system_error": "cpp",
         "functional": "cpp",
         "stdlib.h": "c",
-        "list.h": "c"
-    }
+        "list.h": "c",
+        "darray.h": "c",
+        "array": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
