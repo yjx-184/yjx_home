@@ -19,6 +19,16 @@
 //#include <ctype.h>
 //#include <limits.h>
 
+#include <sys/mman.h>
+#include <unistd.h>
+
+//ringbuffer_posix
+#include <fcntl.h>
+// #include <stdio.h>
+#include <sys/stat.h>
+// #include <string.h>
+// #include <errno.h>
+// #include <assert.h>
 
 #ifdef NDEBUG
 #define debug(M, ...)
