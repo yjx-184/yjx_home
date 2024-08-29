@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+//返回一个二维数组类型
+
+
+
 void *Create_storage(int rows, int cols)
 {
     int (*array)[cols] = (int(*)[cols])malloc(sizeof(int) * rows * cols);
@@ -21,8 +26,6 @@ void *Create_storage(int rows, int cols)
 
 }
 int main() {
-
-    // 创建二维数组
     int rows = 3, cols = 4;
     int (*array)[cols] = (int (*)[cols])Create_storage(rows, cols);
 
@@ -34,7 +37,6 @@ int main() {
     }
 
 
-    // 打印二维数组
     printf("二维数组内容：\n");
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
