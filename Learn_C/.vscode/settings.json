@@ -11,7 +11,9 @@
         "type_traits": "c",
         "utility": "c",
         "ringbuffer_posix.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "stdio.h": "c",
+        "typeinfo": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
