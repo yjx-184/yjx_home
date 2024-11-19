@@ -1,11 +1,11 @@
 #include "verilated.h"
 #include "verilated_vcd_c.h"
-#include "obj_dir/Vdecode24.h"
+#include "obj_dir/Vencode42.h"
 
 //全局变量定义
 VerilatedContext* contextp = NULL;  //定义仿真上下文指针，用于管理仿真时间、状态等。
 VerilatedVcdC* tfp = NULL;  //定义一个只想波形文件的指针，用于记录仿真过程中产生的信号变化。
-static Vdecode24* top;  //定义一个指向顶层模块Vdecode24的实例指针，用于仿真该模块
+static Vencode42* top;  //定义一个指向顶层模块Vencode42的实例指针，用于仿真该模块
 
 //仿真辅助函数
 void step_and_dump_wave(){      //该函数作用：模拟单个时间步长，并将信号写入波形文件
@@ -16,10 +16,10 @@ void step_and_dump_wave(){      //该函数作用：模拟单个时间步长，�
 void sim_init(){                    //该函数作用：初始化仿真环境，包括上下文、波形记录和模块实例
   contextp = new VerilatedContext;  //创建仿真上下文对象
   tfp = new VerilatedVcdC;          //创建波形记录对象
-  top = new Vdecode24;              //创建顶层模块实例
+  top = new Vencode42;              //创建顶层模块实例
   contextp->traceEverOn(true);      //启用波形跟踪功能
   top->trace(tfp, 0);               //将顶层模块的信号连接到波形记录对象
-  tfp->open("dump.vcd");            //打开名为“dump.vcd”的波形文件
+  tfp->open("dump42.vcd");            //打开名为“dump.vcd”的波形文件
 }
 
 void sim_exit(){        //该函数作用：结束仿真并关掉所有资源
@@ -30,15 +30,16 @@ void sim_exit(){        //该函数作用：结束仿真并关掉所有资源
 int main() {
     sim_init();     //初始化仿真环境
 
-    top->en = 0b0; top->x = 0b00; step_and_dump_wave();
-                   top->x = 0b01; step_and_dump_wave();
-                   top->x = 0b10; step_and_dump_wave();
-                   top->x = 0b11; step_and_dump_wave();
-    top->en = 0b1; top->x = 0b00; step_and_dump_wave();
-                   top->x = 0b01; step_and_dump_wave();
-                   top->x = 0b10; step_and_dump_wave();
-                   top->x = 0b11; step_and_dump_wave();
-
+    top->en=0b0;    top->x =0b0000; step_and_dump_wave();
+                    top->x =0b0001; step_and_dump_wave();
+                    top->x =0b0010; step_and_dump_wave();
+                    top->x =0b0100; step_and_dump_wave();
+                    top->x =0b1000; step_and_dump_wave();
+    top->en=0b1;    top->x =0b0000; step_and_dump_wave();
+                    top->x =0b0001; step_and_dump_wave();
+                    top->x =0b0010; step_and_dump_wave();
+                    top->x =0b0100; step_and_dump_wave();
+                    top->x =0b1000; step_and_dump_wave();
     sim_exit();
-    
+    return 0;
 }
