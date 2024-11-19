@@ -28,6 +28,11 @@
     - [测试代码 encode38.cpp](#测试代码-encode38cpp)
     - [实验中遇到的错误](#实验中遇到的错误)
     - [实验结果](#实验结果)
+  - [case,casez,casex的使用](#casecasezcasex的使用)
+    - [使用casez语句实现4-2优先编码器](#使用casez语句实现4-2优先编码器)
+    - [使用casex语句实现4-2优先编码器](#使用casex语句实现4-2优先编码器)
+    - [实验结果对比](#实验结果对比)
+    - [在使用casex语句时，出现警告](#在使用casex语句时出现警告)
 
 
 # 实验二 译码器和编码器
@@ -611,3 +616,77 @@ int main() {
 
 **这是使能信号为1时,此时可以看到0号数码管显示为5**
 ![](./pic/en1.png)  
+
+## case,casez,casex的使用  
+**在case语句中**，敏感表达式中与各项值之间的比较是一种全等比较，每一位都相同才认为批匹配。  
+**在casez语句中**，如果分支表达式某些位的值为高阻z，那么会对这些位的比较进行忽略，只关注其他位的结果。  
+**在casex语句中**，则对这种处理进一步扩展到对x的处理，如果有z和x都不会对这些进行考虑。  
+
+### 使用casez语句实现4-2优先编码器  
+```
+module encode42c(in_code, en, out_code);
+    input [3:0] in_code;
+    input en;
+    output reg [1:0] out_code;
+
+    always @(in_code or en) begin
+        if(en) begin
+            casez(in_code)
+                4'b0001: out_code = 2'b00;
+                4'b001z: out_code = 2'b01;
+                4'b01zz: out_code = 2'b10;
+                4'b1???: out_code = 2'b11;
+                default: out_code = 2'b00;
+            endcase    
+        end else
+            out_code = 2'b00;
+    end
+endmodule  
+
+```  
+
+### 使用casex语句实现4-2优先编码器  
+```
+module encode42d(in_code, en, out_code);
+    input [3:0] in_code;
+    input en;
+    output reg [1:0] out_code;
+
+    always @(in_code or en) begin
+        if(en) begin
+            casex(in_code)
+                4'b0001: out_code = 2'b00;
+                4'b001z: out_code = 2'b01;
+                4'b01??: out_code = 2'b10;
+                4'b1xxx: out_code = 2'b11;
+                default: out_code = 2'b00;
+            endcase    
+        end else
+            out_code = 2'b00;
+    end
+endmodule
+```
+
+### 实验结果对比 
+case：  
+![](./pic/dump42b.png)  
+
+casez：  
+![](./pic/dump42c.png)  
+
+casex:  
+![](./pic/dump42d.png)  
+
+### 在使用casex语句时，出现警告
+```
+verilator --cc encode42d.v --exe sim42d.cpp --trace 
+%Warning-CASEX: encode42d.v:8:13: Suggest casez (with ?'s) in place of casex (with X's)
+    8 |             casex(in_code)
+      |             ^~~~~
+                ... For warning description see https://verilator.org/warn/CASEX?v=5.008
+                ... Use "/* verilator lint_off CASEX */" and lint_on around source to disable this message.
+%Error: Exiting due to 1 warning(s)
+
+```
+警告建议我们使用casez，它不会禁止，将继续进行模拟。  
+casex将所有的x和z都视为通配符匹配。这种行为可能会导致以外的逻辑错误，尤其是当x代表未定义的值时。  
