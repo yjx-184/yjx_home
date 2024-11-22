@@ -27,7 +27,7 @@ module alu_top(i_a, i_b, i_op, o_result, o_cin, o_carry, o_overflow, o_max, o_eq
     wire max_0, equ_0;
 
 
-    //控制信号逻辑
+    //控制信号
     assign cin_0 = 1'b0;  // 初始化加法的控制信号，固定为0
     assign cin_1 = 1'b1;  // 初始化减法的控制信号，固定为1
     assign o_max = (i_op == 3'b110)?max_0:1'b0;     //当操作码到110,o_max输出比较结果
@@ -37,6 +37,10 @@ module alu_top(i_a, i_b, i_op, o_result, o_cin, o_carry, o_overflow, o_max, o_eq
 
     //符号位控制,当最高位为1时点亮-号，否则熄灭
     assign o_signbit = o_result[3]?8'b11111101:8'b11111111;
+
+    //绝对值处理
+    wire [3:0] abs_result;
+    assign abs_result = o_result[3] ? (~o_result + 1) : o_result; // 若为负数，取补码
 
     //实例化
     //加法模块
@@ -108,7 +112,7 @@ module alu_top(i_a, i_b, i_op, o_result, o_cin, o_carry, o_overflow, o_max, o_eq
     //数码管模块
     seg u0_seg(
         .i_signbit(o_result[3]),
-        .seg_in(o_result[3:0]),
+        .seg_in(abs_result),
         .seg_out(o_seg)
     );
 

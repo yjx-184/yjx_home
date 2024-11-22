@@ -201,8 +201,10 @@ VL_INLINE_OPT void Valu_top___024root___ico_sequent__TOP__0(Valu_top___024root* 
                                                       >> 3U));
     vlSelf->o_signbit = ((IData)(alu_top__DOT____Vcellinp__u0_seg__i_signbit)
                           ? 0xfdU : 0xffU);
-    __Vtableidx1 = (((IData)(vlSelf->o_result) << 1U) 
-                    | (IData)(alu_top__DOT____Vcellinp__u0_seg__i_signbit));
+    __Vtableidx1 = ((0x1eU & (((IData)(alu_top__DOT____Vcellinp__u0_seg__i_signbit)
+                                ? ((IData)(1U) + (~ (IData)(vlSelf->o_result)))
+                                : (IData)(vlSelf->o_result)) 
+                              << 1U)) | (IData)(alu_top__DOT____Vcellinp__u0_seg__i_signbit));
     vlSelf->o_seg = Valu_top__ConstPool__TABLE_hdca558d7_0
         [__Vtableidx1];
 }
