@@ -1,0 +1,46 @@
+$date
+	Tue Nov 26 13:45:50 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module tb_shifter32 $end
+$var wire 32 ! dout [31:0] $end
+$var reg 1 " AL $end
+$var reg 1 # LR $end
+$var reg 32 $ din [31:0] $end
+$var reg 5 % shamt [4:0] $end
+$scope module uut $end
+$var wire 1 " AL $end
+$var wire 1 # LR $end
+$var wire 32 & din [31:0] $end
+$var wire 5 ' shamt [4:0] $end
+$var reg 32 ( dout [31:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b10101010101010101010101010101000 (
+b10 '
+b10101010101010101010101010101010 &
+b10 %
+b10101010101010101010101010101010 $
+1#
+0"
+b10101010101010101010101010101000 !
+$end
+#20
+b101010101010101010101010101010 !
+b101010101010101010101010101010 (
+0#
+#30
+b11111111111111111111111111111110 !
+b11111111111111111111111111111110 (
+1"
+b11111111111111111111111111111010 $
+b11111111111111111111111111111010 &
+#40
