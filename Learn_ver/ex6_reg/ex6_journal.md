@@ -242,6 +242,7 @@ gtkwave dump.vcd
 ```
 ## 验收实验：利用移位寄存器实现随机数发生器
 ### lfsr部分生成伪随机数： lfsr.v
+这个部分用于生成8位的周期位255的伪随机数列，根据讲义给出的反馈逻辑，通过移位寄存器生成随机数。能够复位清零，并且初始值为全零时有特殊处理，避免卡死状态的出现。   
 ```
 module lfsr(clk, reset, lfsr_out);
     input clk;      //时钟信号
@@ -266,6 +267,7 @@ module lfsr(clk, reset, lfsr_out);
 endmodule
 ```
 ### 生成伪时钟信号： button_clk.v
+这个部分是通过按钮生成伪时钟信号。
 ```
 module button_clk(clk, reset, btn, btn_clk);
     input clk;                  //全局时钟信号，

@@ -1,0 +1,7 @@
+top = fsm_mealy
+
+reset (SW0)
+in (SW1)
+btn (BTNC)
+out (LD0)
+sta (LD7, LD6, LD5, LD4)

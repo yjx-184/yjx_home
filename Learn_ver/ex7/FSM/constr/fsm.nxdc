@@ -1,0 +1,8 @@
+top = fsm
+
+reset (SW0)
+w (SW1)
+z (LD0)
+y (LD7, LD6, LD5, LD4)
+btn (BTNC)
+btn (LD2)
