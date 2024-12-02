@@ -1,3 +1,25 @@
+- [实验七 状态机及键盘输入](#实验七-状态机及键盘输入)
+  - [状态机](#状态机)
+    - [简单状态机设计](#简单状态机设计)
+      - [fsm.v](#fsmv)
+      - [button\_clk.v:](#button_clkv)
+    - [Listing 21 给的摩尔型状态机设计实例](#listing-21-给的摩尔型状态机设计实例)
+      - [寄存器模板 SimReg.v](#寄存器模板-simregv)
+      - [有限状态机 fsm\_bin.v](#有限状态机-fsm_binv)
+      - [顶层模块 top.v](#顶层模块-topv)
+    - [摩尔型与米里型的区别](#摩尔型与米里型的区别)
+    - [根据之前实验要求，尝试写一个米里型状态机](#根据之前实验要求尝试写一个米里型状态机)
+      - [fsm\_mealy.v](#fsm_mealyv)
+      - [实验现象描述](#实验现象描述)
+  - [验收实验](#验收实验)
+    - [实验步骤1：调用ps2\_keyboard.v模块](#实验步骤1调用ps2_keyboardv模块)
+    - [实验步骤2：接收数据后，进行识别是什么按键ps2\_distinguish.v](#实验步骤2接收数据后进行识别是什么按键ps2_distinguishv)
+    - [实验步骤3：计数器](#实验步骤3计数器)
+    - [复用数码管模块seg\_h.v(添加了使能en，控制是否全灭)](#复用数码管模块seg_hv添加了使能en控制是否全灭)
+    - [顶层模块实现 ps2\_top.v](#顶层模块实现-ps2_topv)
+    - [实验过程遇到的问题](#实验过程遇到的问题)
+      - [计数时，记录按下的同时也把松开记录了](#计数时记录按下的同时也把松开记录了)
+      - [实现数码管低4位全灭时，实验结果不是预期的结果](#实现数码管低4位全灭时实验结果不是预期的结果)
 
 
 # 实验七 状态机及键盘输入
@@ -330,3 +352,338 @@ endmodule
 #### 实验现象描述
 当我复位信号reset为1时，无论当前状态如何，输入如何，状态机都被复位到了初始状态S0。
 当reset为0时，我的输出out与我的输入in的变化有即时响应。这里就体验了米里型与之前摩尔型的不同之处。
+
+## 验收实验
+### 实验步骤1：调用ps2_keyboard.v模块
+如讲义所说，这个部分只负责接收键盘送来的数据。为后续识别做准备。
+### 实验步骤2：接收数据后，进行识别是什么按键ps2_distinguish.v
+接收来自ps2_keyboard.v的扫描码，根据lut表进行映射。同时处理松开事件,但由于后面添加了“松开时，低四位全灭”，所以现在看不到松开时显示F0。
+```
+module ps2_distinguish(clk, clrn, i_data, ascii, key_release);
+    input clk;              //时钟信号
+    input clrn;             //复位信号
+    input [7:0] i_data;     //从ps/2传来的扫描码
+    output reg [7:0] ascii; //输出对应的ascii字符
+    output reg key_release; //标记是否有按键松开时间
+
+    //松开键盘
+    parameter KEY_RELEASE_CODE = 8'hF0;
+
+    //查找表LUT：每个键的扫描码对应ASCII码
+    //暂时定义26个字母，10个数字
+    wire [575:0] lut = {
+        //10个数字
+        8'h45, 8'h30,  //0
+        8'h16, 8'h31,  //1
+        8'h1E, 8'h32,  //2
+        8'h26, 8'h33,  //3
+        8'h25, 8'h34,  //4
+        8'h2E, 8'h35,  //5
+        8'h36, 8'h36,  //6
+        8'h3D, 8'h37,  //7
+        8'h3E, 8'h38,  //8
+        8'h46, 8'h39,  //9
+
+        //26个字母
+        8'h1C, 8'h41,  //A
+        8'h32, 8'h42,  //B
+        8'h21, 8'h43,  //C
+        8'h23, 8'h44,  //D
+        8'h24, 8'h45,  //E
+        8'h2B, 8'h46,  //F
+        8'h34, 8'h47,  //G
+        8'h33, 8'h48,  //H
+        8'h43, 8'h49,  //I
+        8'h3B, 8'h4A,  //J
+        8'h42, 8'h4B,  //K
+        8'h4B, 8'h4C,  //L
+        8'h3A, 8'h4D,  //M
+        8'h31, 8'h4E,  //N
+        8'h44, 8'h4F,  //O
+        8'h4D, 8'h50,  //P
+        8'h15, 8'h51,  //Q
+        8'h2D, 8'h52,  //R
+        8'h1B, 8'h53,  //S
+        8'h2C, 8'h54,  //T
+        8'h3C, 8'h55,  //U
+        8'h2A, 8'h56,  //V
+        8'h6B, 8'h57,  //W
+        8'h1A, 8'h58,  //X
+        8'h22, 8'h59,  //Y
+        8'h14, 8'h5A   //Z
+    };
+
+    //显示映射结果
+    wire [7:0] ascii_result;
+
+    MuxKeyWithDefault #(
+        .NR_KEY(36),        // 36个键
+        .KEY_LEN(8),        // 键值长度为 8 位（对应扫描码）
+        .DATA_LEN(8)        // 输出字符长度为 8 位（ASCII 字符）
+    ) key_ascii (
+        .out(ascii_result), //映射结果
+        .key(i_data),         // 输入扫描码
+        .default_out(8'h00),// 默认输出 null
+        .lut(lut)           // 查找表（键码到字符的映射）
+    );
+
+    // 处理按键松开事件
+    always @(posedge clk or negedge clrn) begin
+        if (clrn == 0) begin
+            ascii <= 8'h00;     //复位
+            key_release <= 0;   //清除松开标记
+        end else if (i_data == KEY_RELEASE_CODE) begin
+            ascii <= 8'h00;  // 如果是松开事件，扫描码为F0，则清除ASCII
+            key_release <= 1;
+        end else begin
+            ascii <= ascii_result; // 更新ASCII字符
+            key_release <= 0;  // 标记为按键没有松开
+        end
+    end
+
+endmodule
+```
+### 实验步骤3：计数器
+将计数器模块化，方便日后复用。同时对实验4的计数器进行了优化。
+```
+module ps2_counter(
+    input clk,                  //时钟信号
+    input clrn,                 //复位信号
+    input key_press,            //按下标志
+    input key_release,          //松开标志
+    output reg [3:0] units,     // 个位
+    output reg [3:0] tens       // 十位
+);
+
+    // 记录是否已经被计数
+    reg counted;
+
+    always @(posedge clk or negedge clrn) begin
+        if (clrn == 1'b0) begin                 //复位信号
+            units <= 4'b0;                      //将个位重置
+            tens <= 4'b0;                       //将十位重置
+            counted <= 1'b0;                    //将计数标志重置
+        end else begin
+            if (key_press && !counted) begin    //检查按键按下且未被计数
+                counted <= 1'b1;                //标记已经被计数
+                if (units == 4'd9) begin        
+                    units <= 4'd0;              //当个位到达9重置为0
+                    if (tens == 4'd9) begin
+                        tens <= 4'd0;           // 超过99次归0
+                    end else begin
+                        tens <= tens + 1;
+                    end
+                end else begin
+                    units <= units + 1;
+                end
+            end 
+            else if (key_release) begin
+                // 按键释放时，标记为未计数
+                counted <= 1'b0;
+            end
+        end
+    end
+
+endmodule
+```
+### 复用数码管模块seg_h.v(添加了使能en，控制是否全灭)
+```
+module seg_h(seg_in,seg_out, en);
+    input [3:0] seg_in;
+    input en;
+    output reg [7:0] seg_out;
+
+    // 定义16进制字符
+    parameter seg0  = 8'b11111100; // 显示 0
+    parameter seg1  = 8'b01100000; // 显示 1
+    parameter seg2  = 8'b11011010; // 显示 2
+    parameter seg3  = 8'b11110010; // 显示 3
+    parameter seg4  = 8'b01100110; // 显示 4
+    parameter seg5  = 8'b10110110; // 显示 5
+    parameter seg6  = 8'b10111110; // 显示 6
+    parameter seg7  = 8'b11100000; // 显示 7
+    parameter seg8  = 8'b11111110; // 显示 8
+    parameter seg9  = 8'b11110110; // 显示 9
+    parameter segA  = 8'b11101110; // 显示 A
+    parameter segB  = 8'b00111110; // 显示 B
+    parameter segC  = 8'b10011100; // 显示 C
+    parameter segD  = 8'b01111010; // 显示 D
+    parameter segE  = 8'b10011110; // 显示 E
+    parameter segF  = 8'b10001110; // 显示 F
+
+    always @(seg_in or en) begin
+        if(en == 1'b0) begin
+            seg_out = 8'b11111111; // 全灭
+        end else begin
+            case(seg_in)
+                4'd0:  seg_out = ~seg0;
+                4'd1:  seg_out = ~seg1;
+                4'd2:  seg_out = ~seg2;
+                4'd3:  seg_out = ~seg3;
+                4'd4:  seg_out = ~seg4;
+                4'd5:  seg_out = ~seg5;
+                4'd6:  seg_out = ~seg6;
+                4'd7:  seg_out = ~seg7;
+                4'd8:  seg_out = ~seg8;
+                4'd9:  seg_out = ~seg9;
+                4'd10: seg_out = ~segA;  // A
+                4'd11: seg_out = ~segB;  // B
+                4'd12: seg_out = ~segC;  // C
+                4'd13: seg_out = ~segD;  // D
+                4'd14: seg_out = ~segE;  // E
+                4'd15: seg_out = ~segF;  // F
+                default: seg_out = 8'b11111111; // 全灭
+            endcase
+        end
+    end
+
+endmodule
+```
+### 顶层模块实现 ps2_top.v
+**延时寄存器的作用：** ready_d1和ready_d2是用来延迟ready信号的寄存器。它们保存了前一个时钟周期的ready状态ready_d1记录了当前周期的ready状态，而ready_d2记录了前一个周期的ready状态。目的是为了避免亚稳态的产生。
+```
+module ps2_top(
+    input clk,                          //时钟信号
+    input clrn,                         //复位信号
+    input ps2_clk,                      //ps/2的时钟信号
+    input ps2_data,                     //ps/2的数据线信号
+    output reg [7:0] seg_out_0,         //扫描码的低8位
+    output reg [7:0] seg_out_1,         //扫描码的高8位
+    output reg [7:0] seg_out_2,         //ascii的低8位
+    output reg [7:0] seg_out_3,         //ascii的高8位
+    output reg [7:0] seg_out_4,         //按键计数的个位
+    output reg [7:0] seg_out_5,         //按键计数的十位
+    output overflow                     //fifo溢出标志
+);
+
+    //内部信号
+    wire [7:0] data;                    //ps/2接收到的数据
+    wire ready;                         //数据准备好标志
+    reg ready_p1, ready_p2;             //上升沿和下降沿准备信号
+    reg ready_d1, ready_d2;             //延迟信号
+    reg nextdata_n;                     //控制信号
+    reg [7:0] data_d1;                  //数据寄存器
+    wire key_press;                     //按钮按下标志
+    wire key_release;                   //按钮松开标志
+    reg [7:0] ascii;                    //输出ascii
+    wire [3:0] high_tens;               //总按键次数的十位
+    wire [3:0] high_units;              //总按键次数的个位
+    reg [7:0] key_scan_code;            //当前按键扫描码
+    reg [7:0] key_scan_display;         //显示的扫描码值
+    reg [7:0] key_ascii_display;        //显示的 ASCII 值
+    reg en;                             //数码管使能
+
+
+    //实例化
+    //PS2键盘模块，负责接收并处理 PS/2 键盘信号
+    ps2_keyboard u0_ps2_kb (
+        .clk(clk), 
+        .clrn(clrn), 
+        .ps2_clk(ps2_clk), 
+        .ps2_data(ps2_data), 
+        .data(data),                            
+        .ready(ready),                         
+        .nextdata_n(nextdata_n),                
+        .overflow(overflow)                    
+    );
+    
+
+    //扫描码映射到ascii模块
+    ps2_distinguish u1_ps2_dsh(
+        .clk(clk),
+        .clrn(clrn),
+        .i_data(data_d1),                      
+        .ascii(ascii),                      
+        .key_release(key_release)     
+    );
+
+    //计数模块
+    ps2_counter u2_ps2_cer(
+        .clk(clk),
+        .clrn(clrn),
+        .key_press(ready_p1 && !key_release),
+        .key_release(key_release),
+        .units(high_units),
+        .tens(high_tens)
+    );
+
+    //显示数码管控制模块
+    seg_h u3_seg_h_0 (
+        .seg_in(key_ascii_display[3:0]),
+        .seg_out(seg_out_2),
+        .en(en)
+    );
+
+    seg_h u4_seg_h_1 (
+        .seg_in(key_ascii_display[7:4]),
+        .seg_out(seg_out_3),
+        .en(en)
+    );
+
+    seg_h u5_seg_h_2 (
+        .seg_in(key_scan_display[3:0]),
+        .seg_out(seg_out_0),
+        .en(en)
+    );
+    
+    seg_h u6_seg_h_3 (
+        .seg_in(key_scan_display[7:4]),
+        .seg_out(seg_out_1),
+        .en(en)
+    );
+
+    seg_h u7_seg_h_4 (
+        .seg_in(high_units),
+        .seg_out(seg_out_4),
+        .en(1'b1)
+    );
+
+    seg_h u8_seg_h_5 (
+        .seg_in(high_tens),
+        .seg_out(seg_out_5),
+        .en(1'b1)
+    );
+
+    // 产生准备信号的上升沿和下降沿
+    always @(posedge clk or negedge clrn) begin
+        if (clrn == 1'b0) begin
+            ready_d1 <= 0;          
+            ready_d2 <= 0;
+        end else begin
+            ready_d1 <= ready;
+            ready_d2 <= ready_d1;
+        end
+    end
+
+    assign ready_p1 = ready & ~ready_d1; // 上升沿
+    assign ready_p2 = ready_d1 & ~ready_d2; // 下降沿
+
+    // 数据处理逻辑
+    always @(posedge clk or negedge clrn) begin
+        if (clrn ==  1'b0) begin
+            data_d1 <= 0;
+            key_scan_display <= 0;
+            key_ascii_display <= 0;
+            en <= 0;
+            nextdata_n <= 1;
+        end else begin
+            if (ready_p1) begin
+                data_d1 <= data;
+                key_scan_display <= data;       //显示扫描码
+                key_ascii_display <= ascii;     //显示 ASCII
+                en <= 1;                        //使能显示
+                nextdata_n <= 0;                //读取下一个数据
+            end else if (key_release) begin
+                en <= 0;                        // 禁用显示
+            end else begin
+                nextdata_n <= 1;                // 不读取新数据
+            end
+        end
+    end
+endmodule
+```
+### 实验过程遇到的问题
+#### 计数时，记录按下的同时也把松开记录了
+**解决过程：** 根据实验的结果显示，判断产生错误的地方是在计数器模块，对按下信号进行了加强检测。在对ps2_top.v 61行中 .key_press(ready_p1) 更新为.key_press(ready_p1 && !key_release)后，问题得到了解决。
+#### 实现数码管低4位全灭时，实验结果不是预期的结果
+**解决过程：** 在seg_h.v模块中添加了使能信号en，并且在ps2_top.v中 数据逻辑处理部分,让使能信号en与上升沿信号相关。
