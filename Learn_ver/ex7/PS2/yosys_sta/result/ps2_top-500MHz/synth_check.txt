@@ -1,0 +1,83 @@
+
+21. Executing CHECK pass (checking for obvious problems).
+checking module $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1..
+Warning: Wire $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1.\out [7] is used but has no driver.
+Warning: Wire $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1.\out [6] is used but has no driver.
+Warning: Wire $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1.\out [5] is used but has no driver.
+Warning: Wire $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1.\out [4] is used but has no driver.
+Warning: Wire $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1.\out [3] is used but has no driver.
+Warning: Wire $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1.\out [2] is used but has no driver.
+Warning: Wire $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1.\out [1] is used but has no driver.
+Warning: Wire $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1.\out [0] is used but has no driver.
+checking module $paramod\MuxKeyWithDefault\NR_KEY=36\KEY_LEN=8\DATA_LEN=8..
+checking module ps2_counter..
+Warning: Wire ps2_counter.\units [3] is used but has no driver.
+Warning: Wire ps2_counter.\units [2] is used but has no driver.
+Warning: Wire ps2_counter.\units [1] is used but has no driver.
+Warning: Wire ps2_counter.\units [0] is used but has no driver.
+Warning: Wire ps2_counter.\tens [3] is used but has no driver.
+Warning: Wire ps2_counter.\tens [2] is used but has no driver.
+Warning: Wire ps2_counter.\tens [1] is used but has no driver.
+Warning: Wire ps2_counter.\tens [0] is used but has no driver.
+checking module ps2_distinguish..
+Warning: Wire ps2_distinguish.\key_release is used but has no driver.
+Warning: Wire ps2_distinguish.\ascii [7] is used but has no driver.
+Warning: Wire ps2_distinguish.\ascii [6] is used but has no driver.
+Warning: Wire ps2_distinguish.\ascii [5] is used but has no driver.
+Warning: Wire ps2_distinguish.\ascii [4] is used but has no driver.
+Warning: Wire ps2_distinguish.\ascii [3] is used but has no driver.
+Warning: Wire ps2_distinguish.\ascii [2] is used but has no driver.
+Warning: Wire ps2_distinguish.\ascii [1] is used but has no driver.
+Warning: Wire ps2_distinguish.\ascii [0] is used but has no driver.
+Warning: Wire ps2_distinguish.$auto$hilomap.cc:39:hilomap_worker$3322 is used but has no driver.
+Warning: Wire ps2_distinguish.$auto$hilomap.cc:47:hilomap_worker$3320 is used but has no driver.
+checking module ps2_keyboard..
+Warning: Wire ps2_keyboard.\ready is used but has no driver.
+Warning: Wire ps2_keyboard.\overflow is used but has no driver.
+Warning: Wire ps2_keyboard.\data [7] is used but has no driver.
+Warning: Wire ps2_keyboard.\data [6] is used but has no driver.
+Warning: Wire ps2_keyboard.\data [5] is used but has no driver.
+Warning: Wire ps2_keyboard.\data [4] is used but has no driver.
+Warning: Wire ps2_keyboard.\data [3] is used but has no driver.
+Warning: Wire ps2_keyboard.\data [2] is used but has no driver.
+Warning: Wire ps2_keyboard.\data [1] is used but has no driver.
+Warning: Wire ps2_keyboard.\data [0] is used but has no driver.
+checking module ps2_top..
+Warning: Wire ps2_top.$auto$hilomap.cc:39:hilomap_worker$3324 is used but has no driver.
+Warning: Wire ps2_top.\key_scan_display[7] is used but has no driver.
+Warning: Wire ps2_top.\key_scan_display[6] is used but has no driver.
+Warning: Wire ps2_top.\key_scan_display[5] is used but has no driver.
+Warning: Wire ps2_top.\key_scan_display[4] is used but has no driver.
+Warning: Wire ps2_top.\key_scan_display[3] is used but has no driver.
+Warning: Wire ps2_top.\key_scan_display[2] is used but has no driver.
+Warning: Wire ps2_top.\key_scan_display[1] is used but has no driver.
+Warning: Wire ps2_top.\key_scan_display[0] is used but has no driver.
+Warning: Wire ps2_top.\key_ascii_display[7] is used but has no driver.
+Warning: Wire ps2_top.\key_ascii_display[6] is used but has no driver.
+Warning: Wire ps2_top.\key_ascii_display[5] is used but has no driver.
+Warning: Wire ps2_top.\key_ascii_display[4] is used but has no driver.
+Warning: Wire ps2_top.\key_ascii_display[3] is used but has no driver.
+Warning: Wire ps2_top.\key_ascii_display[2] is used but has no driver.
+Warning: Wire ps2_top.\key_ascii_display[1] is used but has no driver.
+Warning: Wire ps2_top.\key_ascii_display[0] is used but has no driver.
+Warning: Wire ps2_top.\en is used but has no driver.
+Warning: Wire ps2_top.$abc$2665$logic_and$/home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys_sta/ex7_yosys/ps2_top.v:60$2_Y is used but has no driver.
+Warning: Wire ps2_top.\data_d1[7] is used but has no driver.
+Warning: Wire ps2_top.\data_d1[6] is used but has no driver.
+Warning: Wire ps2_top.\data_d1[5] is used but has no driver.
+Warning: Wire ps2_top.\data_d1[4] is used but has no driver.
+Warning: Wire ps2_top.\data_d1[3] is used but has no driver.
+Warning: Wire ps2_top.\data_d1[2] is used but has no driver.
+Warning: Wire ps2_top.\data_d1[1] is used but has no driver.
+Warning: Wire ps2_top.\data_d1[0] is used but has no driver.
+Warning: Wire ps2_top.\nextdata_n is used but has no driver.
+checking module seg_h..
+Warning: Wire seg_h.\seg_out [7] is used but has no driver.
+Warning: Wire seg_h.\seg_out [6] is used but has no driver.
+Warning: Wire seg_h.\seg_out [5] is used but has no driver.
+Warning: Wire seg_h.\seg_out [4] is used but has no driver.
+Warning: Wire seg_h.\seg_out [3] is used but has no driver.
+Warning: Wire seg_h.\seg_out [2] is used but has no driver.
+Warning: Wire seg_h.\seg_out [1] is used but has no driver.
+Warning: Wire seg_h.\seg_out [0] is used but has no driver.
+found and reported 73 problems.
