@@ -1,0 +1,110 @@
+$date
+	Wed Dec  4 11:40:15 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module tb_seg $end
+$var wire 8 ! seg_out [7:0] $end
+$var reg 1 " i_signbit $end
+$var reg 4 # seg_in [3:0] $end
+$scope module uut $end
+$var wire 1 " i_signbit $end
+$var wire 4 $ seg_in [3:0] $end
+$var reg 8 % seg_out [7:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b10 %
+b0 $
+b0 #
+0"
+b10 !
+$end
+#10
+b10011111 !
+b10011111 %
+b1 #
+b1 $
+#20
+b100101 !
+b100101 %
+b10 #
+b10 $
+#30
+b1101 !
+b1101 %
+b11 #
+b11 $
+#40
+b10011001 !
+b10011001 %
+b100 #
+b100 $
+#50
+b1001001 !
+b1001001 %
+b101 #
+b101 $
+#60
+b1000001 !
+b1000001 %
+b110 #
+b110 $
+#70
+b11111 !
+b11111 %
+b111 #
+b111 $
+#80
+b0 !
+b0 %
+1"
+b1000 #
+b1000 $
+#90
+b10011111 !
+b10011111 %
+b1 #
+b1 $
+#100
+b100101 !
+b100101 %
+b10 #
+b10 $
+#110
+b1101 !
+b1101 %
+b11 #
+b11 $
+#120
+b10011001 !
+b10011001 %
+b100 #
+b100 $
+#130
+b1001001 !
+b1001001 %
+b101 #
+b101 $
+#140
+b1000001 !
+b1000001 %
+b110 #
+b110 $
+#150
+b11111 !
+b11111 %
+b111 #
+b111 $
+#160
+b0 !
+b0 %
+b1000 #
+b1000 $
+#170
