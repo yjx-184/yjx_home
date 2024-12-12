@@ -1,3 +1,35 @@
+- [实验十一 RV32I单周期CPU](#实验十一-rv32i单周期cpu)
+  - [RV32I指令编码](#rv32i指令编码)
+  - [RV32I中的通用寄存器](#rv32i中的通用寄存器)
+  - [RV32I中的指令类型](#rv32i中的指令类型)
+    - [整数运算指令](#整数运算指令)
+    - [控制转移指令](#控制转移指令)
+    - [存储器访问指令](#存储器访问指令)
+    - [常见伪指令](#常见伪指令)
+  - [RV32I电路实现](#rv32i电路实现)
+    - [单周期电路设计](#单周期电路设计)
+  - [控制通路](#控制通路)
+  - [验收实验](#验收实验)
+    - [取址](#取址)
+      - [Instr\_Mem.v](#instr_memv)
+    - [指令存储器](#指令存储器)
+      - [Imm\_Gen.v](#imm_genv)
+      - [测试结果](#测试结果)
+    - [RV32I指令控制信号](#rv32i指令控制信号)
+      - [Contr\_Gen.v 测试结果](#contr_genv-测试结果)
+    - [寄存器堆 Reg\_File](#寄存器堆-reg_file)
+    - [ALU](#alu)
+    - [PC加法器输入选择逻辑](#pc加法器输入选择逻辑)
+      - [Branch\_COnd.v](#branch_condv)
+      - [测试结果](#测试结果-1)
+    - [程序计数器PC](#程序计数器pc)
+      - [PCMux.v](#pcmuxv)
+      - [测试结果](#测试结果-2)
+      - [PC.v](#pcv)
+    - [数据存储器部分](#数据存储器部分)
+      - [Data\_Mem.v](#data_memv)
+      - [测试Data\_Mem.v](#测试data_memv)
+      - [Data\_Mux.v](#data_muxv)
 
 
 # 实验十一 RV32I单周期CPU
@@ -71,3 +103,481 @@ RISC-V中规定了一些常用的伪指令。这些伪指令一般可以在汇�
 ![](./pic/one_CPU.png)  
 
 ## 控制通路
+
+
+
+
+## 验收实验
+### 取址
+#### Instr_Mem.v
+```
+module Instr_Mem(
+    input Rdclk,            //读取时钟
+    input [31:0] Rdaddr,    //读取地址
+    output [31:0] Instr     //输出指令
+);
+
+    //参数定义
+    parameter MEM_DEPTH = 256; //指令存储器的深度
+    parameter MEM_WIDTH = 32;  //每条指令的宽度
+
+    //指令存储器阵列
+    reg [MEM_WIDTH-1:0] mem_array [0:MEM_DEPTH-1];
+
+    //初始化存储器，从外部文件加载指令数据
+    initial begin
+        $readmemh("instr_mem.hex", mem_array);  //从文件中加载指令
+    end
+
+    //在时钟上升沿根据地址读取指令
+    always @(posedge Rdclk) begin
+        Instr <= mem_array[Rdaddr[31:2]];
+    end
+
+endmodule
+```
+
+### 指令存储器 
+#### Imm_Gen.v
+```
+module Imm_Gen(
+    input [31:0] instr,       // 输入：instr
+    input [2:0] ExtOp,        // 扩展操作：用于区分立即数类型
+    output reg [31:0] imm     // 输出：生成的32位立即数
+);
+
+    always @(*) begin
+        case (ExtOp)
+            3'b000: // I-Type：立即数操作指令 
+                // 最高位为符号位，对其进行扩展。
+                imm = {{20{instr[31]}}, instr[31:20]};
+
+            3'b001: // U-Type: 长立即数指令
+                imm = {instr[31:12], 12'b0};
+
+            3'b010: // S-Type: 存储器写指令
+                imm = {{20{instr[31]}}, instr[31:25], instr[11:7]};
+
+            3'b011: // B-Type: 跳转指令 13位立即数，末尾始终为0
+                imm = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
+
+            3'b100: // J-Type: 长跳转指令
+                imm = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
+            default: // 默认输出 0
+                imm = 32'b0;
+        endcase
+    end
+
+endmodule
+
+
+```
+#### 测试结果
+经过测试，符合拼接规则
+```
+test 1: imm = 11111111111111111111100000000000
+test 2: imm = 11111111111100000000000000000000
+test 3: imm = 11111111111111111111111111111111
+test 4: imm = 11111111111111111111011111100000
+test 5: imm = 11111111111100000000011111100000
+
+```
+### RV32I指令控制信号
+#### Contr_Gen.v 测试结果
+```
+yjx@yjx-Lenovo-Legion-R7000-2020:~/Mystudy/yjx_learn/Learn_ver/ex11/CPU/Contr_Gen$ ./Contr_Gen_tb
+开始测试
+test lui:     ExtOp = 001, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0011
+test auipc:   ExtOp = 001, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 1, ALUBsrc = 01, ALUctr = 0000
+......
+test addi:    ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0000
+test slti:    ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0010
+test sltiu:   ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 1010
+test xori:    ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0100
+test ori:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0110
+test andi:    ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0111
+test slli:    ExtOp = 001, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0001
+test srli:    ExtOp = 001, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0101
+test srai:    ExtOp = 001, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 1101
+.......
+test add:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0000
+test sub:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 1000
+test sll:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0001
+test slt:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0010
+test sltu:    ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 1010
+test xor:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0100
+test srl:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0101
+test sra:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 1101
+test or:      ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0110
+test and:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0111
+......
+test jal:     ExtOp = 100, RegWr = 1, Branch = 001, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 1, ALUBsrc = 10, ALUctr = 0000
+test jalr:    ExtOp = 000, RegWr = 1, Branch = 010, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 1, ALUBsrc = 10, ALUctr = 0000
+test beq:     ExtOp = 011, RegWr = 0, Branch = 100, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0010
+test bne:     ExtOp = 011, RegWr = 0, Branch = 101, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0010
+test blt:     ExtOp = 011, RegWr = 0, Branch = 110, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0010
+test bge:     ExtOp = 011, RegWr = 0, Branch = 111, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 0010
+test bltu:    ExtOp = 011, RegWr = 0, Branch = 110, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 1010
+test bgeu:    ExtOp = 011, RegWr = 0, Branch = 111, MemtoReg = 0, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 00, ALUctr = 1010
+......
+test bl:      ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 1, MemWr = 0, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0000
+test lh:      ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 1, MemWr = 0, MemOp = 001, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0000
+test lw:      ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 1, MemWr = 0, MemOp = 010, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0000
+test lbu:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 1, MemWr = 0, MemOp = 100, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0000
+test lhu:     ExtOp = 000, RegWr = 1, Branch = 000, MemtoReg = 1, MemWr = 0, MemOp = 101, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0000
+test sb:      ExtOp = 010, RegWr = 0, Branch = 000, MemtoReg = 0, MemWr = 1, MemOp = 000, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0000
+test sh:      ExtOp = 010, RegWr = 0, Branch = 000, MemtoReg = 0, MemWr = 1, MemOp = 001, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0000
+test sw:      ExtOp = 010, RegWr = 0, Branch = 000, MemtoReg = 0, MemWr = 1, MemOp = 010, ALUAsrc = 0, ALUBsrc = 01, ALUctr = 0000
+测试结束
+
+```
+### 寄存器堆 Reg_File
+这个部分直接调用了上一个实验的寄存器堆Reg_FIle.v
+
+### ALU
+这个部分稍做加工，也是基本调用了上一个实验的ALU.v
+
+### PC加法器输入选择逻辑
+#### Branch_COnd.v
+```
+module Branch_Cond(
+    input [2:0] Branch,
+    input Less,
+    input Zero,
+    output PCAsrc,
+    output PCBsrc
+);
+
+    always @(*) begin
+        //默认情况下, PC + 4
+        PCAsrc = 0;  //默认设置为PC + 4
+        PCBsrc = 0;  //默认设置为PC + 4
+        
+        case(Branch)
+            3'b000: begin       //非跳转指令
+                //PC + 4
+                PCAsrc = 0;
+                PCBsrc = 0;
+            end
+
+            3'b001: begin       //无条件跳转PC目标
+                //PC + imm
+                PCAsrc = 1;
+                PCBsrc = 0;
+            end
+
+            3'b010: begin       //无条件跳转寄存器目标
+                //rs1 + imm
+                PCAsrc = 1;
+                PCBsrc = 1;
+            end
+
+            3'b100: begin       //条件分支，等于
+                case(Zero)
+                    1'b0: begin //PC + 4
+                        PCAsrc = 0;
+                        PCBsrc = 0;
+                    end
+
+                    1'b1: begin //PC + imm
+                        PCAsrc = 1;
+                        PCBsrc = 0;
+                    end
+                endcase
+            end
+
+            3'b101: begin       //条件分支，不等于
+                case(Zero)
+                    1'b0: begin //PC + imm
+                        PCAsrc = 1;
+                        PCBsrc = 0;
+                    end
+
+                    1'b1: begin //PC + 4
+                        PCAsrc = 0;
+                        PCBsrc = 0;
+                    end
+                endcase
+            end
+
+            3'b110: begin       //条件分支，小于
+                case(Less)
+                    1'b0: begin //PC + 4
+                        PCAsrc = 0;
+                        PCBsrc = 0;
+                    end
+
+                    1'b1: begin //PC + imm
+                        PCAsrc = 1;
+                        PCBsrc = 0;
+                    end
+                endcase
+            end
+
+            3'b111: begin       //条件分支，大于等于
+                case(Less)
+                    1'b0: begin //PC + imm
+                        PCAsrc = 1;
+                        PCBsrc = 0;
+                    end
+
+                    1'b1: begin //PC + 4
+                        PCAsrc = 0;
+                        PCBsrc = 0;
+                    end
+
+                endcase
+            end
+
+
+        endcase
+
+    end
+
+
+
+endmodule
+```
+#### 测试结果
+```
+yjx@yjx-Lenovo-Legion-R7000-2020:~/Mystudy/yjx_learn/Learn_ver/ex11/Backup/Branch_Cond$ ./Branch_Cond
+Test 1:   Branch: 000, Less = x, Zero = x, PCAsrc = 0, PCBsrc = 0
+Test 2:   Branch: 001, Less = x, Zero = x, PCAsrc = 1, PCBsrc = 0
+Test 3:   Branch: 010, Less = x, Zero = x, PCAsrc = 1, PCBsrc = 1
+Test 4:   Branch: 100, Less = x, Zero = 0, PCAsrc = 0, PCBsrc = 0
+Test 5:   Branch: 100, Less = x, Zero = 1, PCAsrc = 1, PCBsrc = 0
+Test 6:   Branch: 101, Less = x, Zero = 0, PCAsrc = 1, PCBsrc = 0
+Test 7:   Branch: 101, Less = x, Zero = 1, PCAsrc = 0, PCBsrc = 0
+Test 8:   Branch: 110, Less = 0, Zero = 1, PCAsrc = 0, PCBsrc = 0
+Test 9:   Branch: 110, Less = 1, Zero = 1, PCAsrc = 1, PCBsrc = 0
+Test 10:   Branch: 111, Less = 0, Zero = 1, PCAsrc = 1, PCBsrc = 0
+Test 11:   Branch: 111, Less = 1, Zero = 1, PCAsrc = 0, PCBsrc = 0
+
+```
+### 程序计数器PC
+#### PCMux.v
+```
+module PCMux(
+    input [31:0] imm,
+    input [31:0] rs1,
+    input [31:0] Pc,
+    input PCAsrc,
+    input PCBsrc,
+    output [31:0] NextPC
+);
+
+    always @(*) begin
+        if(PCAsrc == 0) begin
+            //PC + 4
+            NextPC = Pc + 4;
+        end else begin
+            if(PCBsrc == 0) begin
+                //PC + imm
+                NextPC = Pc + imm;
+            end else begin
+                //rs1 + imm
+                NextPC = rs1 + imm;
+            end
+        end
+    end
+endmodule
+```
+#### 测试结果
+```
+$ ./PCMux_tb
+time                    0, Pc = 00000000, imm = 00000000, rs1 = 00000000, PCAsrc = 0, PCBsrc = 0, NextPC = 00000004
+time                10000, Pc = 00000004, imm = 00000008, rs1 = 00000010, PCAsrc = 0, PCBsrc = 0, NextPC = 00000008
+time                20000, Pc = 00000004, imm = 00000008, rs1 = 00000010, PCAsrc = 1, PCBsrc = 0, NextPC = 0000000c
+time                30000, Pc = 00000004, imm = 00000008, rs1 = 00000010, PCAsrc = 1, PCBsrc = 1, NextPC = 00000018
+time                40000, Pc = 00000010, imm = 00000010, rs1 = 00000020, PCAsrc = 0, PCBsrc = 1, NextPC = 00000014
+time                50000, Pc = 00000020, imm = 00000004, rs1 = 00000030, PCAsrc = 1, PCBsrc = 1, NextPC = 00000034
+
+```
+#### PC.v
+```
+module PC(
+    input [31:0] NextPC,
+    input CLK,
+    output reg [31:0] Pc
+);
+    initial begin
+        Pc = 32'b0;
+    end
+
+    always @(negedge CLK) begin
+        Pc <= NextPC;
+    end
+endmodule
+```
+### 数据存储器部分
+#### Data_Mem.v
+```
+module Data_Mem(
+    input [31:0] Addr,
+    input [2:0] MemOp,
+    input [31:0] DataIn,
+    input WrEn,
+    input RdClk,
+    input WrClk,
+    output [31:0] DataOut
+);
+
+    //内存数组（假设内存大小为 256 条指令，每条指令32位宽）
+    reg [31:0] mem_array [0:255];
+
+    //读取操作
+    always @(posedge RdClk) begin
+        case (MemOp)
+            //读取字
+            3'b000: DataOut <= mem_array[Addr[31:2]];
+
+            //读取半字
+            3'b001: begin
+                case(Addr[1:0])
+
+                    //从低地址读取半字
+                    2'b00: DataOut <= {16'b0, mem_array[Addr[31:2]][15:0]};
+
+                    //从高地址读取半字
+                    2'b10: DataOut <= {16'b0, mem_array[Addr[31:2][31:16]]};
+
+                    //无效地址
+                    default: DataOut <= 32'b0;
+                endcase
+            end
+
+            //读取字
+            3'b010: DataOut <= mem_array[Addr[31:2]];
+
+
+            //读取无符号字节
+            3'b100: begin
+                case(Addr[1:0])
+
+                    //低字节
+                    2'b00: DataOut <= {24'b0, mem_array[Addr[31:2]][7:0]};
+
+                    //第二字节
+                    2'b01: DataOut <= {24'b0, mem_array[Addr[31:2]][15:8]};
+
+                    //第三字节
+                    2'b10: DataOut <= {24'b0, mem_array[Addr[31:2]][23:16]};
+
+                    //高字节
+                    2'b11: DataOut <= {24'b0, mem_array[Addr[31:2]][31:24]};
+
+                    //无效地址
+                    default: DataOut <= 32'b0;
+                endcase
+            end
+
+            //读取无符号半字
+            3'b101: begin
+                case(Addr[1:0])
+
+                    //从低地址读取半字
+                    2'b00: DataOut <= {16'b0, mem_array[Addr[31:2]][15:0]};
+
+                    //从高地址读取半字
+                    2'b10: DataOut <= {16'b0, mem_array[Addr[31:2]][31:16]};
+
+                    //无效地址
+                    default: DataOut <= 32'b0;
+                endcase
+            end
+            //默认值
+            default: DataOut <= 32'b0;
+        endcase
+    end
+
+    // 写操作
+    always @(negedge WrClk) begin
+        if (WrEn) begin
+            case (MemOp)
+
+                //写入字
+                3'b000: mem_array[Addr[31:2]] <= DataIn;
+
+                //写入半字
+                3'b001: begin
+                    case (Addr[1:0])
+
+                        //写入低半字
+                        2'b00: mem_array[Addr[31:2]][15:0] <= DataIn[15:0];
+
+                        //写入高半字
+                        2'b10: mem_array[Addr[31:2]][31:16] <= DataIn[15:0];
+
+                        //无效地址，不写入
+                        default: ;
+                    endcase
+                end
+
+                //写入字
+                3'b010: mem_array[Addr[31:2]] <= DataIn;
+
+                //写入字节
+                3'b100: begin
+                    case (Addr[1:0])
+
+                        //写入低字节
+                        2'b00: mem_array[Addr[31:2]][7:0] <= DataIn[7:0];
+
+                        //写入第二字节
+                        2'b01: mem_array[Addr[31:2]][15:8] <= DataIn[7:0]; 
+
+                        //写入第三字节
+                        2'b10: mem_array[Addr[31:2]][23:16] <= DataIn[7:0];
+
+                        //写入高字节
+                        2'b11: mem_array[Addr[31:2]][31:24] <= DataIn[7:0]; 
+
+                        //无效地址，不写入
+                        default: ;
+                    endcase
+                end
+
+                //写入半字
+                3'b101: begin
+                    case (Addr[1:0])
+
+                        //写入低半字
+                        2'b00: mem_array[Addr[31:2]][15:0] <= DataIn[15:0];
+
+                        //写入高半字
+                        2'b10: mem_array[Addr[31:2]][31:16] <= DataIn[15:0];
+
+                        //无效地址，不写入
+                        default: ;
+                    endcase
+                end
+                //默认情况下不写入
+                default: ;
+            endcase
+        end
+    end
+
+endmodule
+```
+#### 测试Data_Mem.v
+结果显示通过。
+
+#### Data_Mux.v
+```
+module Data_Mux(
+    input [31:0] DataOut_in,
+    input [31:0] ALU_Result,
+    input MemtoReg,
+    output reg [31:0] busW
+);
+
+    always @(*) begin
+        case(MemtoReg)
+            1'b0: busW = ALU_Result;
+            1'b1: busW = DataOut_in;
+            default: busW = 32'b0;
+        endcase
+    end
+
+endmodule
+```
