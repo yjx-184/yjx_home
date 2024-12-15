@@ -5,7 +5,7 @@ module Instr_Mem(
 );
 
     //参数定义
-    parameter MEM_DEPTH = 256; //指令存储器的深度
+    parameter MEM_DEPTH = 1; //指令存储器的深度
     parameter MEM_WIDTH = 32;  //每条指令的宽度
 
     //指令存储器阵列

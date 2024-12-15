@@ -5,18 +5,22 @@ module Instr_Mem(
 );
 
     //参数定义
-    parameter MEM_DEPTH = 256; //指令存储器的深度
+    parameter MEM_DEPTH = 1; //指令存储器的深度
     parameter MEM_WIDTH = 32;  //每条指令的宽度
 
     //指令存储器阵列
     reg [MEM_WIDTH-1:0] mem_array [0:MEM_DEPTH-1];
 
     //初始化存储器，从外部文件加载指令数据
-    initial begin
-        $readmemh("instr_mem.hex", mem_array);  //从文件中加载指令
+    // initial begin
+    //     $readmemh("instr_mem.hex", mem_array);  //从文件中加载指令
+    // end
+
+     initial begin
+        mem_array[0] = 32'h00230293;
     end
 
-    //在时钟上升沿根据地址读取指令
+
     always @(negedge Rdclk) begin
         Instr <= mem_array[Rdaddr[31:2]];
     end

@@ -5,11 +5,14 @@ module Data_Mem(
     input WrEn,
     input RdClk,
     input WrClk,
+    input clrn,
     output reg [31:0] DataOut
 );
 
     //内存数组（假设内存大小为 256 条指令，每条指令32位宽）
-    reg [31:0] mem_array [0:255];
+    reg [31:0] mem_array [1:0];
+
+    
 
     //读取操作
     always @(posedge RdClk) begin
@@ -77,8 +80,12 @@ module Data_Mem(
     end
 
     // 写操作
-    always @(negedge WrClk) begin
-        if (WrEn) begin
+    always @(negedge WrClk or negedge clrn) begin
+        if (clrn == 1'b0) begin
+            // 清空内存数组
+            mem_array[0] <= 32'b0;
+            mem_array[1] <= 32'b0;
+        end else if(WrEn) begin
             case (MemOp)
 
                 //写入字

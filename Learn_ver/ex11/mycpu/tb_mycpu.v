@@ -1,35 +1,73 @@
 `timescale 1ns / 10ps
 
 module tb_Mycpu;
+    //接口信号
+    reg CLK, clrn;
+    wire MemtoReg, MemWr;
+    wire [31:0] Rdaddr, Instr, Addr, DataIn;
+    wire [2:0] MemOp;
+    wire [31:0] DataOut, busW, ALU_Result, busB;
+    reg [31:0] NextPC;
 
-    // 时钟信号
-    reg CLK;
 
-    // 实例化待测试模块
-    Mycpu Mycpu_tb (
-        .CLK(CLK)
+
+
+    //实例化被测试模块
+    Instr_Mem My_IM(
+        .Rdclk(CLK),
+        .Rdaddr(NextPC),
+        .Instr(Instr)
     );
 
-    // 时钟生成器
-    initial begin
+    Mycpu my_cpu_tb(
+        .Instr(Instr),
+        .clrn(clrn),
+        .CLK(CLK),
+        .ALU_Result(ALU_Result),
+        .busB(busB)
+    );
+
+    Data_Mem my_DM(
+        .Addr(ALU_Result),
+        .MemOp(MemOp),
+        .DataIn(busB),
+        .WrEn(MemWr),
+        .RdClk(CLK),
+        .WrClk(CLK),
+        .clrn(clrn),
+        .DataOut(DataOut)
+    );
+
+    Data_Mux my_DMux(
+        .DataOut_in(DataOut),
+        .ALU_Result(ALU_Result),
+        .MemtoReg(MemtoReg),
+        .busW(busW)
+    );
+
+    always begin
         CLK = 0;
-        forever #50 CLK = ~CLK; // 每50ns翻转一次，时钟周期为100ns
+        #10 CLK = ~CLK;
     end
 
-    // 测试过程
     initial begin
-        // 初始化
-        $display("开始模拟...");
-        $dumpfile("my_cpu.vcd");  // 保存波形文件（适用于 GTKWave）
-        $dumpvars(0, Mycpu_tb);
+        //初始化
+        clrn = 0;
+        NextPC = 32'b0;
+        #20 clrn = 1;
 
-        $readmemh("instr_mem.hex", mycpu.Instr_Mem.memory); // 加载指令
+        My_IM.mem_array[0] = 32'h00230293;
+        $display("获得到的指令: mem_array = 32'h%h", My_IM.mem_array[0]);
+        $display("开始时的数据: Instr = %h", Instr);
+        $display("Ra(h) = %h, Rb(h) = %h, Rw(h) = %h", my_cpu_tb.my_RF.Ra, my_cpu_tb.my_RF.Rb, my_cpu_tb.my_RF.Rw);
+        $display("Ra(b) = %b, Rb(b) = %b, Rw(b) = %b", my_cpu_tb.my_RF.Ra, my_cpu_tb.my_RF.Rb, my_cpu_tb.my_RF.Rw);
+        
+        #10;
+        $display("上升沿数据:ALU_Result = %b",ALU_Result);
 
-        // 等待若干时钟周期，观察CPU行为
-        #2000;  // 仿真时间延长
-
-        // 结束仿真
-        $display("模拟完成.");
+        #200;
         $finish;
+
     end
+
 endmodule

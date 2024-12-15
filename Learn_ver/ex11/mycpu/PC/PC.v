@@ -1,13 +1,13 @@
 module PC(
     input [31:0] NextPC,
     input CLK,
+    input clrn,
     output reg [31:0] Pc
 );
-    initial begin
-        Pc = 32'b0;
-    end
-
-    always @(negedge CLK) begin
-        Pc <= NextPC;
+    always @(negedge CLK or negedge clrn) begin
+        if(clrn == 1'b0)
+            Pc <= 32'b0;
+        else
+            Pc <= NextPC;
     end
 endmodule
