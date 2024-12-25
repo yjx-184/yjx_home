@@ -1,6 +1,6 @@
 - [第一部分：每章简述](#第一部分每章简述)
 - [第二部分：对于书中的知识点整理](#第二部分对于书中的知识点整理)
-  - [第1：scala的简介](#第1scala的简介)
+  - [1：scala的简介](#1scala的简介)
     - [scala是什么](#scala是什么)
     - [scala的核心理念](#scala的核心理念)
     - [scala的特点](#scala的特点)
@@ -12,7 +12,7 @@
       - [什么是表达式？](#什么是表达式)
       - [scala中常见的表达式类型](#scala中常见的表达式类型)
       - [表达式和语句的区别](#表达式和语句的区别)
-  - [第2：scala入门](#第2scala入门)
+  - [2：scala入门](#2scala入门)
     - [scala的变量](#scala的变量)
     - [scala的函数](#scala的函数)
     - [scala脚本](#scala脚本)
@@ -23,7 +23,7 @@
       - [区别3：副作用和函数式编程风格](#区别3副作用和函数式编程风格)
       - [区别4：性能差异](#区别4性能差异)
       - [总结](#总结)
-  - [第3：scala入门（续）](#第3scala入门续)
+  - [3：scala入门（续）](#3scala入门续)
     - [用类型参数化数组](#用类型参数化数组)
     - [使用列表（列表和数组的区别）](#使用列表列表和数组的区别)
       - [1.实现方式](#1实现方式)
@@ -55,12 +55,47 @@
       - [8.类型推导和泛型](#8类型推导和泛型)
       - [9.尾递归优化](#9尾递归优化)
       - [10.模式匹配](#10模式匹配)
-  - [第4： 类和对象](#第4-类和对象)
+  - [4： 类和对象](#4-类和对象)
     - [类](#类)
     - [字段](#字段)
     - [方法](#方法)
     - [样例类（简单介绍）](#样例类简单介绍)
     - [单例对象](#单例对象)
+  - [5：内建的控制结构](#5内建的控制结构)
+    - [if表达式](#if表达式)
+    - [while循环](#while循环)
+    - [for表达式](#for表达式)
+      - [1.遍历集合](#1遍历集合)
+      - [2.过滤](#2过滤)
+      - [3.中途mid-stream变量绑定](#3中途mid-stream变量绑定)
+      - [4.产生新的集合](#4产生新的集合)
+    - [用try表达式实现异常处理](#用try表达式实现异常处理)
+      - [抛出异常](#抛出异常)
+      - [捕获异常](#捕获异常)
+      - [finally子句](#finally子句)
+      - [交出值](#交出值)
+    - [match表达式](#match表达式)
+  - [6： 函数和闭包](#6-函数和闭包)
+    - [局部函数（嵌套定义方法）](#局部函数嵌套定义方法)
+    - [一等函数](#一等函数)
+    - [闭包](#闭包)
+    - [尾递归](#尾递归)
+  - [7：柯里化](#7柯里化)
+  - [8：组合和继承](#8组合和继承)
+    - [抽象类](#抽象类)
+      - [抽象类和特质trait做比较](#抽象类和特质trait做比较)
+    - [参数化字段](#参数化字段)
+    - [使用override修饰符](#使用override修饰符)
+      - [使用规则](#使用规则)
+    - [多态和动态绑定](#多态和动态绑定)
+      - [多态的类型](#多态的类型)
+      - [特性多态](#特性多态)
+      - [多态的优势](#多态的优势)
+    - [声明final成员](#声明final成员)
+    - [使用组合和继承](#使用组合和继承)
+    - [工厂对象](#工厂对象)
+      - [什么是工厂对象？](#什么是工厂对象)
+      - [工厂对象的实现方式](#工厂对象的实现方式)
 
 
 
@@ -87,7 +122,7 @@
 
 
 # 第二部分：对于书中的知识点整理
-## 第1：scala的简介
+## 1：scala的简介
 ### scala是什么
 &emsp;&emsp;scala是面向对象和函数式编程的结合。在scala中，函数值就是对象，而函数的类型就是可被子类继承的类。  
 
@@ -98,7 +133,7 @@
 &emsp;&emsp;此外，通过对提取器的一般扩展，Scala的模式匹配概念使用了right-ignoring序列模式，自然地延伸到XML数据的处理。其中，for表达式对于构建查询很有用。这些特性使得Scala成为开发web服务等程序的理想选择。  
 ***
 ### scala的核心理念
-&emsp;&emsp;第一个理念： 函数是一等的值。在函数式编程语言中，函数值的低位跟整数、字符串等是相同的。可以将函数作为参数传递给其他函数，作为返回值返回它们，或者将它们保存在变量里。还可以在函数中定义另一个函数，就像在函数中定义整数那样。也可以在定义函数时不指定名字。  
+&emsp;&emsp;第一个理念： 函数是一等的值。在函数式编程语言中，函数值的地位跟整数、字符串等是相同的。可以将函数作为参数传递给其他函数，作为返回值返回它们，或者将它们保存在变量里。还可以在函数中定义另一个函数，就像在函数中定义整数那样。也可以在定义函数时不指定名字。  
 &emsp;&emsp;第二个理念： 是程序中的操作应该将输入映射成输出值，而不是当场in place 修改数据。该理念的另一种表述是方法不应该有副作用。方法只能通过接收入参和返回结果这两种方式与外部环境通信。举例来说，java的string类的replace方法便符合这个描述：它接收一个字符串（对象本身）、两个字符，交出一个新的字符串，其中所有出现的入参第一个字符都被替换成了入参的第二个字符。调用replace并没有其他的作用。**像这样的方法被认为是“指称透明的”，意思是对于任何给定的输入，该方法调用都可以被其结果替换，同时不会影响程序的语义。**  
 ***
 ***
@@ -137,11 +172,11 @@
 **10.异常处理表达式**  
 
 #### 表达式和语句的区别
-**表达式：**1,总有返回值；2.偏向于声明式风格。  
-**语句：**1.用来执行动作，不返回值；2.通常会产生副作用（如修改变量或输出）；3.在scala中尽可能使用表达式。  
+**表达式：** 1,总有返回值；2.偏向于声明式风格。  
+**语句：** 1.用来执行动作，不返回值；2.通常会产生副作用（如修改变量或输出）；3.在scala中尽可能使用表达式。  
 
 
-## 第2：scala入门  
+## 2：scala入门  
 ### scala的变量
 &emsp;&emsp;**val**  与java的final变量类似，一旦初始化就不能被重新赋值。  
 &emsp;&emsp;**var**  与java的非final变量类似，在整个生命周期内var可以被重新赋值。
@@ -238,7 +273,7 @@ println(evenSquares)  // List(4, 16)
 **foreach：** 用于执行副作用，返回 Unit，不能生成新的集合。
 **for：** 可以作为表达式，支持 yield 返回新集合，也可以用于执行副作用，但更常用于需要条件或推导的场景。  
 
-## 第3：scala入门（续）
+## 3：scala入门（续）
 ### 用类型参数化数组  
 **实例化：** 用new来实例化对象或类的实例。  
 **参数化：** 在实例化对象时，可以用值和类型对其进行参数化。参数化的意思是在创建实例时对实例做“配置”。可以用值来参数化一个实例，也可以用类型来参数化一个实例（做法是在方括号里给出一个或多个类型）。  
@@ -594,7 +629,7 @@ val result = x match {
 }
 println(result)  // 输出：Integer: 42
 ```  
-## 第4： 类和对象
+## 4： 类和对象
 ```
 //这是一个类定义
 class ChecksumAccumulator {
@@ -745,5 +780,565 @@ circle1.area
 ```    
 &emsp;&emsp;这里的class Circle 有一个成员 area 是和具体的实例化对象相关的，单例对象 object Circle 包含一个方法 calculateArea ，它在每一个实例化对象中都是可见的。    
 
+## 5：内建的控制结构
+### if表达式
+&emsp;&emsp;条件判断。  
+指令式风格：  
+```
+var filename = "default.txt"
+if (!args.isEmpty)
+  filename = args(0)
+```  
+
+函数式风格：  
+```
+val filename = 
+  if (!args.isEmpty) args(0)
+  else "default.txt"
+```  
+!!使用val的另一个好处是**对等式推理** 的支持。引入的变量**等于** 计算出它的值（假定这个表达式没有副作用）。因此在任何你打算写变量名的地方，都可以直接用表达式来替换。比如，可以不用println(filename)而是写成这样：  
+```
+println(if (!args.isEmpty) args(0) else "deault.txt")
+```  
+***  
+### while循环
+&emsp;&emsp;包含一个条件检查和一个循环体。  
+***  
+### for表达式
+&emsp;&emsp;前面已经提到了foreach和for的区别了，现在for表达式还有以下作用：  
+#### 1.遍历集合  
+
+#### 2.过滤  
+&emsp;&emsp;在for的圆括号中添加if条件判断。  
+
+#### 3.中途mid-stream变量绑定  
+
+#### 4.产生新的集合  
+&emsp;&emsp;形如：for (enumerators) yield e  ，使用yield关键字返回新集合。  
+
+***
+### 用try表达式实现异常处理
+#### 抛出异常  
+需要创建一个异常对象然后用**throw关键字** 抛出：  
+```
+throw new IllegalArgumentException
+```  
+在scala中，throw是一个有结果类型的表达式。  
+
+#### 捕获异常
+使用**try-catch** ，之所以是如下这样，位的是scala的重要组成部分：模式匹配。  
+```
+import java.io.FileReader
+import java.io.FileNotFoundException
+import java.io.IOException
+try {
+  val f = new FileReader("input.txt")
+  //使用并关闭文件
+} catch {
+  case ex: FileNotFoundException => //处理找不到文件的情况
+  case ex: IOException => //处理其他I/O错误
+}
+```  
+try-catch表达式跟其他的异常处理语言一样。首先代码体会被执行，如果抛出异常，则会依次尝试每个catch子句。  
+
+#### finally子句
+常用于确保某个打开的文件要被正确关闭，哪怕某个方法因为抛出了异常而退出。  
+用法：  
+```
+import java.io.FileReader
+val file = FileReafer("input.txt")
+try {
+  //使用文件
+} finallu {
+  file.close()
+}
+```  
+#### 交出值
+&emsp;&emsp;跟scala的大多数控制结构一样，tyr-catch-finally最终返回一个值。如果没有异常抛出，整个表达式的结果就是try子句的结果；如果有异常抛出并且被捕获时，整个表达式的结果就是对应的catch子句的结果；而如果有异常抛出而没有被捕获，整个表达式就没有结果。如果有finally子句，该子句计算结果就会被丢弃。finally子句通常执行清理工作，如关闭文件。通常来说，它们不应该改变主代码或catch子句中计算出来的值。  
+***
+### match表达式
+&emsp;&emsp;match表达式让你从若干**可选项** 中选择。
+如：  
+```
+val firstArg = if (!args.isEmpty) args(0) else ""
+val friend = 
+  firstArg match {
+    case "salt" => "pepper"
+    case "chips" => "salsa"
+    case "eggs" => "bacon"
+    case _ => "huh?"
+  }
+println(friend)
+```  
+## 6： 函数和闭包
+### 局部函数（嵌套定义方法）
+函数式编程风格的一个重要设计原则：程序应该分解成许多小函数，每个函数都只做明确定义的任务。在scala中可以嵌套定义方法。例如以下对象提供了一个factorial方法来计算给定数值的阶乘：  
+```
+//阶乘函数factorial(x)
+def factorial(x: Int): Int = {
+  def fact(x: Int, count: Int): Int = {
+    if (x <= 1) count
+    else fact(x - 1, x * count)
+  }
+  fact(x, 1)
+}
+println("Factorial of 2:" + factorial(2))
+println("Factorial of 3:" + factorial(3))
+```  
+***  
+### 一等函数
+一等函数意味着，函数本身可以像普通的值一样使用。  
+一等函数的特点：1.可以作为赋值给变量（函数可以赋值给变量像值一样存储）；2.可以作为参数船体给其他函数；3.可以作为返回值返回（函数可以从其他函数中返回）  
+
+**函数作为值：**  
+```
+val add = (x:Int, y: Int) => x + y
+println(add(3, 5))  //输出 8
+```  
+
+**函数作为参数传递：**  
+```
+def calculate(x: Int, y: Int, operation: (Int, Int) => Int): Int = {
+  operation(x, y)
+}
+val multiply = (x: Int, y: Int) => x * y
+val add = (x: Int, y: Int) => x + y
+println(calculate(3, 4, multiply))  //输出12
+println(calculate(3, 4, add))       //输出7
+```  
+
+**函数作为返回值：**
+```
+//创建乘数
+def createMultiplier(factor: Int): Int => Int = {
+  (x: Int) => x * factor
+}
+//三倍
+val triple = createMultiplier(3)
+println(triple(5))    //输出15
+```  
+
+**高阶函数：** 高阶函数是指使用其他函数作为参数、或者返回一个函数作为结果的函数。在Scala中函数是“一等公民”，所以允许定义高阶函数。这里的术语可能有点让人困惑，我们约定，使用函数值作为参数，或者返回值为函数值的“函数”和“方法”，均称之为“高阶函数”。上面的例子中，calculate 和 createMultiplier 都是高阶函数。 
+
+### 闭包
+**自由变量**  
+自由变量是指在函数中使用，但既不是局部变量也不是参数的变量。例如：  
+```
+val factor = 3
+val multiplier = (x: Int) => x * factor
+```  
+在这里，factor 是 multiplier 函数的自由变量。multiplier 捕获了 factor 的值，因此它是一个闭包。
+
+**捕获环境**  
+闭包可以捕获自由变量的值或引用，具体行为取决于变量的作用域与生命周期。  
+
+### 尾递归
+&emsp;&emsp;在 Scala 中，尾递归（Tail Recursion） 是一种递归形式，函数调用发生在其自身函数的最后一步，且调用后的结果直接返回，不再需要额外的操作。这种递归形式可以通过编译器优化为循环，从而避免栈溢出错误，提高效率。  
+
+尾递归的特点：
+&emsp;&emsp;1.函数调用时最后一步：尾递归函数的最后一个操作必须是调用自身。  
+&emsp;&emsp;2.编译器优化：scala编译器能够检测尾递归，并将其优化为迭代，从而避免创建新的栈帧。  
+非尾递归示例：  
+```
+def factorial(n: Int): Int = {
+  if (n == 0) 1
+  else n * factorial(n -1)  //n * 在递归调用后执行，因此不是尾递归
+}
+```  
+
+尾递归示例：  
+```
+import scala.annotation.tailrec
+
+@tailrec  //明确标注为尾递归，若不是尾递归则会编译错误
+def factorialTailRec(n: Int, acc: Int = 1): Int = {
+  if (n == 0) acc
+  else factorialTailRec(n - 1, acc * n) //最后一步时递归调用自身
+}
+```  
+
+尾递归的优势：
+&emsp;&emsp;1.避免栈溢出：递归深度太大时，不会因栈空间不足导致 StackOverflowError。
+&emsp;&emsp;2.性能提升：递归调用被编译为迭代，减少了栈操作的开销。  
+
+**尾递归的局限：**  
+在scala中使用尾递归时比较受限的，因为用JVM指令集实现更高级形式的尾递归非常困难。scala只能对那些直接尾递归调用自己的函数做优化。两个互相递归的函数scala无法优化它们。同样地，如果最后一步调用的是一个函数值（而不是发起调用的那个函数自己），也无法享受到尾递归优化。  
+
+## 7：柯里化
+柯里化：方法可以定义多个参数列表，当使用较少的参数列表调用多参数列表的方法时，会产生一个新的函数，该函数接收剩余的参数列表作为其参数。  
+
+一个经过柯里化的函数在应用时支持多个参数列表，而不是只有一个。例如下面展示的是一个常规的，没有经过柯里化的函数：  
+```
+def oldadd(x: Int, y: Int): Int = x + y
+```  
+
+下面时经过柯里化的函数:  
+```
+def curriedadd(x: Int)(y: Int): Int = x + y 
+```  
+
+1.使用柯里化后，如果时全部传参：  
+```
+println(curriedadd(2)(3))   //输出5
+```  
+
+2.部分应用函数：  
+ ```
+val addTwo = curriedadd(2)  //部分应用，固定第一个参数为2
+println(addTwo(3))          //输出5
+ ```  
+
+**柯里化的实现方式：**  
+1.使用多参数列表  
+直接定义多参数列表:def multiplyCurried(x: Int)(y: Int): Int = x * y  
+
+2.使用函数返回函数
+通过匿名函数实现:def multiplyCurried(x: Int): Int => Int = (y: Int) => x * y  
+***  
+**柯里化的优点**  
+1.提高函数的可复用性：通过部分应用函数，可以生成新的函数，从而提高代码的复用性。  
+```
+def formatNumber(base: String)(number: Double): String = base.format(number)
+val formatWithTwoDecimals = formatNumber("%.2f") _
+
+println(formatWithTwoDecimals(123.456))   //输出123.46
+```  
+
+2.函数组合：柯里化的函数更容易进行函数组合和管道化操作。  
+```
+val add = (x: Int) => (y: Int) => x + y
+val addThree = add(3)  
+println(addThree(4))  //输出7
+```  
+
+3.与高阶函数结合：柯里化函数更方便与高阶函数（如：map、reduce）结合。  
+```
+val numbers = List(1, 2 ,3)
+val multiplyBy = (x: Int) => (y: Int) => x * y
+val multiplyByTwo = multiplyBy(2)
+println(numbers.map(multiplyByTwo))   //输出List(2, 4, 6)
+```  
+
+4.增强可读性：柯里化函数表达式的参数逐步应用的过程，更贴合人类的思维方式。  
+
+## 8：组合和继承
+### 抽象类
+想要定义一个抽象类，需要在class关键字前面使用abstract修饰符。抽象类时一种定义不完整的类，它可以包含未实现的方法（抽象方法）和已实现的方法。抽象类类似于java中的抽象类，通常用来定义一些通用的行为或规范，供具体子类实现和扩展。  
+```
+abstract class Animal {
+  // 抽象方法
+  def speak(): String
+  
+  // 已实现的方法
+  def move(): String = "I can move"
+}
+
+```  
+**抽象类特征**  
+1.不能被实例化：抽象类不能直接被实例化，必须通过具体的子类实现其所有抽象成员后才能创建；实例。  
+2.可以包含具体实现：抽象类可以同时包含具体方法和抽象方法。  
+3.可以定义字段：抽象类可以定义字段（变量或常量），子类可以继承并使用这些字段。  
+
+**子类实现抽象类**  
+```
+class Dog extends Animal {
+  //必须实现抽象方法
+  override def speak(): String = "Woof"
+}
+
+val dog = new Dog
+println(dog.speak())  //输出Woof
+println(dog.move())   //输出 I can move
+```  
+#### 抽象类和特质trait做比较
+**1.是否可以包含构造参数**  
+抽象类可以构造参数：  
+```
+abstract class Animal(name: String) {
+  def speak(): String
+}
+```  
+而特质trait不允许直接定义构造参数，但可以通过字段模拟。  
+
+**2.继承限制**  
+抽象类支持单继承，子类只能继承一个抽象类。  
+特质trait支持多重继承，一个类可以混入多个特质。  
+
+**3.使用场景**  
+抽象类：适合用来定义类的通用行为和状态，或者需要使用构造参数的情况下。  
+特质：更倾向于定义行为，支持更灵活的组合。  
+```
+// 使用抽象类
+abstract class Animal {
+  def sound: String
+}
+
+class Dog extends Animal {
+  def sound: String = "Woof"
+}
+
+// 使用特质
+trait Speakable {
+  def sound: String
+}
+
+class Cat extends Speakable {
+  def sound: String = "Meow"
+}
+```  
+### 参数化字段
+在scala中，参数化字段时通过构造参数直接定义类的字段（成员变量）。它提供了一种简洁的方法将类的构造参数和字段结合起来，避免了重复代码。  
+普通构造参数：普通构造参数只存在与类的构造器中，无法直接作为类的字段访问。  
+```
+class Person(name: String, age: Int)
+
+val person = new Person("Alice", 23)  
+//person.name //错误：name不是类的字段
+```  
+
+参数化字段：通过在构造参数前添加val或var修饰符，可以将构造参数提升为类的字段。  
+```
+class Person(val name: String, var age: Int)
+
+val person = new Person("Alice", 23)
+// 现在可以直接访问 name 和 age
+println(person.name) // 输出 Alice
+println(person.age)  // 输出 25
+
+// 修改 age
+person.age = 26
+println(person.age)  // 输出 26
+```  
+
+### 使用override修饰符
+在 Scala 中，override 修饰符用于显式标识子类对超类或特质中定义的成员（如方法、字段或抽象成员）的重写。override 是强制性的，如果子类试图重写一个超类的成员而未使用 override，Scala 编译器会报错。这种设计有助于避免意外的重写行为。
+
+#### 使用规则
+**1.必须显式声明override：** 子类重写超类的具体方法或字段时，必须使用override关键字。  
+```
+class Animal {
+  def sound(): String = "some sound"
+}
+
+class Dog extends Animal {
+  override def sound(): String = "Woof"
+}
+val dog = new Dog
+println(dog.sound())  //输出 Woof
+```  
+
+**2.重写抽象方法或字段：**如果超类定义了抽象方法或字段，子类在实现它们时也需要使用override。  
+```
+abstract class Animal {
+  def sound(): String //抽象方法
+}
+
+class Cat extends Animal {
+  override def sound(): String = "Miao"
+}
+val cat = new Cat
+println(cat.sound())  //输出Miao
+```  
+
+**3.重写val和var**  
+可以使用override重写val或var字段。  
+不能用val重写var，但可以用var重写val。  
+```
+class Animal {
+  val name: String = "Animal"
+}
+class Dog extends Animal {
+  override val name: String = "Dog" // 使用 val 重写 val
+}
+
+val dog = new Dog
+println(dog.name) // 输出: Dog
+```  
+**4.重写特质中的成员：**子类实现特质中的抽象成员或重写具体成员时，也需要使用override。  
+```
+trait Animal {
+  def sound(): String = "Generic sound"
+}
+
+class Dog extends Animal {
+  override def sound(): String = "Woof"
+}
+
+val dog = new Dog
+println(dog.sound())  //输出Woof
+```  
+
+### 多态和动态绑定
+在 Scala 中，多态是面向对象编程的核心概念之一，允许对象在不同上下文中表现为不同的类型。Scala 支持 静态多态（编译时多态） 和 动态多态（运行时多态），以及函数多态（通过类型参数实现的多态）。
+
+#### 多态的类型
+**1.动态多态（运行时多态）** 是通过继承和方法重写实现的。它依赖于对象的实际类型，而不是引用的静态类型。  
+
+示例：方法重写和动态绑定  
+```
+class Animal {
+  def sound(): String = "一些声音"
+}
+
+class Dog extends Animal {
+  override def sound(): String = "汪"
+}
+
+class Cat extends Animal {
+  override def sound(): String = "喵"
+}
+
+val animals: List[Animal] = List(new Dog, new Cat, new Animal)
+
+animals.foreach(animal => println(animal.sound()))
+/*
+输出：
+汪
+喵
+一些声音
+*/
+```  
+animals 是一个 Animal 类型的列表，但它包含 Dog 和 Cat 的实例。在运行时，调用 sound 方法时，根据对象的实际类型绑定具体的方法。  
+***  
+**2.静态多态（编译时多态）** 是通过方法重载或泛型（类型参数）实现的。在编译时确定调用哪个方法。  
+示例：方法重载
+```
+class Calculator {
+  def add(a: Int, b: Int): Int = a + b
+  def add(a: Double, b: Double): Double = a + b
+  def add(a: String, b: String): String = a + b
+}
+
+val calc = new Calculator
+println(calc.add(1, 2))     //输出 3
+println(calc.add(1.5, 2.5)) //输出4.0
+println(calc.add("Hello,", "Scala"))  //输出Hello,Scala
+```  
+方法名称相同，但参数类型或数量不同。编译器根据方法签名确定调用的具体方法。  
+***  
+**3.泛型多态（类型参数）**  
+Scala 的泛型多态允许一个类、方法或特质在多个类型上工作。这种多态性是通过类型参数实现的。  
+示例：泛型类和方法  
+```
+class Box[T](val content: T) {
+  def getContent: T = content
+}
+
+val intBox = new BoxingBox = new Box[String]("Scala")
+
+println(intBox.getContent)  //输出42
+println(stringBox.getContent) //输出Scala
+```  
+Box 是一个泛型类，可以存储任意类型的内容。类型参数 T 是多态的，根据具体实例化时的类型确定。  
+
+泛型方法：  
+```
+object Utils {
+  def identity[T](value: T): T = value
+}
+
+println(Utils.identity(42))       // 输出: 42
+println(Utils.identity("Scala"))  // 输出: Scala
+```  
+#### 特性多态
+**1.子类型多态**  
+在scala中，子类实例可以赋值给超类引用，这是子类型多态的核心。  
+```
+class Animal
+class Dog extends Animal
+
+val animals: Animal = new Dog   //子类可以赋值给超类
+```  
+***  
+**2.协变和逆变**  
+在scala支持通过协变和逆变控制泛型的多态性。  
+```
+class Animal
+class Dog extends Animal
+
+class Cage[+A]    //协变
+val animalCage: Cage[Animal] = new Cage[Dog]
+
+class Trainer[-A] //逆变
+val dogTrainer: Trainer[Dog] = new Trainer[Animal]
+```  
+Cage[+A] 表示协变：子类型可以作为超类型的实例。  
+Trainer[-A] 表示逆变：超类型可以作为子类型的实例。  
+***  
+**3.多态与特质**  
+特质trait提供了多继承的能力，可以实现更里或的多态行为。  
+实例：特质多态  
+```
+trait Speakable {
+  def speak(): String
+}
+
+class Human extends Speakable {
+  override def speak(): String = "好困！"
+}
+ 
+class Robot extends Speakable {
+  override def speak(): String = "前咕噜不转后咕噜转思密达"
+}
+val speakers: List[Speakable] = List(new Human, new Robot)
+speakers.foreach(s => println(s.speak()))
+/*
+输出：
+好困！
+前咕噜不转后咕噜转思密达
+*/
+```  
+#### 多态的优势
+**1.代码复用:** 可以通过多态实现通用的代码逻辑，减少重复代码。  
+**2.扩展性:** 新的子类可以直接融入已有的多态逻辑中，无需修改现有代码。  
+**3.灵活性** 动态绑定和泛型提供了灵活的行为扩展方式，适应各种需求。  
+**4.清晰性** 通过统一的接口（特质或超类），代码更易于理解和维护。  
+
+### 声明final成员
+有时在设计类继承关系中，想确保某个成员不能被子类继承。在scala中跟java一样，可以通过在成员前面加上final修饰符。  
 
 
+### 使用组合和继承
+在 Scala 中，**组合** 和 **继承** 是两种常用的代码复用机制。它们各有特点和适用场景：  
+**继承：** 通过类的继承层次结构复用代码。子类可以直接使用超类的成员，并且可以通过重写（override）扩展或修改它们的行为。  
+**组合：** 通过在一个类中包含其他类或特质的实例来复用代码，强调“使用”（has-a 关系）而非“是”（is-a 关系）。  
+
+组合是一种通过包含其他对象的方式实现代码复用的机制。它更灵活，因为它避免了继承的强耦合问题。  
+示例：组合实现
+```
+class Engine {
+  def start(): String = "Engine started"
+}
+
+class Car(val engine: Engine) {
+  def drive(): String = s"${engine.start()}, car is driving"
+}
+val engine = new Engine
+val car = new Car(engine)
+println(car.drive())  //输出Engine started, Car is driving
+```  
+
+!!scala的特质trait允许更灵活地实现组合和继承的结合。特质即可以用作接口，也可以包含部分实现，是实现代码复用的强大工具。  
+示例：使用特质实现组合  
+```
+trait Engine {
+  def start(): String = "Engine started"
+}
+class Car extends Engine {
+  def drive(): String = s"${start()}, car is driving"
+}
+val car = new Car
+println(car.drive())  // 输出: Engine started, car is driving
+```  
+
+### 工厂对象
+在scala中，工厂对象是创建对象的一种设计模式，用于封装实例化逻辑。scala提供了许多语言特性（例如object单例对象、伴生对象等），使得工厂对象的实现比java等语言更简洁和灵活。  
+#### 什么是工厂对象？  
+工厂对象是一个用来创建实例的特殊对象，它将实例化逻辑集中在一处，提供以下优势：  
+&emsp;&emsp;**隐藏具体实现：** 调用者无需关心如何实例化对象。  
+&emsp;&emsp;**控制实例化逻辑：** 可以灵活决定创建什么样的实例。  
+&emsp;&emsp;**单例实现：** 通过 Scala 的 object 实现简单的单例工厂。  
+
+#### 工厂对象的实现方式
+**1.使用object单例作为工厂**  
+Scala 的 object 是一种单例对象，天然适合作为工厂模式的实现。  
