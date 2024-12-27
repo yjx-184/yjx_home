@@ -1,5 +1,4 @@
-- [第一部分：每章简述](#第一部分每章简述)
-- [第二部分：对于书中的知识点整理](#第二部分对于书中的知识点整理)
+- [对于书中的知识点整理](#对于书中的知识点整理)
   - [1：scala的简介](#1scala的简介)
     - [scala是什么](#scala是什么)
     - [scala的核心理念](#scala的核心理念)
@@ -99,29 +98,8 @@
 
 
 
-# 第一部分：每章简述
-**scala入门：**             介绍了如何用scala完成一些基础的编程任务，但并不深入讲解它们是如何工作的。后面更多的展示了基本的编程任务，帮助快速上手scala。  
-**类和对象：**               开始深入介绍scala，描述其基本的面向对象的组成部分，并指导如何编译并运行scala应用程序  
-**基本类型和操作：**          介绍了scala基本类型、字面量和支持的操作，（操作符的）优先级和结合性，以及对应的富包装类  
-**函数式对象：**             以函数式（即不可变）的分数为例，更深入地讲解scala面向对象的特性  
-**内建的控制结构：**          展示了如何使用scala内建控制结构：if、while、for、try和match  
-**函数和闭包：**             给出了对函数的深入介绍，而函数是对函数式编程最基本的组成部分  
-**控制抽象：**               展示了如何通过定义自己的控制抽象来对scala基本的控制结构进行完善和补充  
-**组合和继承：**             更进异步探讨scala对面向对象编程的支持。  
-**scala的继承关系：**        解释了scala的继承关系，并探讨了通用方法和底类型等概念。  
-**特质：**                  介绍了scala的混入mixin组合机制。本章展示了特质的工作原理，描述了特质的常见用法，并解释了特质相对于更传统的多重继承有哪些改进。  
-**包和引入：**               讨论了大规模编程实践中我们会遇到的问题，包括顶级包、import语句，以及像protected和private那样的访问控制修饰符。  
-**断言和测试：**             展示了scala的断言机制，介绍了用scala编程写测试的若干工具，特别是ScalaTest  
-**样例类和模式匹配：**        介绍了这组孪生的结构，让你更好地编写规则的、开放式的数据结构。样例类和模式匹配在处理树形的递归数据时非常有用。  
-**使用列表：**               详细地解释了列表这个在scala程序中使用最普遍的数据结构。  
-**使用其他集合类：**          展示了如何使用基本的scala集合，如列表、数组、元组、集和映射。  
-**可变对象：**               解释了可变对象，以及scala用来表示它们的语法。  
-**类型参数化：**             用具体的示例解释了信息隐藏的技巧：为纯函数式队列设计的类。后面将对类型参数的型变进行说明，介绍了类型参数化对于信息隐藏的作用。  
 
-
-
-
-# 第二部分：对于书中的知识点整理
+# 对于书中的知识点整理
 ## 1：scala的简介
 ### scala是什么
 &emsp;&emsp;scala是面向对象和函数式编程的结合。在scala中，函数值就是对象，而函数的类型就是可被子类继承的类。  
@@ -1127,7 +1105,7 @@ val dog = new Dog
 println(dog.sound())  //输出 Woof
 ```  
 
-**2.重写抽象方法或字段：**如果超类定义了抽象方法或字段，子类在实现它们时也需要使用override。  
+**2.重写抽象方法或字段：** 如果超类定义了抽象方法或字段，子类在实现它们时也需要使用override。  
 ```
 abstract class Animal {
   def sound(): String //抽象方法
@@ -1154,7 +1132,7 @@ class Dog extends Animal {
 val dog = new Dog
 println(dog.name) // 输出: Dog
 ```  
-**4.重写特质中的成员：**子类实现特质中的抽象成员或重写具体成员时，也需要使用override。  
+**4.重写特质中的成员：** 子类实现特质中的抽象成员或重写具体成员时，也需要使用override。  
 ```
 trait Animal {
   def sound(): String = "Generic sound"
@@ -1342,3 +1320,88 @@ println(car.drive())  // 输出: Engine started, car is driving
 #### 工厂对象的实现方式
 **1.使用object单例作为工厂**  
 Scala 的 object 是一种单例对象，天然适合作为工厂模式的实现。  
+示例：  
+```
+class Shape
+
+class Circle extends Shape {
+  override def toString: String = "Circle"
+}
+
+class Square extends Shape {
+  override def toString: String = "Square"
+}
+
+object ShapeFactory {
+  def createShape(shapeType: String): Shape = shapeType match {
+    case "circle" => new Circle
+    case "square" => new Square
+    case _ => throw new IllegalArgumentException("不知道输入了什么鬼")
+  }
+}
+//使用工厂对象
+val shape1 = ShapeFactory.creatShape("circle")
+val shape2 = ShapeFactory.creatShape("square")
+
+println(shape1)  // 输出: Circle
+println(shape2)  // 输出: Square
+```  
+在这个例子中：ShapeFactory 是工厂对象，集中管理了 Shape 的创建逻辑。通过传递参数，动态决定返回的对象类型。  
+***  
+**2.使用伴生对象**  
+Scala 中的伴生对象（object 和 class 名称相同且定义在同一个文件中）可以直接用作工厂。   
+示例：  
+```
+class Person(val name: String, val age: Int) {
+  override def toString: String= s"Person(name=$name, age=$age)"
+}
+
+object Person {
+  //工厂方法
+  def apply(name: String, age: Int): Person = new Person(name, age)
+}
+
+//使用伴生对象创建实例
+val person = Person("miuma", 23)
+println(person) // 输出: Person(name=niuma, age=23)
+```  
+在这个例子中：伴生对象Person提供了一个apply方法，作为工厂方法。调用时，Person("niuma", 23) 实际上等价于 Person.apply("niuma", 23)。  
+***  
+**3.抽象工厂模式**  
+scala的特质trait和抽象类可以用来实现抽象工厂模式，从而支持更复杂的场景。  
+示例：抽象工厂  
+```
+trait Shape {
+  def draw(): Unit
+}
+
+class Circle extends Shape {
+  override def draw(): Unit = println("画了一个圆形")
+}
+
+class Square extends Shape {
+  override def draw(): Unit = println("画了一个正方形")
+}
+
+trait ShapeFactory {
+  def createShape(): Shape
+}
+
+class CircleFactory extends ShapeFactory {
+  override def createShape(): Shape = new Circle
+}
+
+class SquareFactory extends ShapeFactory {
+  override def createShape(): Shape = new Square
+}
+
+//使用抽象工厂
+val circleFactory: ShapeFactory = new CircleFactory
+val squareFactory: ShapeFactory = new SquareFactory
+
+val shape1 = circleFactory.createShape()
+val shape2 - circleFactory.createShape()
+
+shape1.draw() //输出：画了一个圆形
+shape2.draw() //输出：画了一个正方形
+```  
