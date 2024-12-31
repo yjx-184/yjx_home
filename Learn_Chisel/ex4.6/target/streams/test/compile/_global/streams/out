@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/ex2.6/src/test/scala/HelloTest.scala:28:28: value U is not a member of Int[0m
+[0m[[0m[31merror[0m] [0m[0m        c.io.sw.poke(swVal.U)[0m
+[0m[[0m[31merror[0m] [0m[0m                           ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
