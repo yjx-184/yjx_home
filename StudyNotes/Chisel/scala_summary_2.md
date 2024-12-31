@@ -43,6 +43,25 @@
 - [21：注解](#21注解)
   - [常见的scala注解](#常见的scala注解)
   - [自定义注解](#自定义注解)
+- [22:scala集合架构](#22scala集合架构)
+  - [核心特点](#核心特点)
+  - [集合分类](#集合分类)
+    - [不可变集合](#不可变集合)
+    - [可变集合](#可变集合)
+  - [集合层次结构](#集合层次结构)
+    - [顶层特质](#顶层特质)
+  - [核心特质](#核心特质)
+  - [常见集合类型](#常见集合类型)
+  - [不可变与可变集合的选择](#不可变与可变集合的选择)
+- [23：使用XML](#23使用xml)
+  - [半结构化数据](#半结构化数据)
+  - [创建XML](#创建xml)
+  - [访问XML节点](#访问xml节点)
+  - [遍历XML](#遍历xml)
+  - [修改XML](#修改xml)
+  - [加载和保存XML](#加载和保存xml)
+  - [使用XML属性](#使用xml属性)
+  - [模式匹配](#模式匹配-1)
 
 
 
@@ -1004,3 +1023,141 @@ class MyAnnotation(message: String) extends StaticAnnotation
 @MyAnnotation("This is a custom annotation")
 class Example
 ```  
+## 22:scala集合架构
+Scala 的集合框架是功能强大且灵活的，设计上提供了 不可变集合 和 可变集合 两种版本，以满足不同的需求。它支持多种集合类型，例如列表、序列、映射和集合，并提供了丰富的操作方法，便于处理集合数据。  
+### 核心特点
+**1.不可变集合优先：** scala默认使用不可变集合，保证数据安全（线程安全、函数式编程友好）。  
+**2.多态设计：** 集合操作方法适用于所有类型的集合。  
+**3.统一接口：** 所有集合类型通过通用的接口定义，支持一致性操作。  
+**4.惰性计算：** 部分集合（如Stream）支持延迟计算以优化性能。  
+
+### 集合分类
+#### 不可变集合
+默认情况下，scala提供的集合是不可变的，即对集合的操作会返回新的集合，而不会改变原有集合。  
+**序列：** Seq，如：List，Vector,Range  
+**集：** Set,如：HashSet,TreeSet  
+**映射：** Mao，如HashMap,TreeMap  
+
+#### 可变集合  
+可变集合允许在原地修改集合内容。需要显式导入可变集合包：``` import scala.collection.mutable```  
+**序列：** mutable.Seq,如：ArrayBuffer, ListBuffer  
+**集：** mutable.Set，如： HashSet, TreeSet  
+**映射：** mutable.Map，如： HashMap, TreeMap  
+***  
+### 集合层次结构
+scala集合采用了清晰的层次化设计。以下是主要的类和特质：  
+#### 顶层特质
+1.Iterable：所有集合的通用父接口；提供了遍历集合元素的方法；子类包括Seq、Set 和 Map。  
+***  
+### 核心特质
+**Seq：** 表示有序集合，元素按插入顺序排列（如 List, Vector）。  
+**Set：** 表示无序集合，元素不重复（如 HashSet, TreeSet）。  
+**Map：** 表示键值对集合，键唯一（如 HashMap, TreeMap）。  
+**IndexedSeq：** 快速索引的有序集合（如 Vector, Array）。  
+***  
+### 常见集合类型
+**List：** 不可变链表，操作简单但索引性能较差。例如：val list = List(1, 2, 3)  
+**Vector：** 不可变序列，支持快速索引，推荐用作默认序列。例如：val vector = Vector(1, 2, 3)  
+**Set：** 元素唯一的集合，支持快速查找。例如：val set = Set(1, 2, 3)  
+**Map：** 键值对集合，默认不可变。例如：val map = Map("a" -> 1, "b" -> 2)  
+**Array：** 可变数组，固定大小，适合性能敏感场景。例如：val array = Array(1, 2, 3)  
+**Buffer：** 可变集合，支持高效地添加或删除元素（如 ArrayBuffer, ListBuffer）。例如：val buffer = mutable.ArrayBuffer(1, 2, 3)  
+**Range：** 表示连续整数范围，支持快速生成序列。例如：val range = 1 to 10  
+**Stream：** 惰性列表，仅在访问元素时计算，支持延迟计算和无限序列。例如：val stream = Stream(1, 2, 3)  
+**Queue：** 可变队列，先进先出（FIFO）集合。例如：val queue = mutable.Queue(1, 2, 3)  
+**Stack：** 可变栈，后进先出（LIFO）集合（建议使用 List 替代）。例如：val stack = mutable.Stack(1, 2, 3)  
+***  
+### 不可变与可变集合的选择
+**不可变集合优先：** 1.数据安全（线程安全）；2.函数式编程友好，避免副作用  
+**可变集合使用场景：** 1.性能要求高，需要原地修改集合；2.操作非常频繁的场景，例如算法实现。  
+
+## 23：使用XML
+在 Scala 中，XML 是一种内置的特性，可以用来处理 XML 数据。Scala 的 XML 支持简洁易用的语法，方便解析和构建 XML 文档。  
+### 半结构化数据  
+XML是一种半结构化数据。它比普通的字符更结构化，因为它将数据内容组织成树。不过，普通的XML跟编程语言的对象比起来，就没那么结构化了，因为它允许在标签之间存在自有格式的文本，而且它缺少一个类型系统。  
+***  
+### 创建XML
+scala使用类似于嵌套标记的语法直接创建XML数据。  
+```
+val xmlData = 
+  <note>
+    <to>Tove</to>
+    <from>Jani</from>
+    <heading>Reminder</heading>
+    <body>Don't forget me this weekend!</body>
+  </note>
+```  
+### 访问XML节点
+可以通过点操作符访问XML的子节点。  
+```
+println((xmlData \ "to").text)  // 输出: Tove
+println((xmlData \ "body").text) // 输出: Don't forget me this weekend!
+```  
+\ 表示查找直接子节点，\\ 表示查找所有层次的匹配节点。  
+***  
+### 遍历XML
+使用for表达式遍历XML节点。  
+```
+val xmlList = 
+  <items>
+    <item id="1">Apple</item>
+    <item id="2">Banana</item>
+    <item id="3">Cherry</item>
+  </items>
+
+for (item <- xmlList \ "item") {
+  println((item \ "@id").text + ": " + item.text)
+}
+
+// 输出:
+// 1: Apple
+// 2: Banana
+// 3: Cherry
+```  
+***  
+### 修改XML
+XML是不可变的，但可以通过构造新的XML来模拟修改
+```
+val updatedXml = xmlData.copy(child = xmlData.child ++ <date>2024-12-30</date>)
+println(updateXml)
+```  
+***  
+### 加载和保存XML
+可以从文件加载XML，也可以将XML保存到文件。  
+加载XML：  
+```
+import scala.xml.XML
+
+val xmlFromFIle = XML.loadFile("example.xml")
+println(xmlFromFIle)
+```  
+
+保存XML：  
+```
+import java.io._
+
+val pw = new PrintWriter(new File("output.xml"))
+pw.write(updatedXml.toString())
+pw.close()
+```  
+***  
+### 使用XML属性  
+可以访问或匹配XML节点的属性。  
+```
+val item = <item id = "1" name = "Apple"/>
+println((item \ "@id").text)    //输出1
+println((item \ "@name).text)   //输出Apple
+```  
+***  
+### 模式匹配
+XML节点支持模式匹配，用于提取数据。  
+```
+val elem = <item id = "1">Apple</item>
+
+elem match {
+    case <item>{content}</item> => println(s"Content: $content")
+    case _ => println("No match")
+}
+// 输出: Content: Apple
+```  
+

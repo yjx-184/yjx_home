@@ -1,8 +1,35 @@
+- [1.读chisel-book 跟着做第一个项目Hello](#1读chisel-book-跟着做第一个项目hello)
+  - [Hello-world代码的解读](#hello-world代码的解读)
+  - [Hello-world的测试代码](#hello-world的测试代码)
+- [2.基本组成部分](#2基本组成部分)
+  - [2.1信号类型和常量](#21信号类型和常量)
+  - [2.2组合电路](#22组合电路)
+    - [2.2.1复用器](#221复用器)
+  - [2.3状态寄存器](#23状态寄存器)
+    - [2.3.1计数](#231计数)
+  - [2.4使用Bundle和Vec进行结构](#24使用bundle和vec进行结构)
+  - [2.5Chisel生成的硬件](#25chisel生成的硬件)
+- [3.搭建过程和测试](#3搭建过程和测试)
+  - [3.1使用sbt搭建你的项目](#31使用sbt搭建你的项目)
+    - [3.1.1源文件结构](#311源文件结构)
+    - [3.1.2运行sbt](#312运行sbt)
+    - [3.1.3工具流程](#313工具流程)
+  - [3.2 使用chisel测试](#32-使用chisel测试)
+    - [3.2.1PeekPokeTester](#321peekpoketester)
+    - [3.2.2使用ScalaTest](#322使用scalatest)
+    - [3.2.3波形](#323波形)
+    - [3.2.4printf Debugging](#324printf-debugging)
+- [4.组成部分](#4组成部分)
+  - [4.1chisel的组成部分是模块](#41chisel的组成部分是模块)
+  - [4.2一个运算逻辑单元](#42一个运算逻辑单元)
+  - [4.3整体连接](#43整体连接)
+  - [4.4使用函数的轻量级组成部分](#44使用函数的轻量级组成部分)
+- [5.组合电路](#5组合电路)
 
 
 
 
-# 阅读chisel-book 跟着做第一个项目Hello
+# 1.读chisel-book 跟着做第一个项目Hello
 ## Hello-world代码的解读
 ```
 //导入Chisel库
@@ -80,3 +107,592 @@ class HelloTest extends AnyFlatSpec with ChiselScalatestTester {
 }
 
 ```
+
+# 2.基本组成部分
+## 2.1信号类型和常量
+chisel提供了三种数据类型来描述型号，组合逻辑和寄存器：Bits,UInt和SInt。UInt表示这个bits的矢量是一个无符号的整型，SINt表示一个有符号的整型。  
+8位Bits、8位无符号整型，和一个10位有符号整型：  
+```
+Bits(8.W)
+UInt(8.W)
+SInt(10.W)
+```  
+Bits的矢量位宽被chisel的width类型定义。以下表示把scala的整型n转换成chisel的width用于Bits矢量的定义：  
+```
+n.W
+Bits(n.W)
+```  
+
+常量可以通过scala整型定义并把它转换成chisel类型。定义一个为0的UInt常量，和定义一个为03的SInt常量。  
+```
+0.U
+-3.S
+```  
+常量也可以随着位宽被定义，使用chisel的width类型。定义一个4位宽的常量8：```8.U(4.W)```  
+
+
+**常见问题:** 一个可能的错误是，当我们定义一个常量 .W ，定义一个宽度。 例如, 1.U(32) 不
+会定义一个32位宽的代表1的常量。 相反，表达式 (32)被翻译为从32位的按位抓取，结果是一个
+单位元的常量0。可能不是编程者的原意。  
+
+chisel受益于scala的类型推断，并且很多地方类型信息可以被省略。类似的也适用于位宽。很多时候，chisel会自动推断正确的宽度。与是chisel描述的硬件语言比VHDL或Verilog更加简洁和可读。  
+
+对于以其它作为基底的十进制以外的常量，常量被定义为字符串，开头h是16进制，o是8进制，b是2进制。以下的例子表明了常量255的定义，在不同的基底。这个例子中省略了位宽，chisel推断了最小宽度用来表示常量这个例子是8位。（16进制表示255， 8进制表示255， 二进制表示255）：  
+```
+"hff".U
+"o377".U
+"b1111_1111".U
+```  
+以上代码也表示了如何使用下划线去群组数字来标识常量。下划线是被忽略的。为了表示逻辑值，chisel定义了Bool类型。Bool可以表示true或false值。以下代码表示了Bool类型的定义以及Bool常量的定义，通过转换Scala Boolean常量true和false，到chisel的Bool类型。  
+```
+Bool()
+true.B
+false.B
+```  
+
+## 2.2组合电路
+chisel使用Boolean algebra操作符，和c， java， scala和可能很多其他编程语言中定义的一样，去描述组合电路。以下代码定义了一个对a和b进行and逻辑，然后把它的结果和c进行or逻辑的电路：  
+```
+val logic = a & b | c
+```  
+
+在这个例子中，我们不定义类型或是信号logic的宽度。两个都是从类型和表达式位宽推演过来的，标准chisel的逻辑操作是：  
+```
+val and = a & b
+val or = a | b
+val xor = a ^ b
+val not = ~a
+
+val add = a + b
+val sub = a - b
+val neg = -a
+val mul = a * b
+val div = a / b
+val mod = a % b
+```  
+算术操作使用标准操作符，即1.加法 2.减法 3.相反数 4.乘法 5.除法 6.余数。加法和减法操作结果的宽度是操作数的最大宽度，乘法操作结果的宽度是两个操作数的位宽加和，除法和余数操作结果是被除数的位宽。  
+
+一个信号也可以先被定义为某种类型的Wire。随后，我们可以给这个wire赋值，使用 :=  
+```
+val w = Wire(UInt())
+
+w := a & b
+```  
+
+一个简单的bit可以被如下提取：```val sign = x(31)```  
+
+一个分割可以从终点到起点提取：```val lowByte = largeWord(7, 0)```  
+
+bit域可以通过Cat合并：```val word = Cat(highByte, lowByte)```  
+
+### 2.2.1复用器
+复用器是一个选择选项的电路。在最基本的形式，它在二者选其一。一个复用器可以通过逻辑简单搭建。但是，复用是一个常用操作，chisel提供了一个复用器。  
+```
+val result = Mux(sel, a, b)
+```  
+在这个，如果sel是0（false）选择b， 如果是1（true）选择a。sel类型是ChiselBool，a和b作为输入可以是任何chisel基本类型或是集合，只要它们的类型相同。  
+
+## 2.3状态寄存器
+chisel提供了一个寄存器，这是一个D flip-flops的集合。这个寄存器隐含连接到一个总时钟，并且上升触发。当一个初始值随着在寄存器声明的时候被提供，它使用的是一个同步复位，连接到总复位信号。  
+
+一个寄存器可以是任何bits集合的chisel类型。下边的代码定义了一个八位寄存器，在复位初始化位0：  
+```
+val reg = RegInit(0.U(8.W))
+```  
+
+一个输入连接到寄存器，通过 := 更新操作数，输出的寄存器可以使用表达式通过名字调用。  
+```
+reg := d
+val q = reg
+```  
+
+寄存器也可以连接到它的输入使用如下定义：  
+```
+val regNxt = RegNext(d)
+```  
+
+也可以连接到它的输入并使用一个常量作为初始值作为定义：  
+```
+val bothReg = RegNext(d, 0.U)
+```  
+
+为了区分表示组合逻辑和寄存器的信号，一个常见的方式是在寄存器前边加上前缀Reg。另一个常见的方式，来自java和scala，是去使用camelCase，由几个单词组成的标识。这个方式是函数和变量用首字幕小写，类用首字母大写。  
+  
+### 2.3.1计数
+一个简单的方式是计数到一个值。但是，在计算机科学和数字设计，计数从0开始：  
+```
+val cntReg = RegInit(0.U(8.W))
+cntReg := Mux(cntReg === 100.U, 0.U, cntReg + 1.U)
+```  
+这个代码使用RegInit定义了一个名位cntReg的初始值为0的8位寄存器。随后经过Mux选择器，当条件cntReg ===100.U为真则输出0.U（计数器清零），否则输出cntReg + 1.U（计数器递增）。
+
+## 2.4使用Bundle和Vec进行结构
+chisel提供两个集成小组相关的信号：一个是BUndle，组织不同类型信号 和 ，一个是Vec代表一个可索引的相同类型的信号。Bundles和Vecs可以任意交织。  
+
+chisel捆束多个信号。整个bundle可以被整体引用，或是通过它们的名字分别访问。我们可以定义一个捆束（信号的集合），通过定义一个类型，拓展了Bundle，并在域内通过val列出。  
+```
+val ch = wire(new Channel())  //定义新的wire，类型为channel
+ch.data := 123.U              //给ch的data字段赋值为123
+ch.valid := true.B            //给ch的alid赋值为true
+
+val b = ch.valid              //将chalid的值赋值给b，b是Bool类型
+```  
+为了使用捆束，我们使用new，并把它包裹进wire。域通过点标识访问。点标识是面向对象语言的常见做法，x.y意味着x是一个对象的引用，y是那个对象的域。因为chisel是面向对象的，我们使用点标识去访问捆束的域。一个捆束类似于C语言的struct， VHDL的record，或是SystemVerilog的struct。捆束可以整体被引用。  
+```
+val channel = ch
+```  
+chisel的Vec代表一系列相同类型的信号。每个元素可以通过索引访问。chisel的Vec类似于一串数据结构在其他编程语言。Vec通过使用两个参数传入构造函数：元素的数量和元素的类型。组合逻辑Vec需要被打包进wire。  
+单一元素通过index被访问到.  
+```
+v(0) := 1.U
+v(1) := 3.U
+v(2) := 5.U
+
+val idx = 1.U(2.W)
+val a = v(idx)
+```  
+被包裹进wire的向量是一个复用器，我们也可以把向量传入寄存器去定义一系列寄存器。以下例子定义了用于处理器的寄存器文件；32位寄存器，每个寄存器有32位宽，例如经典的32位RISC处理器，或是32-bits版本的RISC-V。  
+```
+val registerFile = Reg(Vec(32, UInt(32.W)))
+```  
+寄存器的一个元索通过索引访问，并用作正常寄存器。  
+```
+registerFile(idx) := dIn
+val dOut = registerFile(idx)
+```  
+我们可以随意混搭捆束和向量。当创造一个有着捆束类型的向量，我们需要把这个类型传入向量域。使用我们的Channel，像我们以上定义的，我们可以创造一个向量的通道通过：  
+```
+val vexBundle = Wire(Vec(8, new Channel()))
+```  
+一个为捆束可能包含一个向量：  
+```
+class BundleVec extends Bundle {
+  val field = UInt(8.W)
+  val vector = Vec(4, UInt(8.W))
+}
+```  
+
+当我们想要一个需要reset值的寄存器类型，我们首先创建一个具有那个捆束的wire，设置单独的域，然后把捆束传给RegInit。  
+```
+val initVal = Wire(new Channel())
+
+initVal.data := 0.U
+initVal.valid := false.B
+
+val channelReg = RegInit(initVal)
+```  
+通过BUndle和Vec的组合，我们可以定义我们自己的数据结构，这个是有力的抽象。  
+
+## 2.5Chisel生成的硬件
+在看到一些chisel代码，可能看起来和经典编程语言像是java或cc比较想死。但是，chisel描述了硬件部分。而在软件项目中，一行代码在前一行过后执行而硬件执行全部。  
+
+必须记住，chisel代码确实会生成硬件。尝试想像或画在纸上的单个模块，通过您的chisel电路描述生成。每次创建组件都会添加硬件。每个赋值声明产生门和/或触发器。  
+
+从技术上讲，chisel执行代码时，它将作为scala程序运行，并且通过执行chisel语句，它收集硬件组件并连接这些节点。硬件节点网络就是硬件，可能会产生用于ASIC或FPGA综合的Verilog代码，或者用chisel测试仪测试。硬件节点网络时完全并行执行的。  
+
+# 3.搭建过程和测试
+## 3.1使用sbt搭建你的项目
+### 3.1.1源文件结构
+![](./pic/chisel源文件结构.png)  
+为了使用chisel命名空间的工具，需要声明类或模块再软件包被定义，在这个例子里，再mypacket：  
+```
+package mypack
+import chisel3._
+class Abc extends Module {
+  val io = IO(new Bundle {})
+}
+```  
+注意在这个例子我们看到了引入chisel3软件包和使用chisel类型。为了使用Abc模块在不同的地方（软件包命名空间），软件包的mypacket需要被引用。下划线“_”充当万用字元，意味着所有mypacket的类都要被引用。  
+```
+import mypack._
+class AbcUser extends Module {
+  val io = IO(new Bundle {})
+  val abc = Abc()
+}
+```  
+也可以不去引用来自mypack的所有类别，而是使用全名mypack.Abc代表mypack中的模块Abc。  
+```
+class AbcUser2 extends Module {
+  val io = IO(new Bundle())
+  val abc = new mypack.Abc()
+}
+```  
+引用只是一个单个的类，并创造它也是可以的。  
+```
+import mypack.Abc
+class AbcUser3 extends Module {
+  val io = IO(new Bundle{})
+  val abc = new Abc()
+}
+```  
+### 3.1.2运行sbt
+一个chisel项目可以被编译并执行通过一个简单的sbt命令：```sbt run```  
+
+这个命令会编译所有的源文件树下的chisel代码并搜索含有object和含有main方法的类别，或是简化的App。如果由多余一个类似的对象，所有的对象都会被列出以及可选，你也可以直接执行被传入sbt作为参数的对象：```sbt "runMain mypacket.MyObject"```  
+
+根据默认sbt只是搜索main部分的源文件树而不是测试部分。但是chisel测试器在这里描述的，含有一个main，但是应该放在源文件树的test部分，为了执行测试树的main，使用如下sbt命令：```sbt "test:runMain mypacket.MyTester"```  
+
+现在我们知道了chisel项目的基本构成和如何使用sbt编译运行，我们可以继续开始一个简单的测试框架了。  
+
+### 3.1.3工具流程
+![](./pic/chisel工具流程.png)  
+该图标识了chisel的工具流程。这个数字电路中，在chisel类被标识位Hello.scala 。scala编译器编译了这个类，和chisel和scala库，并生成了能被一个标准java虚拟机（JVM）执行的java类。通过chisel驱动器，执行这个类，生成了所谓RTL的灵活中间表达（RIRRTL），一个数字电路的中间表达。在我们的例子里，这个文件是Hello.fir。这个FIRRTL编译器完成了电路的转换。  
+
+Treadle是一个FIRRTL表示器，去模拟一个电路。联合chisel测试器，它可以用来debug和测试chisel电路。通过assertion，我们可以提供测试结果。Treadle也可以生成波形文件Hello.vcd，可以通过波形观察器进行观察。  
+
+一个FIRRTL变换，Verilog发射器，生成用于综合的Verilog代码Hello.v。电路综合工具（例如，intel的Quartus，Xilinx Vivado，或是ASIC工具）综合电路。在一个FPGA设计流程里，工具产生了FPGA的bitstream，用于设置FPGA，例如，Hello.bit。  
+
+## 3.2 使用chisel测试
+在测试硬件设计一般成为testbench。这些testbench初始化被测试的设计DUT，驱动输入端口，观察输出端口，与它们和期待值比较。  
+
+### 3.2.1PeekPokeTester
+chisel提供的testbench叫PeekPokeTester。其中chisel的一个优势是它能够全力使用scala写入这些testbench。比方说可以在软件模拟器编写期望的硬件功能，并把硬件仿真和软件仿真进行比较，这个方法是非常有效的，当测试写好的处理器的时候。使用PeekPokeTester，以下软件包需要引入：  
+```
+import chisel3._
+import chisel3.iotesters._
+```  
+
+测试电路需要至少三个部分：1.接受测试的器件（经常称为DUT）；2.测试逻辑，也称为testbench；3.包含main函数的测试对象用来开始测试。  
+
+以下代码表明了我们简单的接受测试的设计。它包含输入端口和一个输出端口，全市2位宽的。这个电路执行按位AND并返回给输出：  
+```
+class DeciceUnderTest extends Module {
+  val io = IO(new Bundle {
+    val a = Input(UInt(2.W))
+    val b = Input(UInt(2.W))
+    val out = Output(UInt(2.W))
+  })
+  io.out := io.a & io.b
+}
+```  
+
+该DUT的testbench拓展了PeekPokeTester，并把DUT作为建造器的参数：  
+```
+class TesterSimple(dut: DeviceUNderTest) extends
+PeekPokeTester(dut) {
+  poke(dut.io.a, 0.U)
+  poke(dut.io.b, 1.U)
+  step(1)
+}
+println("Result is: " + peek(dut.io.out).toString)
+poke(dut.io.a, 3.U)
+poke(dut.io.b, 2.U)
+step(1)
+println("Result is: " + peek(dut.io.out).toString)
+```  
+PeekPokeTester可以使用poke()设置初始值，并通过peek()读出数值。测试器通过进一步的step(1)声明，增加一个周期过后的数值。我们可以使用println()打印输出。  
+
+测试建立，并通过以下运行：  
+```
+object TesterSimple extends App {
+  chisel3.iotesters.Driver(() => new DeviceUnderTesst()) { c =>
+    new TesterSimple(c)
+  }
+}
+```  
+当你运行测试，你会看见除了其他信息以外，打印到端口的结果。  
+```
+[info] [0.004] SEED 1544207645120
+[info] [0.008] Result is: 0
+[info] [0.009] Result is: 2
+test DeviceUnderTest Success: 0 tests passed in 7 cycles
+taking 0.021820 seconds
+[info] [0.010] RAN 2 CYCLES PASSED
+```  
+我们看到0和1的与是0；3和2的与是2.除此之外手动查看结果，这个是一个很好的开始点，我们也可以在测试平台上使用expect()，用来表示我们的期待值，放在输出端口，并传入期待值。以下的例子是使用expect()作为测试的例子。  
+```
+class Tester(dut: DeviceUnderTest) extends PeekPokeTester(dut) {
+
+  poke(dut.io.a, 3.U)
+  poke(dut.io.b, 1.U)
+  step(1)
+  expect(dut.io.out, 1)
+  poke(dut.io.a, 2.U)
+  poke(dut.io.b, 0.U)
+  step(1)
+  expect(dut.io.out, 0)
+}
+```  
+执行测试不打印出任何硬件的值，但是所有通过期待值的测试代表正确。  
+```
+[info] [0.001] SEED 1544208437832
+test DeviceUnderTest Success: 2 tests passed in 7 cycles
+taking 0.018000 seconds
+[info] [0.009] RAN 2 CYCLES PASSED
+```  
+一个失败的测试，当DUT或是测试台包含了一个错误，产生了一个错误信息，描述了期待值和实际值的差异。在以下，我们把测试台的期待值为4,产生了一个错误：  
+```
+[info] [0.002] SEED 1544208642263
+[info] [0.011] EXPECT AT 2
+io_out got 0 expected 4 FAIL
+test DeviceUnderTest Success: 1 tests passed in 7 cycles
+taking 0.022101 seconds
+[info] [0.012] RAN 2 CYCLES FAILED FIRST AT CYCLE 2
+```  
+在本节描述了chisel用于简单的基本测试工具。但是在chisel中，scala的全部功能可用于编写测试人员。  
+
+### 3.2.2使用ScalaTest
+ScalaTest是一个scala（和java）的测试工具，我们可以用来运行chisel测试。为了使用它，把下边这段放在build.sbt里面：  
+```
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+```  
+
+测试通常在src/test/scala被找到，使用以下：```sbt test```  
+
+一个最小测试（测试hello world）来测试scala整型：  
+```
+import org.scalatest._
+
+class ExampleSpec extends FlatSpec with Matchers {
+
+  "Integers" should "add" in {
+    val i = 2
+    val j = 3
+    i + j should be (5)
+  }
+}
+```  
+尽管chisel测试比scala程序的单元测试更重要，我们可以将chisel测试包装到ScalaTest类中。对于显示的Tester在此之前：  
+```
+class SimpleSpec extends FlatSpec with Matchers {
+
+  "Tester" should "pass" in {
+    chisel3.iotesters.Driver(() => new DeviceUnderTest()) { c =>
+      new Tester(c)} should be (true)
+  }
+}
+```  
+这个练习的主要好处是可以通过sbt test运行所有测试（而不是main）。你可以只是使用一个简单的sbt进行测试，像是如下：```sbt "testOnly SimpleSpec"```  
+
+### 3.2.3波形
+chisel测试器可以生成包括所有寄存器和io信号的波形图。以下例子，我们表示了被测试器件的波形图，来自前边地例子（2位的AND函数）。下面的例子，我们引入下边的类：  
+```
+import chisel3.iotesters.PeekPokeTester
+import chisel3.iotesters.Driver
+import org.scalatest._
+```  
+我们开始使用一个简单的测试器，把数值置入输入，并使用step增加时钟，我们不会读取任何输出并使用expect进行比较。  
+```
+class WaveformTester(dut: DeviceUnderTest) extends PeekPokeTester(dut) {
+  poke(dut.io.a, 0)
+  poke(dut.io.b, 0)
+  step(1)
+  poke(dut.io.a, 1)
+  poke(dut.io.b, 0)
+  step(1)
+  poke(dut.io.a, 0)
+  poke(dut.io.b, 1)
+  step(1)
+  poke(dut.io.a, 1)
+  poke(dut.io.b, 1)
+  step(1)
+}
+```  
+相反，我们使用参数呼叫Driver.execute，生成波形文件：  
+```
+class WaveformSpec extends FlatSpec with Matchers {
+  "Waveform" should "pass" in {
+    Driver.execute(Array("--generate-vcd-output","on"),() => new DeviceUnderTest() { c => 
+      new WaveformTester(c)} should be (true))
+  }
+}
+```  
+很明显地列举所有可能的值到输入端不能变少。于是，我们会使用一些scala代码驱动DUT，以下测试器列举了所有可能值，到两个2bit的输入信号。  
+```
+class WaveformCounterTester(dut: DeviceUnderTest) extends PeekPokeTester(dut) {
+  for (a <- 0 until 4) {
+    for (b <- 0 until 4) {
+      poke(dut.io.a, a)
+      poke(dut.io.b, b)
+      step(1)
+    }
+  }
+}
+```  
+我们给这个测试增加了ScalaTest的spec。  
+```
+class WaveformCounterSpec extends FlatSpec with Matchers {
+
+  "WaveformCounter" should "pass" in {
+    Driver.execute(Array("--generate-vcd-output", "on"), () => new DeviceUnderTest()) {c => new WaveformCounterTester(c)} should be (true)
+  }
+}
+```  
+并且使用如下执行：```sbt "testOnly WaveformCounterSpec"```  
+
+### 3.2.4printf Debugging
+另一种形式的debug是所谓的“printf Debugging”。这种方式是来自把c语言的printf声明用来执行程序的过程中，打印感兴趣的变量。printf Debugging也可以在测试chisel电路的时候有效。打印过程在时钟上升沿。printf可以在模拟定义中被插入到任何位置。  
+
+# 4.组成部分
+一个大的数字设计是一系列组件部分构建而成的，经常是以层级的方式。每个组件部分都有一个输入输出的接口，经常被称作端口。这些和IC中的输入输出引脚类似。组成的部分被输入和输出连接，组件可能含有下属组件用来构建层级。最外层的组件，连接到芯片的物理引脚，称作上层组件。  
+
+## 4.1chisel的组成部分是模块
+硬件组件在chisel里称为module。每个module拓展了Module类，并包含了一个界面的io域。界面通过Bundle进行定义，被包裹进IO()Bundle包含了域去表示模块的输入和输出端口。方向通过呼叫Input()或是Output()来决定方向。方向是从组成部分本身来说的。  
+```
+class CompA extends Module {
+  val io = IO(new Bundle {
+    val a = Input(UInt(8.W))
+    val b = Input(UInt(8.W))
+    val x = Output(UInt(8.W))
+    val y = Output(UInt(8.W))
+  })
+}
+```  
+
+组成部分有两个输入命名为a和b，和两个输出命名为x和y。对于组成部分B，我们选取名字in1, in2,和out。所有的端口使用位宽为8的UInt非符号整型，作为这个例子的代码，是关于连接组成部分和搭建层级，我们不编写这个部分的内部。这个部分的编写作为常见形式“X的函数”。因为我们对于这些例子部分没有函数，我们使用原本端口名称。对于一个真正的设计，我们使用描述性的端口名称，例如data,valid或是ready。  
+
+组成部分C有三个输入和两个输出端口。它来自组成部分A和B。我们表明A和B如何连接到C的端口，以及A作为输出和B作为输入如何连接。  
+```
+class CompC extends Module {
+  val io = IO(new Bundle {
+    val in_a = Input(UInt(8.W))
+    val in_b = Input(UInt(8.W))
+    val in_c = Input(UInt(8.W))
+    val out_x = Output(UInt(8.W))
+    val out_y = Output(UInt(8.W))
+  })
+
+  //创建组件A和B
+  val compA = Module(new CompA())
+  val compB = Module(new CompB())
+
+  //连接A
+  compA.io.a := io.in_a
+  compA.io.b := io.in_b
+  io.out.x := compA.io.x
+
+  //连接B
+  compB.io.in1 := compA.io.y
+  compB.io.in2 := io.in_c
+  io.out_y := compB.io.out
+}
+```  
+组成部分使用new进行创建，例如，new CompA(),需要被包裹进Module()。引用那个模块作为本地变量存入，在这个例子val compA = Module(new CompA())。有了这个引用，我们可以通过IO，访问模块的io域和单独IO域下的Bundle。我们设计中最简单的部分只是一个输入端口，命名为in和输出端口out。  
+```
+class CompD extends Module {
+  val io = IO(new Bundle {
+    val in = Input(UInt(8.W))
+    val out = Output(UInt(8.W))
+  }) 
+}
+```  
+
+最后我们的例子缺少的一部分是顶层部分，它本身是C和D组成。  
+```
+class TopLevel extends Module {
+  val io = IO(new Bundle {
+    val in_a = Input(UInt(8.W))
+    val in_b = Input(UInt(8.W))
+    val in_c = Input(UInt(8.W))
+    val out_m = Output(UInt(8.W))
+    val out_n = Output(UInt(8.W))
+  })
+
+  //创建C和D
+  val c = Module(new CompC())
+  val d = Module(new compD())
+
+  //连接C
+  c.io.in_a := io.in_a
+  c.io.in_b := io.in_b
+  c.io.in_c := io.in_c
+  io.out_m := c.io.out_x
+
+  //连接D
+  d.io.in := c.io.out_y
+  io.out_n := d.io.out
+}
+```  
+良好的组件设计类似于以下功能或方法的良好设计：软件设计。主要问题之一使我们应该投入多少功能组件以及组件应多大。这两个极端很小组件，例如加法器，以及庞大的组件，例如完整的微处理器。硬件设计的初学者通常从微型组件开始。问题在于数字设计书使用微小的组件来显示原理。但是示例的打小（在这些书以及本书中）都很小，以适合页面并且不会分散太多细节。组件的界面有点冗长（包括类型，名称，方向，IO建设）。根据经验，我建议组件的核心是功能，应该少与组件的接口一样长。对于细微的部件（例如计数器），chisel提供了更轻巧的功能，将它们描述为返回硬件的函数的方式。  
+
+## 4.2一个运算逻辑单元
+我们的一个核心计算的电路部分，例如微处理器，是arithmetic-logic unit，或是简单来说是ALU。  
+![](./pic/ALU.png)  
+ALU有两个数据输入，图中标明为A和B，一个函数的输入fn，一个的输出labeled Y。ALU操作在A和B，并且提供结果给输出。fn选取了A和B进行操作。这个操作经常是一些算法，例如加法和减法，并且一些逻辑性函数，例如：和，或，异或。那是为什么称为ALU。函数输入fn选取操作。ALU经常是一个组合逻辑电路，没有任何的状态元素。一个ALU可能有一些额外的输出对于信号结果的属性，例如0或是正负符号。  
+
+以下代码表明了一个具有16位输入和输出的ALU，支持加法，减法，或，和，与操作，通过而为的fn信号。  
+```
+class Alu extends Module {
+  val io = IO(new Bundle {
+    val a = Input(UInt(16.W))
+    val b = Input(UInt(16.W))
+    val fn = Input(UInt(2.W))
+    val y = Output(UInt(16.W))
+  })
+
+  //需要一些默认值
+  io.y := 0.U
+
+  //ALU的选择
+  switch(io.fn) {
+    is (0.U) { io.y := io.a + io.b}
+    is (1.U) { io.y := io.a - io.b}
+    is (2.U) { io.y := io.a | io.b}
+    is (3.U) { io.y := io.a & io.b}
+  }
+}
+```  
+用这个例子，我们使用new Chisel的结构，switch/is用于表示选取我们的ALU的输出表。为了使用这个函数，我们需要引入其他chisel包：```import chisel3.util._```  
+
+疑惑：为什么上面代码使用switch/is，而不是match/case。  
+解答：在 Chisel 中，switch 和 is 是专门设计用于硬件描述的构造，直接生成硬件中的多路选择器逻辑。虽然 Scala 的 match/case 语法看起来类似，但它不能直接用于硬件生成。  
+
+## 4.3整体连接
+为了连接具有多个IO端口的组件，chisel提供了皮料连接运算符<>。该运算符在双方连接束。chisel使用离开字段的名称进行连接如果缺少名称，则表示未连接。作为一个例子，让我们假定，我们搭建一个流水线处理器，抓取阶段有一个如下的接口：  
+```
+class Fetch extends Module {
+  val io = IO(new Bundle {
+    val instr = Output(UInt(32.W))
+    val pc = Output(UInt(32.W))
+  })
+}
+```  
+下一阶段是译码阶段：  
+```
+class Decode extends Module {
+  val io = IO(new Bundle {
+    val instr = Input(UInt(32.W))
+    val pc = Input(UInt(32.W))
+    val aluOp = Output(UInt(5.W))
+    val regA = Output(UInt(32.W))
+    val regB = Output(UInt(32.W))
+  })
+}
+```  
+我们的简单处理器的最后阶段是执行：  
+```
+class Execute extends Module {
+  val io = IO(new Bundle {
+    val aluOp = Input(UInt(5.W))
+    val regA = Input(UInt(32.W))
+    val regB = Input(UInt(32.W))
+    val result = Output(UInt(32.W))
+  })
+}
+```  
+## 4.4使用函数的轻量级组成部分
+模块是构造硬件描述的通用方法。但是，有一些样板代码在声明模块以及实例化连接的时候可以去使用。构造硬件的轻型方法是使用功能。scala函数可以采用chisel参数并返回生成的硬件。作为一个简单的示例，我们生成一个加法器：  
+```
+def adder(x: UInt, y:UInt) = {
+  x + y
+}
+```  
+我们可以接下来创造两个加法器，通过呼叫函数adder。  
+```
+val x = adder(a, b)
+val y = adder(c, d)
+```  
+注意到这个是hardware generator，你不只是在生成过程中执行任何相加操作，而是建造两个加法器（硬件模块）。加法器是一个人工的例子，使他变得简单。chisel本身就有加法器生成函数，像是+(that:UInt)。  
+
+函数作为轻量级硬件生成器，也可以包含状态，包含几个寄存器。以下例子返回了一个时钟周期的元素（一个寄存器）。如果一个函数只是一个单一的声明。我们可以把它用一行写入，并忽略括号（）。  
+```
+def delay(x: UInt) = RegNext(x)
+```  
+通过呼叫这个函数，传入这个函数本身，这产生两个周期的延迟。  
+```
+val delOut = delay(delay(delIn))
+```  
+再次，这个例子太短了，以至于不够有用，像RegNext（）已经是那个函数创造一个延时。可以将函数声明位Module的一部分。但是，函数应该最好将用于不同模块放置一个收集实用程序的scala对象中。  
+
+# 5.组合电路
+
