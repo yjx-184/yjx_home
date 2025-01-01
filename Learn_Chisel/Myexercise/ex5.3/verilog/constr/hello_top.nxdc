@@ -1,0 +1,4 @@
+top=hello_top
+
+sw (SW0, SW1)
+led (LD0)

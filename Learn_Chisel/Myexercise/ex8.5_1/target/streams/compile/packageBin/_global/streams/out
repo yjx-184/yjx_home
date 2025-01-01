@@ -1,0 +1,15 @@
+[0m[[0m[0mdebug[0m] [0m[0mPackaging /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex8.5/target/scala-2.12/ex8-5_2.12-0.1.0-SNAPSHOT.jar ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Top$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex8.5/target/scala-2.12/classes/Top$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Timing.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex8.5/target/scala-2.12/classes/Timing.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Top$$anon$2.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex8.5/target/scala-2.12/classes/Top$$anon$2.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Top$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex8.5/target/scala-2.12/classes/Top$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Timing$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex8.5/target/scala-2.12/classes/Timing$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Top.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex8.5/target/scala-2.12/classes/Top.class[0m
+[0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m
