@@ -24,7 +24,27 @@
   - [4.2一个运算逻辑单元](#42一个运算逻辑单元)
   - [4.3整体连接](#43整体连接)
   - [4.4使用函数的轻量级组成部分](#44使用函数的轻量级组成部分)
-- [5.组合电路](#5组合电路)
+- [5.组合搭建模块](#5组合搭建模块)
+  - [5.1组合电路](#51组合电路)
+  - [5.2译码器](#52译码器)
+  - [5.3编码器](#53编码器)
+  - [5.4练习](#54练习)
+    - [Combinational.scala](#combinationalscala)
+    - [CombinationalTest.scala](#combinationaltestscala)
+- [6.时序建造模块](#6时序建造模块)
+  - [6.1寄存器](#61寄存器)
+  - [6.2计数器](#62计数器)
+    - [6.2.1向上和向下计数](#621向上和向下计数)
+    - [6.2.2使用计数器产生时序](#622使用计数器产生时序)
+    - [6.2.3 nerd计数器](#623-nerd计数器)
+    - [6.2.4一个计时器](#624一个计时器)
+    - [6.2.5脉冲宽度调制](#625脉冲宽度调制)
+  - [6.3移位寄存器](#63移位寄存器)
+    - [6.3.1使用并行输出的移位寄存器](#631使用并行输出的移位寄存器)
+    - [6.3.2并行读取的移位寄存器](#632并行读取的移位寄存器)
+  - [6.4存储器](#64存储器)
+  - [8.5练习](#85练习)
+    - [第一小题](#第一小题)
 
 
 
@@ -694,5 +714,501 @@ val delOut = delay(delay(delIn))
 ```  
 再次，这个例子太短了，以至于不够有用，像RegNext（）已经是那个函数创造一个延时。可以将函数声明位Module的一部分。但是，函数应该最好将用于不同模块放置一个收集实用程序的scala对象中。  
 
-# 5.组合电路
+# 5.组合搭建模块
+## 5.1组合电路
+**chisel的条件语句：** when，否则是使用“.otherwise”。在某些条件下通过一个值分配，可以忽略默认值：  
+```
+val w = Wire(UInt())
 
+when(cond) {
+  w := 1.U
+} .otherwise {
+  w := 2.U
+}
+```  
+
+**chisel也支持一系列条件(if/elseif/else系列)，使用.elsewhen:**  
+```
+val w = Wire(UInt())
+
+when(cond) {
+  w := 1.U
+} .elsewhen(cond2) {
+  w := 2.U
+} .otherwise {
+  w := 3.U
+}
+```  
+**小方法：** 再给Wire赋值一个默认值的时候，可以直接使用WireDefault作为线声明,用于简化对wire类型信号的初始化操作：  
+```
+val w = WireDefault(0.U)
+
+when(cond) {
+  w := 3.U
+}
+```  
+有一个疑问，既然scala有if， else if和else，为什么用when，.elsewhen和.otherwise?那些声明是用来条件执行scala代码的，而不是生成chisel硬件的。那些scala条件在我们写电路生成器的时候在chisel中有具体作用，是在抓取参数条件生成不同硬件实例中被使用。  
+
+## 5.2译码器
+![](./pic/24译码器.png)  
+在描述上图24译码器，可以使用真值表。一个Chiselwitch的声明描述了这个逻辑，作为一个真值表，switch声明不是chisel语言的核心部分，于是我们需要引用chisel.util软件包的元素。  
+```
+import chisel3.util._
+```
+
+以下代码引入了chisel的switch的声明，描述了一个译码器。  
+```
+resule := 0.U
+
+switch(sel) {
+  is (1.U) { result := 1.U }
+  is (2.U) { result := 2.U }
+  is (3.U) { result := 3.U }
+  is (4.U) { result := 4.U }
+}
+```  
+上面代码列举了所有可能，并把所有译码值赋给result信号，同时chisel仍然需要一个默认值，这个赋值不会被激活，直到有后端工具去优化，这是故意的，避免组合电路的非完全赋值，(chisel里，Wire)会导致一个不理想的锁存器，在硬件描述语言，像是VHDL或是Verilog。chisel不会允许非完全赋值。  
+
+译码器作为一个由复用器组成的部分，输出结果和使能，选用一个与门选择信号作为输入。但是在chisel我们不需要搭建复用器，尽管库的Mux是可用的。译码器可以用来翻译低值，然后输出是被选择的信号，例如，不同的IO器件连接到一个处理器。  
+
+
+## 5.3编码器
+![](./pic/42编码器.png)  
+以下chisel代码定义默认输入00,并且使用switch声明用作合法输入值：  
+```
+b := "b00".U
+switch(a) {
+  is ("b0001".U) { b := "b00".U}
+  is ("b0010".U) { b := "b01".U}
+  is ("b0100".U) { b := "b10".U}
+  is ("b1000".U) { b := "b11".U}
+}
+```  
+## 5.4练习  
+要求是：描述一个组合电路，转换一个4位输入显示到7段显示。可以定义十进制数字的显示码。  
+### Combinational.scala
+```
+import chisel3._
+
+class Combinational extends Module {
+  val io = IO(new Bundle {
+    val in = Input(UInt(4.W))
+    val seg = Output(UInt(8.W))
+  })
+
+  //默认值
+  io.seg := "b1111_1111".U
+
+  
+  when(io.in === "b0000".U) { io.seg := "b0000_0011".U } // 0
+    .elsewhen(io.in === "b0001".U) { io.seg := "b1001_1111".U } // 1
+    .elsewhen(io.in === "b0010".U) { io.seg := "b0010_0101".U } // 2
+    .elsewhen(io.in === "b0011".U) { io.seg := "b0000_1101".U } // 3
+    .elsewhen(io.in === "b0100".U) { io.seg := "b1001_1001".U } // 4
+    .elsewhen(io.in === "b0101".U) { io.seg := "b0100_1001".U } // 5
+    .elsewhen(io.in === "b0110".U) { io.seg := "b0100_0001".U } // 6
+    .elsewhen(io.in === "b0111".U) { io.seg := "b0001_1111".U } // 7
+    .elsewhen(io.in === "b1000".U) { io.seg := "b0000_0001".U } // 8
+    .elsewhen(io.in === "b1001".U) { io.seg := "b0000_1001".U } // 9
+    .otherwise { io.seg := "b1111_1111".U } // 全灭
+}
+
+
+object Combinational extends App {
+  (new chisel3.stage.ChiselStage).emitVerilog(new Combinational())
+}
+```  
+### CombinationalTest.scala
+```
+import chiseltest._
+import org.scalatest.flatspec.AnyFlatSpec
+import chisel3._
+
+class CombinationalTestTest extends AnyFlatSpec with ChiselScalatestTester {
+  behavior of "Combinational"
+  it should "pass" in {
+    test(new Combinational) { dut =>
+      //定义输入到七段码的期望输出映射
+      val expectedResult = Map(
+        0 -> "b0000_0011".U,
+        1 -> "b1001_1111".U,
+        2 -> "b0010_0101".U,
+        3 -> "b0000_1101".U,
+        4 -> "b1001_1001".U,
+        5 -> "b0100_1001".U,
+        6 -> "b0100_0001".U,
+        7 -> "b0001_1111".U,
+        8 -> "b0000_0001".U,
+        9 -> "b0000_1001".U
+      )
+
+      //测试输入0到9
+      for ((input, expected) <- expectedResult) {
+        dut.io.in.poke(input.U)     //输入值
+        dut.clock.step(1)            //运行一个时钟周期
+        dut.io.seg.expect(expected) //验证输出是否正确
+      }
+
+      //测试输入10,期望输出全灭
+      dut.io.in.poke(10.U)
+      dut.clock.step(1)
+      dut.io.seg.expect("b1111_1111".U)
+    }
+  }
+}
+
+```  
+***  
+测试结果：  
+```
+yjx@yjx-Lenovo-Legion-R7000-2020:~/Mystudy/yjx_learn/Learn_Chisel/ex7.4$ sbt test
+[info] welcome to sbt 1.10.6 (Ubuntu Java 11.0.25)
+[info] loading project definition from /home/yjx/Mystudy/yjx_learn/Learn_Chisel/ex7.4/project
+[info] loading settings for project ex7-4 from build.sbt...
+[info] set current project to ex7-4 (in build file:/home/yjx/Mystudy/yjx_learn/Learn_Chisel/ex7.4/)
+[info] CombinationalTestTest:
+[info] Combinational
+[info] - should pass
+[info] Run completed in 2 seconds, 978 milliseconds.
+[info] Total number of tests run: 1
+[info] Suites: completed 1, aborted 0
+[info] Tests: succeeded 1, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[success] Total time: 4 s, completed Jan 1, 2025, 12:57:20 PM
+```  
+同时也按照要求将生成的verilog代码连接至nvboard。  
+
+# 6.时序建造模块
+## 6.1寄存器
+**在chisel，一个寄存器输入d和输出q被定义为：**  
+```
+val q = RegNext(d)
+```  
+这里注明一下，我们不需要给寄存器连接时钟，这个在chisel内部间接完成。寄存器的输入和输出可以是任何来自于vector和bundle组合的复杂类型。  
+
+一个寄存器也可以被复位初始化。reset信号是像clock信号一样，在chisel是隐型的。我们提供了复位值，例如零，作为一个参数出汗给寄存器构造器RegInit。寄存器的输入是通过chisel赋值声明连入的。  
+```
+val valReg = RegInit(0.U(4.W))
+valReg := inVal
+```  
+chisel的默认重置是同步复位。对于一个同步复位，不需要在D触发器改变，只是一个复用器需要被添加到输入，用于选取复位数值和数据数值。  
+
+**一个具有使能的寄存器** 可以通过数行chisel代码和一个条件更新来描述：  
+```
+val enableReg = Reg(UInt(4.W))
+
+when(enable) {
+  enableReg := inVal
+}
+```  
+具有使能的寄存器也可以被重置：  
+```
+val resetEnableReg = RegInit(0.U(4.W))
+
+when(enable) {
+  resetEnableReg := inVal
+}
+```  
+
+**一个寄存器也可以是表达式的一部分。**一下电路检测了信号的上升沿，通过比较其当前值和上周期的值。  
+```
+val risingEdge = din & !RegNext(din)
+```  
+
+## 6.2计数器
+计数器是最基本的时序电路之一。以最简单的形式，计数器就是寄存器输出连接到加法器，而加法器的输出连接到寄存器。  
+
+具有4位寄存器的自由运行计数器从0到15计数，然后回绕再次设为0.基础器也应重置为已知值。  
+```
+val cntReg = RegInit(0.U(4.W))
+
+cntReg := cntReg + 1.U
+```  
+
+当我们想要计数事件的时候，我们使用条件去增加计数器度数：  
+```
+val cntEventsReg = RegInit(0.U(4.W))
+when(event) {
+  cntEventsReg := cntEventsReg + 1.U
+}
+```  
+
+### 6.2.1向上和向下计数
+要计算一个值，然后使用0重新启动，我们需要比较具有最大长数的计数器值，例如带有when有条件的声明。  
+```
+val cntReg = RegInit(0.U(8.W))
+
+cntReg := cntReg + 1.U
+when(cntReg === N) {
+  cntReg := 0.U
+}
+```  
+我们也可以使用复用器作为一个计数器的增加读数：  
+```
+val cntReg = RegInit(0.U(8.W))
+
+cntReg := Mux(cntReg === N, 0.U, cntReg + 1.U)
+```  
+
+如果我们有倒数的想法，我们开始（重置计数器寄存器）设置为最大值，并在到大0时将计数器重置为该数：  
+```
+val cntReg = RegInit(N.U(8.W))
+
+cntReg := Mux(cnt -=== 0.U, N.U, cntReg - 1.U)
+```  
+
+当我们写入和使用更多计数器的时候，我们可以定义一个具有参数的函数去为我们生成计数器：  
+```
+//定义一个函数，用于生成计数器
+def genCounter(n: Int) = {
+  val cntReg = RegInit(0.U(8.W))
+  cntReg := Mux(cntReg === n.U , 0.U, cntReg + 1.U)
+  cntReg  //返回计数器函数
+}
+
+//创建两个计数器
+val count10 = genCounter(10)
+val count99 = genCounter(99)
+
+//为测试创建一个额外的计数器
+val testCounter = genCounter(n - 1)
+io.tick := testCounter === (n - 1).U  //当达到n - 1 时，设置io.tick为true
+io.cnt := testCounter
+
+//定义一个类，集成Counter类
+class NerdCounter(n: Int) extends Counter(n) {
+  val N = n //定义常量N保存参数n的值
+
+  val MAX = (N -2).S(8.W)
+  val cntReg = RegInit(MAX) //定义一个计数去，设置为MAX
+  io.tick := false.B        //将io.tick初始化为flase.B
+
+  cntReg := cntReg - 1.S    //计数器寄存器减1
+  when(cntReg(7)) {         //当最高位为1时，重置为MAX
+    cntReg := MAX
+    io.tick := true.B
+  }
+}
+```  
+
+### 6.2.2使用计数器产生时序
+除了计数事件，计数器经常被用来生成延迟，一个同步电路使用一个时钟和特定的频率。电路在这些时钟变化中生成结果。在数字电路中没有时间的概念，除了计算时钟周期。如果我们直到时钟频率，我们可以生成电路用于生成时间性事件，类似于一些特定频率闪烁LED。  
+
+在下边的例子，将会介绍一个计数去，从0数到最大值N - 1。当达到最大值的时候，tick在一个单周期内变为true，计数器被重置为0,当我们从0数到N - 1,我们每N时钟周期生成一个逻辑tick：  
+```
+val tickCounterReg = RegInit(0.U(4.W))
+val tick = tickCounterReg === (N - 1).U
+
+tickCounterReg := tickCounterReg + 1.U
+when(tick) {
+  tickCounterReg := 0.U
+}
+```  
+### 6.2.3 nerd计数器
+我们很多人有时感觉自己像一个nerd。例如，我们想要设计一个超级优化的计数器（触发信号的生成）。一个标准计数器需要以下资源：一个寄存器，一个加法器（或是减法器），一个比较器。我们不能再寄存器或是加法器做很多。如果我们向上数，我们需要比较一个目标数，这是一个字符。比较器可以从0开始反向生成一个字符，然后一个大的与门。当我们向下数零的时候，比较器时一个大的或非门，这个从ASIC的角度是更加便宜的。在FPGA，逻辑来源于查找表，所有在比较1或是0的时候就没什么区别了，此时向上数和向下数对于资源的要求是一样的。  
+
+但是，这里仍有一个小窍门，硬件设计者可以节间。目前向上数或向下数需要与所有的计数位比较。当你向下数太多会发生什么？那种情况，计数会变为负数。探测一个负数只是简单比较最高位“a”就好：  
+```
+val MAX = (N - 2).S(8.W)
+val cntReg = RegInit(Max)
+io.tick := false.B
+
+cntReg := cntReg - 1.S
+when(cntReg(7)) {
+  cntReg := MAX
+  io.tick := true.B
+}
+```  
+### 6.2.4一个计时器
+用一个8位寄存器reg，被重置为0.布尔值done是reg和零比较的结果。对于输入复用器，我们引入先next，默认值为0.when/elsewhen随着选择函数，引入了其他两个输入。信号load比向下数更有优先性，最后连接了复用器，被next表示，到寄存器reg的输入：  
+```
+val cntReg = RegInit(0.U(8.W))
+val done = cntReg === 0.U
+
+val next = WireInit(0.U)
+when(load) {
+  next := din
+} .elsewhen(!done) {
+  next := cntReg - 1.U
+}
+cntReg := next
+```  
+### 6.2.5脉冲宽度调制
+脉冲宽度调制PWM是一个常量周期的信号，调制的时间是周期high的时间。  
+![](./pic/脉冲宽度调制.png)  
+该图表明了一个PWM信号。箭头指向周期开始的地方。高电平信号的占比被称为占空比。在前两个周期，占空比是25%，在后边两个周期是50%，并且在最后两个周期是75%。脉冲在25%和75%之间。  
+
+增加低通滤波器到一个PWM称为一个简单的数字模拟转换器。低通滤波器可以简单地像是一个电阻和一个电容。  
+
+以下代码例子会生成一个每10个时钟周期出现3个时钟周期高电平的波形：  
+```
+def pwm(nrCycles: Int, din: UInt) = {
+
+  //创建一个计数器，位宽根据nrCycles - 1的最大值决定，初始值为0
+  val cntReg = RegInit(0.U(unsignedBitLength(nrCycles - 1).W))
+
+  //更新计数器，达到nrCycles - 1，则重置0否则递增1
+  cntReg := Mux(cntReg === (nrCycles - 1).U, 0.U, cntReg + 1.U)
+
+  //返回比较结果：
+  din > cntReg
+}
+val din = 3.U
+val dout = pwm(10, din)
+```  
+我们使用一个函数，用作PWM的生成器，提供一个可重复使用，轻量级的部分。这个函数有两个参数：一个scala整型，通过调节时钟周期数量（nrCycles）和一个chisel线（din）提供占空比（脉冲宽度）用作PWM的输出。我们使用一个复用器，在这个例子里来表示计数器。最后一行的函数，比较计数器的值，和输入值din用来返回PWM信号。最后chisel函数的表示，是返回值，在我们的例子里，是连接到比较函数的线。我们使用函数unsignedBitLength(n)去规定计数器用来表示计数cntReg的上限（并包括）n。chisel也有一个函数signedBitLength提供位数的数量，提供用来表示一个符号位的数的位宽。  
+
+另一个使用PWM的应用是亮起一个LED，在那种情况下，我们的眼睛像是一个低通滤波器，我们拓展以上例子去驱动PWM，通过一个三角函数，这个例子是LED可以连续改变强度。  
+```
+val FREQ = 100000000  //定义一个基础频率
+val MAX = FREQ/1000   //用于PWM的周期控制
+
+val modulationReg = RegInit(0.U(32.W))  //定义一个调制器
+
+val upReg = RegInit(true.B)             //定义方向寄存器，用于只是调制增减方向
+
+when(modulationReg < FREQ.U && upReg) { //当比较结果与upReg都为true，调制递增
+  modulationReg := modulationReg + 1.U
+} .elsewhen(modulationReg === FREQ.U && upReg) {  //相等，切换方向为减小
+  upReg := false.B
+} .elsewhen(modulationReg > 0.U && !upReg) {  //大于且与upReg为false，切换方向增加
+  modulationReg := modulationReg - 1.U
+} .otherwise {  //否则modulationReg 等于 0 且 upReg 为 false），切换方向为增加
+  upReg := true.B
+}
+
+// 调用 PWM 函数生成输出信号 sig
+// 将 modulationReg 右移 10 位（取高位作为调制值），并设置 PWM 周期为 MAX
+val sig = pwm(MAX, modulationReg >> 10)
+```  
+## 6.3移位寄存器
+移位寄存器是一个顺序连接的触发器的集合。每个寄存器的输出接到下一个寄存器的输入。用这个原理做了：（1）创造一个4位寄存器shiftReg，（2）合并移位寄存器的低3位到输入din用于下一个寄存器的输入，（3）使用了最高位的寄存器用于输出dout。  
+```
+val shiftReg = Reg(UInt(4.W))
+shiftReg := Cat(shiftReg(2, 0), din)
+val dout = shiftReg(3)
+```  
+移位寄存器经常被用来转换串口数据到平行数据，或是从平行数据转换到串口数据。
+
+### 6.3.1使用并行输出的移位寄存器
+![](./pic/并行输出移位寄存器.png)  
+一个串口并行设置的移位寄存器把一个串口输入变成并行输出的字，这个可以在串口UART用来接收功能。 上图表示了一个4位的移位寄存器，这里每个触发器输出接入一个输出位，经过4个周期，这个电路把一个4位串口字转换为一个4位平行数据字，在q有效，在这个例子，我们假定，0位（最低位）先被发送，当我们要读取整个字的时候，最低位到达最后一级。以下是chisel代码，我们使用0初始化移位寄存器outReg，我们从最高位开始移位，也就是右移。并行结果q是寄存器outReg的读出值。  
+```
+val outReg = RegInit(0.U(4.W))
+outReg := Cat(serIn, outReg(3, 1))
+val q = outReg
+```  
+### 6.3.2并行读取的移位寄存器
+![](./pic/并行读取移位寄存器.png)  
+一个并行输入串行输出设置的移位寄存器，把一个并行输入的字转换为串行输出流。这个可以用来传输功能的串口UART。上图表示了一个4位移位寄存器，具有并行读取的功能。  
+```
+when(load) {
+  loadReg := d
+} .otherwise {
+  loadReg := Cat(0.U, loadReg(3, 1)) 
+}
+val serOut = loadReg(0)
+```  
+## 6.4存储器
+存储器可以通过一系列的寄存器搭建，在chisel，一个Vec的Reg。但是这个在硬件上是昂贵的，更大的存储器是通过SREAM搭建的。对于一个ASIC存储器编译器构建出存储器。FPGA自带片上存储单元也成为模块化RAM。这些片上存储单元可以组合成为更大的存储器。FPGA上的存储器一般有一个读端和一个写端，或者可以切换方向的两个端口。  
+
+FPGA（或是ASIC）经常支持同步存储器，同步存储器在输入上具有寄存器（读和写地址，写数据，写使能）。那意味着读数据在设置地址后的一个周期是可用的。  
+
+![](./pic/同步存储器草图.png)  
+该图表明了这样一个同步存储器的草图。这个存储器是双端口的，具有一个读出和写入端口。这个读出端口有一个单一输入，读出地址rdAddr和一个输出数据rdData。写入端口有三个输入：地址wrAddr，写入数据wrData和写入使能wrEna。注意到对于所有的输入，存储器的寄存器表明了同步的行为。  
+
+为了支持片上存储，chisel提供了存储器构建器SyncReadMem.  
+```
+class Memory() extends Module {
+  val io = IO(new Bundle {
+    val rdAddr = Input(UInt(10.W))
+    val rdData = Output(UInt(8.W))
+    val wrEna = Input(Bool())
+    val wrData = Input(UInt(8.W))
+    val wrAddr = Input(UInt(10.W))
+  })
+
+  val mem = SyncReadMem(1024, UInt(8.W))
+
+  io.rdData := mem.read(io.rdAddr)
+
+  when(io.wrEna) {
+    mem.write(io.wrAddr, io.wrData)
+  }
+}
+```  
+## 8.5练习
+### 第一小题  
+用上一章的代码添加一个4位计数器作为输入，切换显示，从0到F。同时需要调慢计数，这需要创建一个秒计数器，每个周期生成一个tick，每过500毫秒，使用那个信号作为使能信号，用作4位计数器。  
+```
+import chisel3._
+import chisel3.util._
+
+class Timing extends Module {
+  val io = IO(new Bundle {
+    val in = Input(UInt(4.W))
+    val seg = Output(UInt(8.W))
+  })
+
+  //默认值
+  io.seg := "b1111_1111".U
+
+  when(io.in === "b0000".U) { io.seg := "b0000_0011".U } // 0
+    .elsewhen(io.in === "b0001".U) { io.seg := "b1001_1111".U } // 1
+    .elsewhen(io.in === "b0010".U) { io.seg := "b0010_0101".U } // 2
+    .elsewhen(io.in === "b0011".U) { io.seg := "b0000_1101".U } // 3
+    .elsewhen(io.in === "b0100".U) { io.seg := "b1001_1001".U } // 4
+    .elsewhen(io.in === "b0101".U) { io.seg := "b0100_1001".U } // 5
+    .elsewhen(io.in === "b0110".U) { io.seg := "b0100_0001".U } // 6
+    .elsewhen(io.in === "b0111".U) { io.seg := "b0001_1111".U } // 7
+    .elsewhen(io.in === "b1000".U) { io.seg := "b0000_0001".U } // 8
+    .elsewhen(io.in === "b1001".U) { io.seg := "b0000_1001".U } // 9
+    .elsewhen(io.in === "b1010".U) { io.seg := "b0001_0001".U } // A
+    .elsewhen(io.in === "b1011".U) { io.seg := "b1100_0001".U } // B
+    .elsewhen(io.in === "b1100".U) { io.seg := "b0110_0011".U } // C
+    .elsewhen(io.in === "b1101".U) { io.seg := "b1000_0101".U } // D
+    .elsewhen(io.in === "b1110".U) { io.seg := "b0110_0001".U } // E
+    .elsewhen(io.in === "b1111".U) { io.seg := "b0111_0001".U } // F
+    .otherwise { io.seg := "b1111_1111".U } // 全灭
+}
+
+//顶层模块
+class Top extends Module {
+  val io = IO(new Bundle {
+    val seg = Output(UInt(8.W))
+  })
+
+  //4位计数器
+  val counter4 = RegInit(0.U(4.W))  //初始化为0
+
+  //秒计数器
+  val freq = 100000000                //FPGA时钟频率（100MHZ）
+  val halfSecond = (freq / 2).U       //500毫秒计数周期
+  val secCounter = RegInit(0.U(27.W)) //秒计数器宽度足够存储100M
+
+  val tick = Wire(Bool())             //用于生成计数脉冲
+  tick := false.B
+
+  when(secCounter === halfSecond - 1.U) {
+    secCounter := 0.U                 //重置计数器
+    tick := true.B                    //产生tick信号
+  } .otherwise {                      //否则计数器自增
+    secCounter := secCounter + 1.U
+  }
+
+  //使能计数器
+  when(tick) {
+    counter4 := counter4 + 1.U // 每次 tick 更新计数器
+  }
+
+  //实例化
+  val timing = Module(new Timing)
+  timing.io.in := counter4
+  io.seg := timing.io.seg
+}
+
+
+object Top extends App {
+  (new chisel3.stage.ChiselStage).emitVerilog(new Top())
+}
+```  
