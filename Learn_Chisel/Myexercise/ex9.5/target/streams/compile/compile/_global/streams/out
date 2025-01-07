@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex9.5/src/main/scala/Top.scala:23:22: not found: value fac[0m
+[0m[[0m[31merror[0m] [0m[0m  val tick = tickGen(fac) //生成一个分频信号[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

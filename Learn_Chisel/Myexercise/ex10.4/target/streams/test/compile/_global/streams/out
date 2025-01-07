@@ -1,0 +1,7 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex9.5/src/test/scala/TopTest.scala:24:16: value led is not a member of Top[0m
+[0m[[0m[31merror[0m] [0m[0m           dut.led.expect(2.U)[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex9.5/src/test/scala/TopTest.scala:34:16: value led is not a member of Top[0m
+[0m[[0m[31merror[0m] [0m[0m           dut.led.expect(2.U)[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
