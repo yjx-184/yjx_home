@@ -17,6 +17,15 @@
   - [9.2 具有数据通路的状态机](#92-具有数据通路的状态机)
     - [9.2.1 位一计数的例子](#921-位一计数的例子)
   - [9.3 Ready-Valid界面](#93-ready-valid界面)
+- [10.硬件生成器](#10硬件生成器)
+  - [10.2 使用参数配置](#102-使用参数配置)
+    - [10.2.1 简单参数](#1021-简单参数)
+    - [10.2.2 使用类型参数的函数](#1022-使用类型参数的函数)
+    - [10.2.3 具有类型参数的模块](#1023-具有类型参数的模块)
+    - [10.2.4 参数化Bundle](#1024-参数化bundle)
+  - [10.3 生成组合逻辑](#103-生成组合逻辑)
+  - [10.4 使用继承](#104-使用继承)
+  - [10.5 使用函数式编程做硬件生成](#105-使用函数式编程做硬件生成)
 
 
 # 7.输入处理
@@ -675,3 +684,243 @@ chisel没有要求ready和valid的信号设置前置条件，当使用DecoupledI
 
 AXI为总线的以下每个部分使用ready-valid接口：读地址，读数据，写地址，写数据。AXI限制该接口，一旦ready或valid被置位，在数据传输完成之前不允许取消置位。  
 
+# 10.硬件生成器
+chisel的强处是它允许我们去写所谓的硬件生成器。有了旧的硬件描述语言，类似于VHDL和Verilog，我们通常使用另一个语言，像是java或python来生成硬件。作者经常编写小型java程序去生成VHDL网表。而在Chisel中，Scala（以及Java库）的全部功能都可以在硬件构建过程中使用。因此，我们可以用同一种语言编写硬件生成器，并将其作为Chisel电路生成的一部分来执行。  
+
+scala有两类变量：val和var。val为表达式赋予一个名称，并且不能重新赋值。以下代码片段展示了一个名为zero的整数值的定义。如果我们尝试为zero重新赋值，将会导致编译错误。  
+```
+val zero = 0
+zero = 3    // 错误
+```  
+在chisel我们使用val只是命名硬件部分。注意:=是chisel的操作符，而不是scala操作符。  
+
+我们使用循环用作电路生成器。以下的循环连接移位寄存器的每一位。  
+```
+val shiftReg = RegInit(0.U(8.W))
+
+shiftReg(0) := inVal
+
+//使用循环将寄存器的每一位依次向后移动
+for (i <- 1 until 8) {
+    shiftReg(i) := shiftReg(i - 1)  //将前一位的值赋给当前位，实现移位操作
+}
+```   
+条件通过if和else来表达。注意到这个条件是在电路生成期间由scala运行时评估的。这种结构并不会创建一个多路复用器。  
+```
+for(i <- 0 until 10) {
+    if(i % 2 == 0) {
+        println(i + "is even")
+    } else {
+        println(i + "is odd")
+    }
+}
+```  
+## 10.2 使用参数配置
+chisel组成部分和函数可以通过参数来配置。参数可以像整数常量一样简单，但是也可以称为chisel硬件类型。  
+
+### 10.2.1 简单参数
+参数化电路的基本方法是将位宽定义为一个参数。参数可以作为参数传递给chisel模块的构造函数。以下例子是一个简单的例子，该模块实现了一个可配置位宽的加法器。位宽n是传递给构造函数的组件参数（scala类型为Int），可以在IO bundle中使用。  
+```
+class ParamAdder(n: Int) extends Module {
+    val io = IO(new Bundle {
+        val a = Input(UInt(n.W))
+        val b = Input(UInt(n.W))
+        val c = Output(UInt(n.W))
+    })
+
+    io.c := io.a + io.b
+}
+```  
+加法器的参数化版本可以像如下被创造：  
+```
+val add8 = Module(new ParamAdder(8))
+val add16 = Module(new ParamAdder(16))
+```  
+### 10.2.2 使用类型参数的函数
+有了位宽作为配置参数只是硬件生成器的起点。一个非常灵活的配置方式是使用类型。这个特征允许用chisel来提供一个多路复用器（Mux），它能接受任何类型进行多路复用。为了展示如何使用类型进行配置，为了展示如何使用类型来进行配置，我们建造一个多路复用器来接受任意的类型。以下函数定义一个多路复用器：  
+``` 
+//定义一个泛型函数，实现多路复用器功能
+//T是泛型类型参数，限制为Data的子类
+//sel是选择信号，tPath 和 fPath 是两个输入路径，类型为 T
+def myMux[T <: Data](sel: Bool, tPath: T, fPath: T): T = {
+
+    //创建一个wire，默认值为fPath
+    val ret = WireDefault(fPath)
+
+    //当sel为真，将ret的值设置为tPath
+    when(sel) {
+        ret := tPath
+    }
+    ret     //返回输出
+}
+```  
+chisel允许使用类型对函数进行参数化，在我们的例子中使用chisel类型。方括号中的表达式[T <: Data]定义了一个类型参数T，它是Data或是Data的一个子类。Data是chisel类型系统的根类型。  
+
+我们的复用器函数有三个参数：布尔条件，一个参数用于true通路，和一个参数用于false通路。两个参数都是类型T，在函数调用时提供信息。这个函数本身非常直接：我们定义一个wire的默认值是fPath并且在条件为真时改变这个值为tPath。这个条件是常见的多路复用器函数。在函数结束时我们返回多路复用器的硬件。我们可以使用我们的多路复用器函数用于简单类型，如UInt：  
+```
+val resA = myMux(selA, 5.U, 10.U)
+```  
+两个多路复用器线路的类型需要一致。以下多路复用器的错误使用会导致一个运行时间错误：  
+```
+val resErr = myMux(selA, 5.U, 10.S)
+```  
+
+我们将我们的类型定义为一个包含两个子端的Bundle：  
+```
+class ComplexIO extends Bundle {
+    val d = UInt(10.W)
+    val b = Bool()
+}
+```  
+
+我们可以通过首先创建一个wire，然后设置其子字段来定义Bundle常量。接着，我们可以将我们的参数化多路复用器用于这种复杂类型。  
+```
+val tVal = Wire(new ComplexIO)
+tVal.b := true.B
+tVal.d := 42.U
+val fVal = Wire(new ComplexIO)
+fVal.b := false.B
+tVal.d := 13.U
+
+//这个多路复用器用于复杂类型
+val resB = myMux(selB, tVal, fVal)
+```  
+
+在我们函数的最初设计，我们使用WireInit来创造一个具有T类型默认值的Wire。如果我们需要创建一个wire只有chisel类型没有使用默认值，我们可以用fPath.cloneType去访问chisel的类型。以下函数表明了另一种方法来编写复用器。  
+```
+def myMuxAlt[T <: Data](sel: Bool, tPath: T, fPath: T): T = {
+    val ret = Wire(fPath.cloneType)
+    ret := fPath
+    when(sel) {
+        ret := tPath
+    }
+    ret
+}
+```  
+
+### 10.2.3 具有类型参数的模块
+我们也可以用chisel类型来参数化模块。假设我们想要设计一个片上网络，用于在不同处理核心之间传输数据。然而，我们不想要在路由器接口中硬编码数据格式，而是希望对他们进行参数化。与函数的类型参数化类似，我们添加一个类型参数T到模块的构造函数。此外，我们需要有一个该类型的构造函数参数。  
+```
+class NocRouter[T <: Data](dt: T, n: Int) extends Module {
+    val io = IO(new Bundle {
+        val inPort = Input(Vec(n, dt))
+        val address = Input(Vec(n, UInt(8.W)))
+        val outPort = Output(Vec(n, dt))
+    })
+}
+```  
+为了使用我们的路由器，我们首先需要去定义我们想要的路由器的数据类型，例如chisel的Bundle。  
+```
+class Payload extends Bundle {
+    val data = UInt(16.W)
+    val flag = Bool()
+}
+```  
+我们创造了一个路由器，通过传入一个自定义的Bundle的实例，并且给路由器的构建函数传入端口数量。  
+```
+val router = Module(new NocRouter(new Payload, 2))
+```  
+### 10.2.4 参数化Bundle
+在路由器的例子中，我们为路由器的输入使用了两个不同的字段向量：一个用于地址并且一个用于数据（数据是参数化的）。更优雅的解决方案是使用一个本身也是参数化的Bundle。如：  
+```
+class Port[T <: Data](dt: T) extends Bundle {
+    val address = UInt(8.W)
+    val data = dt.cloneType
+}
+```  
+Bundle有一个类型为T的参数，是chisel的Data的子类型。在Bundle，我们通过调用参数的cloneType来定义一个字段data。然而，当我们使用构造函数参数时，这些参数会变成类的公共字段。当chisel需要科隆Bundle的类型时，这些公共字段会带来问题。解决这个问题的方法是可以将参数字段设置为私有：  
+```
+class Port[T <: Data](private val dt: T) extends Bundle {
+    val address = UInt(8.W)
+    val data = dt.cloneType
+}
+```  
+
+通过 new Bundle，我们可以定义我们的路由器端口。  
+```
+class NocRouter2[T <: Data](dt: T, n: Int) extends Module {
+    val io = IO(new Bundle {
+        val inPort = Input(Vec(n, dt))
+        val outPort = Output(vec(n, dt))
+    })
+}
+```  
+使用Port来实例化我们的路有器，采用Payload作为一个参数：  
+```
+val router = Module(new NocRouter2(new Port(new Payload), 2))
+```  
+
+## 10.3 生成组合逻辑
+在Chisel中，我们可以通过从Scala数组创建Chisel的Vec来轻松生成逻辑表。我们可能有一个文件中的数据，可以在硬件生成时读取该文件以生成逻辑表。下面的文件读取示例展示了如何使用Scala标准库中的Source类来读取文件“data.txt”，该文件包含文本格式的整数常量。  
+```
+val table = VecInit(array.map(_.U(8.W)))
+```  
+
+scala的Array可以隐式转换为序列seq，它支持映射函数map。map对序列中的每个元素调用一个函数，并返回该函数返回值的序列。我们的函数_.U(8.W)将Scala数组中的每个Int值表示为_，并将其从Scala的Int值转换为Chisel的UInt字面量，大小为8位。Chisel的VecInit对象从Chisel类型的序列Seq创建一个Chisel的Vec。  
+读取文本生成逻辑表：  
+```
+import chisel3._
+import scala.io.Source
+
+class FileReader extends Module {
+    val io = IO(new Bundle {
+        val address = Input(UInt(8.W))
+        val data = Output(UInt(8.W))
+    })
+    val array = new Array[Int](256)
+    val idx = 0
+
+    //读取数据到scala array
+    val source = Source.fromFile("data.txt")
+    for (line <- source.getLines()) {
+        array(idx) = line.toInt
+        idx += 1
+    }
+    //转换scala为整型array到chisel类型Vec
+    val table = VecInit(array.map(_.U(8.W)))
+
+    //使用table
+    io.data := table(io.address)
+}
+```  
+我们可以充分利用Scala的能力来生成我们的逻辑（表格）。例如，生成定点常量表来表示三角函数，计算数字滤波器的常量，或者在Scala中编写一个小型汇编器来为用Chisel编写的微处理器生成代码。所有这些功能都在同一个代码库中（使用同一种语言），并且可以在硬件生成期间执行。  
+
+一个经典的例子是将二进制数转换为二进制编码的十进制（BCD）表示。BCD用于以十进制格式表示数字，每个十进制数字使用4位。例如，十进制数13在二进制中为1101，而在BCD编码中表示为1和3的二进制形式：00010011。BCD允许以十进制显示数字，这是一种比十六进制更用户友好的数字表示方式。  
+
+我们可以编写一个Java程序来计算将二进制转换为BCD的表格。该Java程序会输出可以包含在项目中的VHDL代码。这个Java程序大约有100行代码，其中大部分代码用于生成VHDL字符串。而转换的关键部分只有两行代码。  
+
+在Chisel中，我们可以直接在硬件生成过程中计算这个表格。展示了二进制到BCD转换的表格生成代码。  
+```
+import chisel3._
+
+//用于实现二进制到BCD的转换表
+class BcdTable extends Module {
+    val io = IO(new Bundle {
+        val address = Input(UInt(8.W))          //输入地址
+        val data = Output(UInt(8.W))            //输出数据
+    })
+
+    //创建一个大小为256的数组，用于存储BCD转换表
+    val array = new Array[Int](256)
+
+    //转换为BCD
+    for(i <- 0 to 99) {
+        array(i) = ((i/10)<<4) + i%10
+    }
+
+    //将数组转换为chisel的Vec类型，每个元素为8位无符号整数
+    val table = VecInit(array.map(_.U(8.W)))
+
+    //根据输入地址从表中读取对应的BCD值并输出
+    io.data := table(io.address)
+}
+```  
+
+## 10.4 使用继承
+
+## 10.5 使用函数式编程做硬件生成
+scala支持函数式编程，所以chisel也支持。我们可以使用函数去表示硬件，并结合这些硬件部分使用函数式编程（“高阶函数”）。  
+```
+def add(a: UInt, b: UInt) = a + b
+val sum = vec.reduce(add)
+```  
