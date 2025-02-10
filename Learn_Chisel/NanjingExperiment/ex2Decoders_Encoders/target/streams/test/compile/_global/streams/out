@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex2Decoders_Encoders/src/test/scala/SegTest.scala:18:11: value ui is not a member of Seg[0m
+[0m[[0m[31merror[0m] [0m[0m      dut.ui.in.poke(1.U)[0m
+[0m[[0m[31merror[0m] [0m[0m          ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

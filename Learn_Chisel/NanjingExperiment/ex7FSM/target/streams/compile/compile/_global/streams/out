@@ -1,0 +1,7 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/src/main/scala/ex5_3/Hello.scala:13:7: Hello is already defined as class Hello[0m
+[0m[[0m[31merror[0m] [0m[0mclass Hello extends Module {[0m
+[0m[[0m[31merror[0m] [0m[0m      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/src/main/scala/ex5_3/Hello.scala:42:8: Hello is already defined as object Hello[0m
+[0m[[0m[31merror[0m] [0m[0mobject Hello extends App {[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

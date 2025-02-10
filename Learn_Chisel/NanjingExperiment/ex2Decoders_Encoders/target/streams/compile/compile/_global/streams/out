@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex2Decoders_Encoders/src/main/scala/Seg.scala:14:59: value reverse is not a member of chisel3.UInt[0m
+[0m[[0m[31merror[0m] [0m[0m    val encodedOut = Mux(io.in.orR, PriorityEncoder(io.in.reverse), 0.U(3.W))[0m
+[0m[[0m[31merror[0m] [0m[0m                                                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

@@ -1,0 +1,67 @@
+$date
+2025-02-10T06:00+0000
+$end
+$version
+0.2
+$end
+$comment
+
+$end
+$timescale 1ns  $end
+$scope module Mux4to1 $end
+ $var wire 2 ! io_X2 $end
+ $var wire 2 " io_Y $end
+ $var wire 2 # io_X1 $end
+ $var wire 1 $ clock $end
+ $var wire 2 % io_X0 $end
+ $var wire 2 & io_X3 $end
+ $var wire 2 ' io_F $end
+ $var wire 1 ( reset $end
+$upscope $end
+$enddefinitions $end
+$dumpvars
+b00 &
+b00 #
+b00 '
+b00 !
+b00 %
+0$
+b00 "
+0(
+$end
+#0
+1(
+#1
+1$
+#6
+b10 !
+b11 &
+b01 #
+0$
+0(
+#11
+1$
+#16
+b01 "
+b01 '
+0$
+#21
+1$
+#26
+b10 "
+b10 '
+0$
+#31
+1$
+#36
+b11 "
+b11 '
+0$
+#41
+1$
+#46
+b00 !
+b00 "
+b00 &
+b00 #
+0$

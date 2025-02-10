@@ -1,0 +1,81 @@
+$date
+2025-02-10T09:59+0000
+$end
+$version
+0.2
+$end
+$comment
+
+$end
+$timescale 1ns  $end
+$scope module Seg $end
+ $var wire 3 ! io_out $end
+ $var wire 1 " io_sel $end
+ $var wire 1 # clock $end
+ $var wire 1 $ io_valid $end
+ $var wire 8 % io_in $end
+ $var wire 1 & reset $end
+ $var wire 3 ' encodedOut $end
+ $var wire 7 ( io_seg $end
+$upscope $end
+$enddefinitions $end
+$dumpvars
+0"
+0&
+0#
+b000 '
+b00000000 %
+b0000000 (
+0$
+b000 !
+$end
+#0
+1&
+#1
+1#
+#6
+1"
+0&
+0#
+b0000001 (
+#11
+1#
+#16
+b00000001 %
+0"
+0#
+1$
+b0000000 (
+#21
+1#
+#26
+1"
+0#
+b0000001 (
+#31
+1#
+#36
+b010 !
+b00000100 %
+0#
+b010 '
+b0010010 (
+#41
+1#
+#46
+b00000110 %
+0#
+#51
+1#
+#56
+b111 !
+b10000000 %
+0#
+b111 '
+b0001111 (
+#61
+1#
+#66
+b00000000 %
+0"
+0#

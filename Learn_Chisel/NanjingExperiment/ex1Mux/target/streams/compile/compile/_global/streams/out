@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex1Mux/src/main/scala/Mux4to1.scala:15:33: too many arguments (3) for method apply: (default: T, mapping: Seq[(chisel3.Bool, T)])T in object MuxCase[0m
+[0m[[0m[31merror[0m] [0m[0m  io.F := MuxCase(io.Y, 0.U, Seq([0m
+[0m[[0m[31merror[0m] [0m[0m                                ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

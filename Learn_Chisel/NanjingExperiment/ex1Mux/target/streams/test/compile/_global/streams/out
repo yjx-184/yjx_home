@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex1Mux/src/test/scala/Mux4to1Test.scala:8:14: not found: type Combinational[0m
+[0m[[0m[31merror[0m] [0m[0m    test(new Combinational).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>[0m
+[0m[[0m[31merror[0m] [0m[0m             ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
