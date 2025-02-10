@@ -5,7 +5,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 class TopTest extends AnyFlatSpec with ChiselScalatestTester {
     behavior of "Top"
     it should "LED灯正确的进行闪烁" in {
-        test(new Top(fac = 10)) { dut =>
+        test(new Top(fac = 10)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
             dut.clock.setTimeout(100000)
 
            //初始化输入和检查初始状态

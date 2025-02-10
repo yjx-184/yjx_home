@@ -1,6 +1,6 @@
 import chisel3._
 import chisel3.util._
-
+import circt.stage.ChiselStage 
 
 class Top extends Module {
   val io = IO(new Bundle {
@@ -26,7 +26,7 @@ class Top extends Module {
     is (MainGreen) {
       io.mainLight := 2.U   //主干道绿灯
       io.minorLight := 0.U  //副干道红灯
-      when(io.minorcar) {   //检测到副干道有车辆
+      when(io.minorcar === true.B) {   //检测到副干道有车辆
         stateReg := MainOrange
       }
     }
@@ -47,7 +47,7 @@ class Top extends Module {
     is (MinorGreen) {
       io.mainLight := 0.U
       io.minorLight := 2.U
-      when(io.timestate) {
+      when(io.timestate & (io.minorcar === false.B)) {  //检测到小车离开
         stateReg := MinorOrange
       }
     }
@@ -63,5 +63,5 @@ class Top extends Module {
 
 
 object Top extends App {
-  (new chisel3.stage.ChiselStage).emitVerilog(new Top())
+  (new ChiselStage).emitVerilog(new Top())
 }

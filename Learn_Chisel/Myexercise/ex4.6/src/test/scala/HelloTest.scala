@@ -5,10 +5,12 @@ import chisel3._
 class HelloTest extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "Hello"
   it should "pass" in {
-    test(new Hello) { c =>
+    test(new Hello).withAnnotations(Seq(WriteVcdAnnotation)) { c =>
+      //设置仿真时钟
       c.clock.setTimeout(0)
+      
       var ledStatus = BigInt(-1)
-      println("Start the blinking LED test with sw control")
+      println("开始测试呼吸灯")
 
       //测试不同sw值对LED的影响
       for (swVal <- 0 to 3) { //遍历sw的值
@@ -26,7 +28,7 @@ class HelloTest extends AnyFlatSpec with ChiselScalatestTester {
         }
         println() //换行分割不同se值的输出
       }
-      println("End the blinking LED test")
+      println("结束呼吸灯测试")
     }
   }
 }

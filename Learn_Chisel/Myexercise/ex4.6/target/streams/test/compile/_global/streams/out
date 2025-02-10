@@ -1,4 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/ex2.6/src/test/scala/HelloTest.scala:28:28: value U is not a member of Int[0m
-[0m[[0m[31merror[0m] [0m[0m        c.io.sw.poke(swVal.U)[0m
-[0m[[0m[31merror[0m] [0m[0m                           ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex4.6/src/test/scala/HelloTest.scala:5:8: object WriteVcdAnnotation is not a member of package chiseltest.internal[0m
+[0m[[0m[31merror[0m] [0m[0mimport chiseltest.internal.WriteVcdAnnotation[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex4.6/src/test/scala/HelloTest.scala:15:9: value drawVcd is not a member of Hello[0m
+[0m[[0m[31merror[0m] [0m[0m      c.drawVcd("./hello_test.vcd")[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

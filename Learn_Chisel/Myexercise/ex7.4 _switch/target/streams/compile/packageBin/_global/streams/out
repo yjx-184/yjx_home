@@ -1,0 +1,11 @@
+[0m[[0m[0mdebug[0m] [0m[0mPackaging /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex7.4 _switch/target/scala-2.12/ex7-4-_switch_2.12-0.1.0-SNAPSHOT.jar ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Combinational$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex7.4 _switch/target/scala-2.12/classes/Combinational$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Combinational$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex7.4 _switch/target/scala-2.12/classes/Combinational$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Combinational.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex7.4 _switch/target/scala-2.12/classes/Combinational.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Combinational$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex7.4 _switch/target/scala-2.12/classes/Combinational$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m

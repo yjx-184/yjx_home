@@ -10,7 +10,7 @@ class Top(fac : Int = 10000) extends Module {
   })
 
   //输入同步器
-  def sync(v: Bool) = RegNext(RegNext(v))
+  def sync(v: Bool) = RegNext(RegNext(v)) //两次寄存，确保信号稳定
   val btnsync = sync(io.btn)              //将按钮信号通过输入同步器
 
   //防抖动电路（生成分频信号）

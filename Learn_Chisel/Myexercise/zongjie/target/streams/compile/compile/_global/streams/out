@@ -1,0 +1,4 @@
+[0m[[0m[33mwarn[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/Myexercise/ex10.4/src/main/scala/Top.scala:66:22: class ChiselStage in package stage is deprecated (since Chisel 3.6): this feature will not be supported as part of the migration to the MLIR-based FIRRTL Compiler (MFC). For more information about this migration, please see the Chisel ROADMAP.md. Please switch to circt.stage.ChiselStage.[0m
+[0m[[0m[33mwarn[0m] [0m[0m  (new chisel3.stage.ChiselStage).emitVerilog(new Top())[0m
+[0m[[0m[33mwarn[0m] [0m[0m                     ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m

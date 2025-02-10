@@ -41,6 +41,7 @@ class Top extends Module {
   //秒计数器
   val freq = 100000000                //FPGA时钟频率（100MHZ）
   val halfSecond = (freq / 2).U       //500毫秒计数周期
+  //val halfSecond = 10.U                 //方便测试
   val secCounter = RegInit(0.U(27.W)) //秒计数器宽度足够存储100M
 
   val tick = Wire(Bool())             //用于生成计数脉冲
