@@ -1,11 +1,11 @@
-[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(CombinationalTestTest, org.scalatest.tools.Framework$$anon$1@2cc368cd, false, [SuiteSelector])[0m
-[0m[[0m[0minfo[0m] [0m[0m[32mCombinationalTestTest:[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[32mCombinational[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(AluTest, org.scalatest.tools.Framework$$anon$1@37b9c9cc, false, [SuiteSelector])[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mAluTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mAlu[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32m- should pass[0m[0m
-[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 2 seconds, 682 milliseconds.[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 4 seconds, 473 milliseconds.[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 1[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[36mSuites: completed 1, aborted 0[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 1, failed 0, canceled 0, ignored 0, pending 0[0m[0m
 [0m[[0m[0minfo[0m] [0m[0m[32mAll tests passed.[0m[0m
 [0m[[0m[0mdebug[0m] [0m[0mPassed tests:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	CombinationalTestTest[0m
+[0m[[0m[0mdebug[0m] [0m[0m	AluTest[0m

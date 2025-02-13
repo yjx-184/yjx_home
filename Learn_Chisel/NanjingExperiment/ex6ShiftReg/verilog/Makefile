@@ -1,6 +1,6 @@
 # 定义工程的顶层模块名称和约束文件
-TOPNAME = Combinational_top
-NXDC_FILES = constr/Combinational_top.nxdc
+TOPNAME = Top
+NXDC_FILES = constr/Top.nxdc
 
 # 头文件包含路径（可选）
 INC_PATH ?=

@@ -1,11 +1,19 @@
-[0m[[0m[0mdebug[0m] [0m[0mPackaging /home/yjx/Mystudy/yjx_learn/Learn_Chisel/ex7.4/target/scala-2.12/ex7-4_2.12-0.1.0-SNAPSHOT.jar ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mPackaging /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/ex6shiftreg_2.12-0.1.0-SNAPSHOT.jar ...[0m
 [0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Combinational$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/ex7.4/target/scala-2.12/classes/Combinational$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Combinational$delayedInit$body.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/ex7.4/target/scala-2.12/classes/Combinational$delayedInit$body.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Combinational.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/ex7.4/target/scala-2.12/classes/Combinational.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Combinational$$anon$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/ex7.4/target/scala-2.12/classes/Combinational$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Top$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes/Top$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Shiftreg$$anon$2.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes/Shiftreg$$anon$2.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Seg$$anon$3.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes/Seg$$anon$3.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Top$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes/Top$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Top$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes/Top$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Seg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes/Seg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Shiftreg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes/Shiftreg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Top.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes/Top.class[0m
 [0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m
