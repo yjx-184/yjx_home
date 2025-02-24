@@ -293,3 +293,53 @@ All self evident, except for the value reported for c. Note that we had defined 
 Conclusion
 Great. We were able to debug a core dump for a C program, and we leaned the basics of GDB debugging in the meantime. If you are a QA engineer, or a junior developer, and you have understood and learned everything in this tutorial well, you are already quite a bit ahead of most QA engineers, and potentially other developers around you.  
 太好了。我们成功地调试了一个 C 程序的核心转储，并在此过程中学习了 GDB 调试的基础知识。如果你是 QA 工程师，或者是初级开发者，并且已经很好地理解并掌握了本教程中的所有内容，那么你已经领先于大多数 QA 工程师，甚至可能比你周围的其他开发者更有优势。
+
+# 常用命令总结
+1. 基本操作
+gdb <program> ：启动 GDB 并加载程序
+run (r) ：运行程序
+quit (q) ：退出 GDB
+help (h) ：查看帮助
+2. 断点管理
+break <行号> (b <行号>) ：在指定行号设置断点
+break <函数名> (b <函数名>) ：在函数入口设置断点
+info breakpoints (i b) ：查看所有断点
+delete <编号> (d <编号>) ：删除指定编号的断点
+enable <编号> / disable <编号> ：启用/禁用断点
+clear <行号> ：清除指定行的断点
+3. 运行控制
+next (n) ：执行下一行（不进入函数）
+step (s) ：单步执行（进入函数）
+continue (c) ：继续运行直到下一个断点
+finish ：运行直到当前函数返回
+until <行号> ：运行到指定行号
+return ：提前返回当前函数
+4. 查看信息
+backtrace (bt) ：查看调用栈
+frame <编号> ：切换到指定栈帧
+info locals ：查看当前函数的局部变量
+info registers (i r) ：查看寄存器值
+info threads (i th) ：查看线程信息
+5. 变量与表达式
+print <变量> (p <变量>) ：打印变量值
+print/x <变量> ：以十六进制格式打印
+display <变量> ：每次单步执行时自动显示变量值
+set var <变量>=<值> ：修改变量值
+watch <变量> ：监视变量，变量值变化时暂停程序
+6. 内存查看
+x/<格式> <地址> ：查看内存
+x/10xw $sp ：查看栈指针附近 10 个 4 字节的值（十六进制）
+x/5i $pc ：查看当前指令
+x/s <地址> ：查看字符串
+7. 调试共享库
+info sharedlibrary (i sh) ：查看加载的共享库
+break <库文件>:<函数> ：在共享库中的函数设置断点
+set environment <变量>=<值> ：设置环境变量
+8. GDB 进阶
+attach <PID> ：附加到正在运行的进程
+detach ：分离调试的进程
+core <core 文件> ：加载 core dump 进行调试
+thread <编号> ：切换到指定线程
+set follow-fork-mode <mode> ：调试 fork 子进程
+parent ：跟踪父进程
+child ：跟踪子进程
