@@ -34,6 +34,12 @@
   - [思考题：框架代码中定义wp\_pool等变量的时候使用了关键字static, static在此处的含义是什么? 为什么要在此处使用它?](#思考题框架代码中定义wp_pool等变量的时候使用了关键字static-static在此处的含义是什么-为什么要在此处使用它)
   - [实现监视点池的管理](#实现监视点池的管理)
   - [实现监视点](#实现监视点)
+  - [如何阅读手册](#如何阅读手册)
+    - [riscv32有哪几种指令格式？](#riscv32有哪几种指令格式)
+    - [LUI指令的行为是什么？](#lui指令的行为是什么)
+    - [mstatus寄存器的结构是怎么样的？](#mstatus寄存器的结构是怎么样的)
+  - [实现统计目录下编写了多少行代码](#实现统计目录下编写了多少行代码)
+  - [gcc编译时-Wall和-Werror有什么作用? 为什么要使用-Wall和-Werror?](#gcc编译时-wall和-werror有什么作用-为什么要使用-wall和-werror)
 
 
 
@@ -826,3 +832,51 @@ config WATCHPOINT
     Enable watchpoint support in NEMU. This allows you to monitor changes to specific expressions.
     Disable this option to improve performance if watchporints are not needed.
 ```  
+
+## 如何阅读手册
+### riscv32有哪几种指令格式？
+首先，在阅读器搜索： Instruction Formats，根据目录我找到了：  
+```
+2.2 Base Instruction Formats
+
+```  
+定位过去后，阅读得知：在riscv32中有4种核心指令格式：R型，I型，S型，U型。这些指令长度固定32位。  
+
+### LUI指令的行为是什么？
+通过阅读器搜索LUI，我们看到在27页，有这么一段定义：LUI（加载上半部分立即数）用于构建 32 位常数，使用 U 型指令格式。LUI 指令将 32 位的 U 型立即数值加载到目标寄存器 rd 中，并将最低的 12 位填充为零。（这里位于2.4.2整数寄存器-寄存器操作）  
+在40页有这么一段定义：LUI（加载上半部分立即数）使用与 RV32I 相同的操作码。LUI 将 32 位 U 型立即数加载到寄存器 rd 中，并将最低的 12 位填充为零。然后，32 位的结果会进行符号扩展，扩展为 64 位。（这里位于4.2. 整数计算指令）  
+
+### mstatus寄存器的结构是怎么样的？
+在第一卷没有搜索到想要的，于是在第二卷搜索，找到了：3.1.6Machine Status Registers (mstatus and mstatush) 3.1.6机器状态寄存器 (mstatus 和 mstatush)。  
+
+我们定位过去看到：  
+mstatus 寄存器是一个 MXLEN 位的读/写寄存器，格式如图 3.6 所示（RV32）和图 3.7 所示（RV64）。mstatus 寄存器用于跟踪和控制 hart 当前的操作状态。mstatus 的受限视图作为 sstatus 寄存器出现在 S 级 ISA 中。  
+![](./pic/图3.6.png)  
+图3.6 RV32 的机器模式状态寄存器 (mstatus)。  
+
+![](./pic/图3.7.png)  
+图 3.7：RV64 的机器模式状态寄存器 (mstatus)。  
+
+仅对于 RV32，mstatush 是一个 32 位的读写寄存器，格式如图 3.8 所示。mstatush 的第 30 位到第 4 位通常包含与 RV64 中 mstatus 的第 62 位到第 36 位相同的字段。字段 SD、SXL 和 UXL 在 mstatush 中不存在。  
+
+![](./pic/图3.8.png)  
+图 3.8：RV32 的附加机器模式状态寄存器 (mstatush)。  
+
+## 实现统计目录下编写了多少行代码
+根据查找，我们知道在shell命令行中，xargs cat 是将find命令输出的文件内容合并起来输出，然后通过wc -l 进行统计，-l是显示行数。  
+
+```
+//包括空行：  
+count:
+    @find $(NEMU_HOME) -type f \( -name "*.c" -o -name "*.h" \) | xargs cat | wc -l
+
+//不包括空行：
+count-nonempty:
+	@find $(NEMU_HOME) -type f \( -name "*.c" -o -name "*.h" \) | xargs cat | grep -v '^\s*$$' | wc -l
+
+```  
+
+## gcc编译时-Wall和-Werror有什么作用? 为什么要使用-Wall和-Werror?
+-Wall 显示了所有的警告。例如未使用的变量、未初始化的变量、类型不匹配等。  
+-Werror 是将所有编辑警告提升为错误，导致编译失败。  
+这两组组合使用：1.提高代码质量。 2.减少调试时间在编译阶段发现问题比在运行时发现问题更容易调试。 3.强制代码规范，-Werror 强制开发者遵循严格的代码规范，避免警告被忽视。 4.提高代码可维护性，通过解决所有警告，代码变得更加清晰和易于维护。  
