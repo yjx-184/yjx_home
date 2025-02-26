@@ -1,4 +1,5 @@
 - [c语言练习](#c语言练习)
+  - [练习2 用Make来代替Python](#练习2-用make来代替python)
   - [练习3 格式化输出](#练习3-格式化输出)
     - [man 3 printf](#man-3-printf)
   - [练习4 valgrind介绍](#练习4-valgrind介绍)
@@ -25,6 +26,160 @@
 
 
 # c语言练习
+## 练习2 用Make来代替Python
+1. 语法规则：  
+```
+目标 ... : 依赖 ...
+   命令1
+   命令2
+```  
+2. 变量：
+   * 定义变量： VAR = value
+   * 使用变量： $(VAR)
+```
+CC = gcc
+CFLAGS = -Wall
+
+hello: hello.c
+   $(CC) $(CFLAGS) -o hello hello.c
+```  
+3. 伪目标
+   * 伪目标不代表实际文件，通常执行一些操作。
+   * 使用.PHONY声明伪目标
+```
+.PHONY: clean
+clean:
+   rm -f hello
+```  
+4. 自动变量
+   * $@: 当前目标
+   * $<: 第一个依赖
+   * $^: 所有依赖
+```
+hello: hello.c
+   $(CC) $(CFLAGS) -o $@ $<
+```  
+5. 模式规则
+   使用通配符 % 来匹配文件名。
+```
+%.o: %.c
+   $(CC) $(CFLAGS) -c $< -0 $@
+```  
+6. 函数
+   $(wildcard pattern): 匹配文件。
+```
+SRC = $(wildcard ./*.c)
+```  
+匹配当前目录下所有.c文件，并将其赋值给SRC变量。  
+7. 条件判断
+   ifeq:判断两个值是否相等。
+   ifneq：判断两个值是否不相等。
+   ifdef：判断变量是否已定义（非空）。
+   ifndef：判断变量是否为未定义（或为空）
+```
+ifeq ($(OS), Windows_NT)
+   RM = del
+else
+   RM = rm -f
+endif
+```  
+8. 包含其他Makefile
+   使用include包含其他Makefile
+9. 默认目标
+    Makefile的第一个目标是默认目标，通常命名为all
+10. 多目标规则
+    可以为多个目标定义相同的规则。
+```
+file1 file2 file3:
+   touch $@
+```  
+touch：如果目标不存在就建立，存在就访问和修改时间为当前时间
+
+11. 命令前缀
+    @：不显示命令本身。
+    -：忽略命令的错误。
+```
+clean:
+   -rm -f *.o
+```  
+12. 递归Make
+    在子目录中调用Make
+```
+subdir:
+   $(MAKE) -C subdir
+```  
+13. 文件查找路径
+    使用 VPATH 或 vpath 指定文件查找路径。
+```
+VPATH = src:include
+```  
+14. 并行执行
+    使用-j选项并行执行任务。
+```
+make -j4
+```  
+15. 隐式规则
+    Makefile有一些内置的隐式规则，例如从.c文件生成,o文件。
+```
+%.o: %c
+   $(CC) $(CFLAGS) -c $< -o $@
+```  
+16. 清理构建产物
+    通常定义一个clean目标来删除构建产物
+```
+.PHONY: clean
+clean:
+   rm -f *.o hello
+```  
+17. 依赖生成
+    使用-MMD选项自动生成依赖文件
+```
+CFLAGS += -MMD
+-include $(OBJECTS:.o=.d)
+```  
+18. 多配置支持
+    通过变量支持不同的构建配置（如Debug 和 Release）。
+```
+ifeq ($(BUILD),debug)
+   CFLAGS += -g
+else
+   CFLAGS += -02
+endif
+```  
+19. 调试
+    使用-n选项显示但补执行命令。
+    使用-p选项打印数据库（变量和规则）
+```
+make -n
+make -p
+```  
+20. 文件存在检查
+    使用if检查文件是否存在
+```
+ifeq ($(wildcard config.mk),)
+   $(error config.mk not found)
+endif
+```
+21. 目标依赖顺序
+    使用 | 指定顺序依赖（不检查时间戳）
+```
+all: | dir1 dir2
+```  
+22. 多架构支持
+    通过变量支持不同的架构。
+```
+ifeq ($(ARCH),x86)
+    CFLAGS += -m32
+else ifeq ($(ARCH),x64)
+    CFLAGS += -m64
+endif
+```  
+23. 默认目标设置
+    使用 .DEFAULT_GOAL 设置默认目标。
+```
+.DEFAULT_GOAL := all
+```  
+
 ## 练习3 格式化输出
 练习3在示例中，展示了格式化输出的一些使程序崩溃的错误。同时也希望我们学会使用makefile。  
 
