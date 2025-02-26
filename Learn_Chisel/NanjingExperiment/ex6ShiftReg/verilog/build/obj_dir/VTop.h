@@ -28,6 +28,7 @@ class VTop VL_NOT_FINAL : public VerilatedModel {
     VL_IN8(&reset,0,0);
     VL_IN8(&io_clk,0,0);
     VL_IN8(&io_reset,0,0);
+    VL_IN8(&io_btn,0,0);
     VL_OUT8(&io_seg_out,7,0);
 
     // CELLS

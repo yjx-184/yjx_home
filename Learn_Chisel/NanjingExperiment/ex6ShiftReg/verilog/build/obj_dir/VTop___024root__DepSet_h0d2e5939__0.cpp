@@ -6,6 +6,113 @@
 
 #include "VTop___024root.h"
 
+VL_INLINE_OPT void VTop___024root___ico_sequent__TOP__0(VTop___024root* vlSelf) {
+    if (false && vlSelf) {}  // Prevent unused
+    VTop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
+    VL_DEBUG_IF(VL_DBG_MSGF("+    VTop___024root___ico_sequent__TOP__0\n"); );
+    // Body
+    vlSelf->io_seg_out = ((IData)(vlSelf->io_reset)
+                           ? ((0U == (0xfU & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                               ? 3U : ((1U == (0xfU 
+                                               & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                        ? 0x9fU : (
+                                                   (2U 
+                                                    == 
+                                                    (0xfU 
+                                                     & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                    ? 0x25U
+                                                    : 
+                                                   ((3U 
+                                                     == 
+                                                     (0xfU 
+                                                      & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                     ? 0xdU
+                                                     : 
+                                                    ((4U 
+                                                      == 
+                                                      (0xfU 
+                                                       & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                      ? 0x99U
+                                                      : 
+                                                     ((5U 
+                                                       == 
+                                                       (0xfU 
+                                                        & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                       ? 0x49U
+                                                       : 
+                                                      ((6U 
+                                                        == 
+                                                        (0xfU 
+                                                         & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                        ? 0x41U
+                                                        : 
+                                                       ((7U 
+                                                         == 
+                                                         (0xfU 
+                                                          & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                         ? 0x1fU
+                                                         : 
+                                                        ((8U 
+                                                          == 
+                                                          (0xfU 
+                                                           & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                          ? 1U
+                                                          : 
+                                                         ((9U 
+                                                           == 
+                                                           (0xfU 
+                                                            & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                           ? 9U
+                                                           : 
+                                                          ((0xaU 
+                                                            == 
+                                                            (0xfU 
+                                                             & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                            ? 0x11U
+                                                            : 
+                                                           ((0xbU 
+                                                             == 
+                                                             (0xfU 
+                                                              & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                             ? 0xc1U
+                                                             : 
+                                                            ((0xcU 
+                                                              == 
+                                                              (0xfU 
+                                                               & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                              ? 0x63U
+                                                              : 
+                                                             ((0xdU 
+                                                               == 
+                                                               (0xfU 
+                                                                & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                               ? 0x85U
+                                                               : 
+                                                              ((0xeU 
+                                                                == 
+                                                                (0xfU 
+                                                                 & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                                ? 0x61U
+                                                                : 
+                                                               ((0xfU 
+                                                                 == 
+                                                                 (0xfU 
+                                                                  & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                                 ? 0x71U
+                                                                 : 0xffU))))))))))))))))
+                           : 0xffU);
+}
+
+void VTop___024root___eval_ico(VTop___024root* vlSelf) {
+    if (false && vlSelf) {}  // Prevent unused
+    VTop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
+    VL_DEBUG_IF(VL_DBG_MSGF("+    VTop___024root___eval_ico\n"); );
+    // Body
+    if (vlSelf->__VicoTriggered.at(0U)) {
+        VTop___024root___ico_sequent__TOP__0(vlSelf);
+    }
+}
+
 void VTop___024root___eval_act(VTop___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
     VTop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
@@ -20,100 +127,114 @@ VL_INLINE_OPT void VTop___024root___nba_sequent__TOP__0(VTop___024root* vlSelf) 
     if (vlSelf->reset) {
         vlSelf->Top__DOT__shiftreg__DOT__shiftreg = 0xffU;
     } else if (vlSelf->io_reset) {
+        if (vlSelf->Top__DOT__buttonDebounce__DOT__btnDebReg) {
+            vlSelf->Top__DOT__shiftreg__DOT__shiftreg 
+                = vlSelf->Top__DOT__shiftreg__DOT___shiftreg_T_1;
+        }
+    } else {
         vlSelf->Top__DOT__shiftreg__DOT__shiftreg = 0xffU;
-    } else if (vlSelf->io_clk) {
-        vlSelf->Top__DOT__shiftreg__DOT__shiftreg = vlSelf->Top__DOT__shiftreg__DOT___shiftreg_T_1;
     }
-    vlSelf->io_seg_out = ((0U == (0xfU & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                           ? 3U : ((1U == (0xfU & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                    ? 0x9fU : ((2U 
-                                                == 
-                                                (0xfU 
-                                                 & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                ? 0x25U
-                                                : (
-                                                   (3U 
-                                                    == 
-                                                    (0xfU 
-                                                     & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                    ? 0xdU
-                                                    : 
-                                                   ((4U 
-                                                     == 
-                                                     (0xfU 
-                                                      & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                     ? 0x99U
-                                                     : 
-                                                    ((5U 
-                                                      == 
-                                                      (0xfU 
-                                                       & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                      ? 0x49U
-                                                      : 
-                                                     ((6U 
-                                                       == 
-                                                       (0xfU 
-                                                        & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                       ? 0x41U
-                                                       : 
-                                                      ((7U 
-                                                        == 
-                                                        (0xfU 
-                                                         & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                        ? 0x1fU
-                                                        : 
-                                                       ((8U 
-                                                         == 
-                                                         (0xfU 
-                                                          & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                         ? 1U
-                                                         : 
-                                                        ((9U 
-                                                          == 
-                                                          (0xfU 
-                                                           & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                          ? 9U
-                                                          : 
-                                                         ((0xaU 
-                                                           == 
-                                                           (0xfU 
-                                                            & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                           ? 0x11U
-                                                           : 
-                                                          ((0xbU 
-                                                            == 
-                                                            (0xfU 
-                                                             & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                            ? 0xc1U
-                                                            : 
-                                                           ((0xcU 
-                                                             == 
-                                                             (0xfU 
-                                                              & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                             ? 0x63U
-                                                             : 
-                                                            ((0xdU 
-                                                              == 
-                                                              (0xfU 
-                                                               & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                              ? 0x85U
-                                                              : 
-                                                             ((0xeU 
-                                                               == 
-                                                               (0xfU 
-                                                                & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                               ? 0x61U
-                                                               : 
-                                                              ((0xfU 
-                                                                == 
-                                                                (0xfU 
-                                                                 & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
-                                                                ? 0x71U
-                                                                : 0U))))))))))))))));
     vlSelf->Top__DOT__shiftreg__DOT___shiftreg_T_1 
         = ((0x80U & (VL_REDXOR_8((0x1dU & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg))) 
                      << 7U)) | (0x7fU & ((IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg) 
                                          >> 1U)));
+    vlSelf->io_seg_out = ((IData)(vlSelf->io_reset)
+                           ? ((0U == (0xfU & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                               ? 3U : ((1U == (0xfU 
+                                               & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                        ? 0x9fU : (
+                                                   (2U 
+                                                    == 
+                                                    (0xfU 
+                                                     & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                    ? 0x25U
+                                                    : 
+                                                   ((3U 
+                                                     == 
+                                                     (0xfU 
+                                                      & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                     ? 0xdU
+                                                     : 
+                                                    ((4U 
+                                                      == 
+                                                      (0xfU 
+                                                       & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                      ? 0x99U
+                                                      : 
+                                                     ((5U 
+                                                       == 
+                                                       (0xfU 
+                                                        & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                       ? 0x49U
+                                                       : 
+                                                      ((6U 
+                                                        == 
+                                                        (0xfU 
+                                                         & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                        ? 0x41U
+                                                        : 
+                                                       ((7U 
+                                                         == 
+                                                         (0xfU 
+                                                          & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                         ? 0x1fU
+                                                         : 
+                                                        ((8U 
+                                                          == 
+                                                          (0xfU 
+                                                           & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                          ? 1U
+                                                          : 
+                                                         ((9U 
+                                                           == 
+                                                           (0xfU 
+                                                            & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                           ? 9U
+                                                           : 
+                                                          ((0xaU 
+                                                            == 
+                                                            (0xfU 
+                                                             & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                            ? 0x11U
+                                                            : 
+                                                           ((0xbU 
+                                                             == 
+                                                             (0xfU 
+                                                              & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                             ? 0xc1U
+                                                             : 
+                                                            ((0xcU 
+                                                              == 
+                                                              (0xfU 
+                                                               & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                              ? 0x63U
+                                                              : 
+                                                             ((0xdU 
+                                                               == 
+                                                               (0xfU 
+                                                                & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                               ? 0x85U
+                                                               : 
+                                                              ((0xeU 
+                                                                == 
+                                                                (0xfU 
+                                                                 & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                                ? 0x61U
+                                                                : 
+                                                               ((0xfU 
+                                                                 == 
+                                                                 (0xfU 
+                                                                  & (IData)(vlSelf->Top__DOT__shiftreg__DOT__shiftreg)))
+                                                                 ? 0x71U
+                                                                 : 0xffU))))))))))))))))
+                           : 0xffU);
+    vlSelf->Top__DOT__buttonDebounce__DOT__btnDebReg 
+        = ((~ (IData)(vlSelf->reset)) & ((IData)(vlSelf->io_reset) 
+                                         & ((~ (IData)(vlSelf->Top__DOT__buttonDebounce__DOT__btnLast)) 
+                                            & (IData)(vlSelf->io_btn))));
+    vlSelf->Top__DOT__buttonDebounce__DOT__btnLast 
+        = ((~ (IData)(vlSelf->reset)) & ((IData)(vlSelf->io_reset) 
+                                         & (IData)(vlSelf->io_btn)));
 }
 
 void VTop___024root___eval_nba(VTop___024root* vlSelf) {
@@ -126,6 +247,10 @@ void VTop___024root___eval_nba(VTop___024root* vlSelf) {
     }
 }
 
+void VTop___024root___eval_triggers__ico(VTop___024root* vlSelf);
+#ifdef VL_DEBUG
+VL_ATTR_COLD void VTop___024root___dump_triggers__ico(VTop___024root* vlSelf);
+#endif  // VL_DEBUG
 void VTop___024root___eval_triggers__act(VTop___024root* vlSelf);
 #ifdef VL_DEBUG
 VL_ATTR_COLD void VTop___024root___dump_triggers__act(VTop___024root* vlSelf);
@@ -139,10 +264,29 @@ void VTop___024root___eval(VTop___024root* vlSelf) {
     VTop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    VTop___024root___eval\n"); );
     // Init
+    CData/*0:0*/ __VicoContinue;
     VlTriggerVec<1> __VpreTriggered;
     IData/*31:0*/ __VnbaIterCount;
     CData/*0:0*/ __VnbaContinue;
     // Body
+    vlSelf->__VicoIterCount = 0U;
+    __VicoContinue = 1U;
+    while (__VicoContinue) {
+        __VicoContinue = 0U;
+        VTop___024root___eval_triggers__ico(vlSelf);
+        if (vlSelf->__VicoTriggered.any()) {
+            __VicoContinue = 1U;
+            if (VL_UNLIKELY((0x64U < vlSelf->__VicoIterCount))) {
+#ifdef VL_DEBUG
+                VTop___024root___dump_triggers__ico(vlSelf);
+#endif
+                VL_FATAL_MT("/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/verilog/vsrc/Top.v", 172, "", "Input combinational region did not converge.");
+            }
+            vlSelf->__VicoIterCount = ((IData)(1U) 
+                                       + vlSelf->__VicoIterCount);
+            VTop___024root___eval_ico(vlSelf);
+        }
+    }
     __VnbaIterCount = 0U;
     __VnbaContinue = 1U;
     while (__VnbaContinue) {
@@ -159,7 +303,7 @@ void VTop___024root___eval(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
                     VTop___024root___dump_triggers__act(vlSelf);
 #endif
-                    VL_FATAL_MT("/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/verilog/vsrc/Top.v", 91, "", "Active region did not converge.");
+                    VL_FATAL_MT("/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/verilog/vsrc/Top.v", 172, "", "Active region did not converge.");
                 }
                 vlSelf->__VactIterCount = ((IData)(1U) 
                                            + vlSelf->__VactIterCount);
@@ -174,7 +318,7 @@ void VTop___024root___eval(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
                 VTop___024root___dump_triggers__nba(vlSelf);
 #endif
-                VL_FATAL_MT("/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/verilog/vsrc/Top.v", 91, "", "NBA region did not converge.");
+                VL_FATAL_MT("/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/verilog/vsrc/Top.v", 172, "", "NBA region did not converge.");
             }
             __VnbaIterCount = ((IData)(1U) + __VnbaIterCount);
             VTop___024root___eval_nba(vlSelf);
@@ -196,5 +340,7 @@ void VTop___024root___eval_debug_assertions(VTop___024root* vlSelf) {
         Verilated::overWidthError("io_clk");}
     if (VL_UNLIKELY((vlSelf->io_reset & 0xfeU))) {
         Verilated::overWidthError("io_reset");}
+    if (VL_UNLIKELY((vlSelf->io_btn & 0xfeU))) {
+        Verilated::overWidthError("io_btn");}
 }
 #endif  // VL_DEBUG

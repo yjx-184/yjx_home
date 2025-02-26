@@ -17,14 +17,19 @@ class VTop___024root final : public VerilatedModule {
     VL_IN8(reset,0,0);
     VL_IN8(io_clk,0,0);
     VL_IN8(io_reset,0,0);
+    VL_IN8(io_btn,0,0);
     VL_OUT8(io_seg_out,7,0);
+    CData/*0:0*/ Top__DOT__buttonDebounce__DOT__btnDebReg;
+    CData/*0:0*/ Top__DOT__buttonDebounce__DOT__btnLast;
     CData/*7:0*/ Top__DOT__shiftreg__DOT__shiftreg;
     CData/*7:0*/ Top__DOT__shiftreg__DOT___shiftreg_T_1;
     CData/*0:0*/ __Vtrigrprev__TOP__clock;
     CData/*0:0*/ __VactContinue;
     IData/*31:0*/ __VstlIterCount;
+    IData/*31:0*/ __VicoIterCount;
     IData/*31:0*/ __VactIterCount;
     VlTriggerVec<1> __VstlTriggered;
+    VlTriggerVec<1> __VicoTriggered;
     VlTriggerVec<1> __VactTriggered;
     VlTriggerVec<1> __VnbaTriggered;
 

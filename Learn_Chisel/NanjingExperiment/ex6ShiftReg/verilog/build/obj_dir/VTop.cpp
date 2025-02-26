@@ -14,6 +14,7 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , reset{vlSymsp->TOP.reset}
     , io_clk{vlSymsp->TOP.io_clk}
     , io_reset{vlSymsp->TOP.io_reset}
+    , io_btn{vlSymsp->TOP.io_btn}
     , io_seg_out{vlSymsp->TOP.io_seg_out}
     , rootp{&(vlSymsp->TOP)}
 {

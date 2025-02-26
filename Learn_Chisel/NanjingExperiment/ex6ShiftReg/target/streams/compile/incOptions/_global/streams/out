@@ -1,29 +1,35 @@
 [0m[[0m[0mdebug[0m] [0m[0mCreated transactional ClassFileManager with tempDir = /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes.bak[0m
 [0m[[0m[0mdebug[0m] [0m[0mAbout to delete class files:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Shiftreg$$anon$3.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	ButtonDebounce$$anon$2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Shiftreg.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Shiftreg$$anon$2.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Seg$$anon$3.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Seg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Seg$$anon$4.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	ButtonDebounce.class[0m
 [0m[[0m[0mdebug[0m] [0m[0mWe backup class files:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Shiftreg$$anon$3.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	ButtonDebounce$$anon$2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Shiftreg.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Shiftreg$$anon$2.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Seg$$anon$3.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Seg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Seg$$anon$4.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	ButtonDebounce.class[0m
 [0m[[0m[0mdebug[0m] [0m[0mRegistering generated classes:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Shiftreg$$anon$3.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	ButtonDebounce$$anon$2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Shiftreg.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Shiftreg$$anon$2.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	Seg$$anon$3.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Seg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Seg$$anon$4.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	ButtonDebounce.class[0m
 [0m[[0m[0mdebug[0m] [0m[0mRemoving the temporary directory used for backing up class files: /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex6ShiftReg/target/scala-2.12/classes.bak[0m

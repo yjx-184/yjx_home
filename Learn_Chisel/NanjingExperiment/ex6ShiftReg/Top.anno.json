@@ -11,7 +11,7 @@
     "class":"firrtl.transforms.CombinationalPath",
     "sink":"~Top|Top>io_seg_out",
     "sources":[
-      "~Top|Top>io_clk"
+      "~Top|Top>io_reset"
     ]
   }
 ]
