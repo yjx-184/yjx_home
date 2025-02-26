@@ -2,7 +2,7 @@
 #include "Vreg_top.h"
 
 void nvboard_bind_all_pins(Vreg_top* top) {
-	nvboard_bind_pin( &top->reset, 1, BTNR);
+	nvboard_bind_pin( &top->reset, 1, SW0);
 	nvboard_bind_pin( &top->reset, 1, LD0);
 	nvboard_bind_pin( &top->btn, 1, BTNC);
 	nvboard_bind_pin( &top->btn, 1, LD4);

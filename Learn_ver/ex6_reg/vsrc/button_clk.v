@@ -9,7 +9,7 @@ module button_clk(clk, reset, btn, btn_clk);
 
     //将按钮的输入信号btn同步到全局时钟clk的时钟域中，防止由于信号跨时钟域而引发亚稳态问题。
     always @(posedge clk or negedge reset) begin
-        if(reset) begin            //复位信号
+        if(!reset) begin            //复位信号
             btn_sta1 <= 0;      
             btn_sta2 <= 0;
         end else begin
@@ -20,7 +20,7 @@ module button_clk(clk, reset, btn, btn_clk);
 
     //检测按钮的上升沿并生成单周期脉冲信号
     always @(posedge clk or negedge reset) begin
-        if(reset) begin                //复位信号
+        if(!reset) begin                //复位信号
             btn_clk <= 0;
             btn_last <= 0;
         end else begin

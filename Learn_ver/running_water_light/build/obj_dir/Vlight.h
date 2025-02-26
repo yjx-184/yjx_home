@@ -1,72 +1,75 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Primary model header
-// 这是 Verilator 生成的主要模型头文件。
-// 该头文件应由所有实例化设计的源文件包含。
-// 在 Verilator 手册中可以找到示例。
+//
+// This header should be included by all source files instantiating the design.
+// The class here is then constructed to instantiate the design.
+// See the Verilator manual for examples.
 
 #ifndef VERILATED_VLIGHT_H_
-#define VERILATED_VLIGHT_H_  // 宏定义防止重复包含
+#define VERILATED_VLIGHT_H_  // guard
 
 #include "verilated.h"
 
-class Vlight__Syms;  // 前置声明，表示符号表类
-class Vlight___024root;  // 前置声明，表示模型的根实例类
+class Vlight__Syms;
+class Vlight___024root;
 
-// 这个类是与 Verilated 模型交互的主要接口
+// This class is the main interface to the Verilated model
 class Vlight VL_NOT_FINAL : public VerilatedModel {
   private:
-    // 符号表，持有完整的模型状态（该类拥有它）
+    // Symbol table holding complete model state (owned by this class)
     Vlight__Syms* const vlSymsp;
 
   public:
 
-    // 端口
-    // 应用代码可以通过这些信号来读写，从而将新值传播到 Verilated 模型内或从模型内读取。
-    VL_IN8(&clk,0,0);  // 时钟信号输入，1位宽
-    VL_IN8(&rst,0,0);  // 复位信号输入，1位宽
-    VL_OUT16(&led,15,0);  // 输出信号，表示16位的LED输出
+    // PORTS
+    // The application code writes and reads these signals to
+    // propagate new values into/out from the Verilated model.
+    VL_IN8(&clk,0,0);
+    VL_IN8(&rst,0,0);
+    VL_OUT16(&led,15,0);
 
-    // 单元
-    // 公开的以允许访问被 `verilator public` 标记的项目。
-    // 否则，应用代码可以将这些内容视为内部项。
+    // CELLS
+    // Public to allow access to /* verilator public */ items.
+    // Otherwise the application code can consider these internals.
 
-    // 根实例指针，允许访问模型的内部，
-    // 包括内联的 `verilator public_flat_*` 项目。
+    // Root instance pointer to allow access to model internals,
+    // including inlined /* verilator public_flat_* */ items.
     Vlight___024root* const rootp;
 
-    // 构造函数
-    /// 构造模型；由应用程序代码调用
-    /// 如果 contextp 是空的，则模型将使用默认的全局上下文
-    /// 如果名称是 ""，则会创建一个不可见的单一模型包装器，相对于 DPI 作用域名称来说。
+    // CONSTRUCTORS
+    /// Construct the model; called by application code
+    /// If contextp is null, then the model will use the default global context
+    /// If name is "", then makes a wrapper with a
+    /// single model invisible with respect to DPI scope names.
     explicit Vlight(VerilatedContext* contextp, const char* name = "TOP");
     explicit Vlight(const char* name = "TOP");
-    /// 销毁模型；由应用程序代码调用（通常是隐式调用）
+    /// Destroy the model; called (often implicitly) by application code
     virtual ~Vlight();
   private:
-    VL_UNCOPYABLE(Vlight);  ///< 不允许复制
+    VL_UNCOPYABLE(Vlight);  ///< Copying not allowed
 
   public:
-    // API 方法
-    /// 评估模型。当输入更改时，应用程序必须调用此方法。
+    // API METHODS
+    /// Evaluate the model.  Application must call when inputs change.
     void eval() { eval_step(); }
-    /// 当每个时间步骤调用多个单元/模型时进行评估。
+    /// Evaluate when calling multiple units/models per time step.
     void eval_step();
-    /// 当使用 eval_step() 进行跟踪时，在时间步结束时进行评估。
-    /// 在所有 eval() 调用之后，时间改变之前，应用程序必须调用此方法。
+    /// Evaluate at end of a timestep for tracing, when using eval_step().
+    /// Application must call after all eval() and before time changes.
     void eval_end_step() {}
-    /// 仿真完成，运行最终块。应用程序在完成时必须调用此方法。
+    /// Simulation complete, run final blocks.  Application must call on completion.
     void final();
-    /// 是否有计划处理的事件？
+    /// Are there scheduled events to handle?
     bool eventsPending();
-    /// 返回下一个时间槽的时间。如果 `!eventsPending()` 则中止。
+    /// Returns time at next time slot. Aborts if !eventsPending()
     uint64_t nextTimeSlot();
-    /// 检索此模型实例的名称（如构造函数中传递的）。
+    /// Retrieve name of this model instance (as passed to constructor).
     const char* name() const;
 
-    // VerilatedModel 中的抽象方法
+    // Abstract methods from VerilatedModel
     const char* hierName() const override final;
     const char* modelName() const override final;
     unsigned threads() const override final;
 } VL_ATTR_ALIGNED(VL_CACHE_LINE_BYTES);
 
-#endif  // 防止重复包含
+#endif  // guard

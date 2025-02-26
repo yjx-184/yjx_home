@@ -9,7 +9,7 @@ module lfsr(clk, reset, lfsr_out);
     assign feedback = lfsr_out[4] ^ lfsr_out[3] ^ lfsr_out[2] ^ lfsr_out[0];
 
     always @(posedge clk or negedge reset) begin    //在时钟上升沿或复位信号的下降沿触发
-        if(reset) begin            //复位信号
+        if(!reset) begin            //复位信号
             lfsr_out <= 8'b00000001;    //将lfsr初始化为非零值，避免全零状态，lfsr会卡在全零状态
         end else if(lfsr_out == 8'b00000000) begin  //防止卡死
             lfsr_out <= 8'b00000001;

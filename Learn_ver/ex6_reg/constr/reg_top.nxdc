@@ -1,6 +1,6 @@
 top = reg_top
 
-reset (BTNR)
+reset (SW0)
 reset (LD0)
 btn (BTNC)
 btn (LD4)

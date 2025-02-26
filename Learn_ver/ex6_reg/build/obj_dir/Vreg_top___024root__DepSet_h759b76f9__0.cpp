@@ -25,15 +25,14 @@ VL_INLINE_OPT void Vreg_top___024root___nba_sequent__TOP__0(Vreg_top___024root* 
     __Vtableidx2 = 0;
     // Body
     vlSelf->reg_top__DOT__lfsr_out = ((IData)(vlSelf->reset)
-                                       ? 1U : ((0U 
-                                                == (IData)(vlSelf->reg_top__DOT__lfsr_out))
-                                                ? 1U
-                                                : (
+                                       ? ((0U == (IData)(vlSelf->reg_top__DOT__lfsr_out))
+                                           ? 1U : (
                                                    ((IData)(vlSelf->reg_top__DOT__u_lfsr__DOT__feedback) 
                                                     << 7U) 
                                                    | (0x7fU 
                                                       & ((IData)(vlSelf->reg_top__DOT__lfsr_out) 
-                                                         >> 1U)))));
+                                                         >> 1U))))
+                                       : 1U);
     vlSelf->reg_top__DOT__u_lfsr__DOT__feedback = (1U 
                                                    & VL_REDXOR_8(
                                                                  (0x1dU 
@@ -52,15 +51,15 @@ VL_INLINE_OPT void Vreg_top___024root___nba_sequent__TOP__1(Vreg_top___024root* 
     Vreg_top__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vreg_top___024root___nba_sequent__TOP__1\n"); );
     // Body
-    vlSelf->reg_top__DOT__btn_clk = ((~ (IData)(vlSelf->reset)) 
+    vlSelf->reg_top__DOT__btn_clk = ((IData)(vlSelf->reset) 
                                      & ((IData)(vlSelf->reg_top__DOT__u_btn_clk__DOT__btn_sta2) 
                                         & (~ (IData)(vlSelf->reg_top__DOT__u_btn_clk__DOT__btn_last))));
     vlSelf->reg_top__DOT__u_btn_clk__DOT__btn_last 
-        = ((~ (IData)(vlSelf->reset)) & (IData)(vlSelf->reg_top__DOT__u_btn_clk__DOT__btn_sta2));
+        = ((IData)(vlSelf->reset) & (IData)(vlSelf->reg_top__DOT__u_btn_clk__DOT__btn_sta2));
     vlSelf->reg_top__DOT__u_btn_clk__DOT__btn_sta2 
-        = ((~ (IData)(vlSelf->reset)) & (IData)(vlSelf->reg_top__DOT__u_btn_clk__DOT__btn_sta1));
+        = ((IData)(vlSelf->reset) & (IData)(vlSelf->reg_top__DOT__u_btn_clk__DOT__btn_sta1));
     vlSelf->reg_top__DOT__u_btn_clk__DOT__btn_sta1 
-        = ((~ (IData)(vlSelf->reset)) & (IData)(vlSelf->btn));
+        = ((IData)(vlSelf->reset) & (IData)(vlSelf->btn));
 }
 
 void Vreg_top___024root___eval_nba(Vreg_top___024root* vlSelf) {
