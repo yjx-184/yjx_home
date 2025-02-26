@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     } else if(argc > 2 && argc < 5) {
         printf("Here are your arguments:\n");
         for(i = 0; i < argc; i++) {
-            printf("%s", argv[i]);
+            printf("%s\n", argv[i]);
         }
         printf("\n");
     } else {

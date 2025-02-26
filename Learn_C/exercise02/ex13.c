@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
     for(i = 0; argv[1][i] != '\0'; i++) {
         char letter = argv[1][i];
 
-        //将字母换成消协
+        //将字母换成小写
         if(letter >= 'A' && letter <= 'Z') {
             letter = letter + 32;
         }
