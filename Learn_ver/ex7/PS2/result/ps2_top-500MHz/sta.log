@@ -1,0 +1,122 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I20250227 14:39:45.015805 1105822 Sta.cc:375] read verilog file /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/result/ps2_top-500MHz/ps2_top.netlist.fixed.v start
+I20250227 14:39:45.015882 1105822 VerilogParserRustC.cc:41] load verilog file /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/result/ps2_top-500MHz/ps2_top.netlist.fixed.v
+r str /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/result/ps2_top-500MHz/ps2_top.netlist.fixed.v
+I20250227 14:39:45.033018 1105822 Sta.cc:379] read verilog end
+I20250227 14:39:45.033133 1105822 Sta.cc:298] load lib start
+I20250227 14:39:45.035437 1105824 LibParserRustC.cc:1269] load liberty file /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/scripts/../nangate45/lib/merged.lib
+rust read lib file /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/scripts/../nangate45/lib/merged.lib
+I20250227 14:39:45.581660 1105824 LibParserRustC.cc:1278] load liberty file /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/scripts/../nangate45/lib/merged.lib success.
+I20250227 14:39:45.582556 1105822 Sta.cc:317] load lib end
+I20250227 14:39:45.582610 1105822 Sta.cc:405] link design ps2_top start
+I20250227 14:39:45.587540 1105856 LibParserRustC.cc:1289] link liberty file /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/scripts/../nangate45/lib/merged.lib start.
+I20250227 14:39:45.913336 1105856 LibParserRustC.cc:1295] link liberty file /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/scripts/../nangate45/lib/merged.lib success.
+I20250227 14:39:46.013589 1105822 Sta.cc:790] link design ps2_top end
+I20250227 14:39:46.014176 1105822 Sta.cc:172] read sdc /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/ex7_yosys/ps2_top.sdc start 
+I20250227 14:39:46.016052 1105822 CmdCreateClock.cc:116] create clock core_clock for pin/port: clk
+I20250227 14:39:46.016091 1105822 Sta.cc:185] read sdc end
+I20250227 14:39:46.016130 1105822 StaBuildGraph.cc:310] build graph start
+I20250227 14:39:46.138203 1105822 StaBuildGraph.cc:327] build graph end
+I20250227 14:39:46.138244 1105822 Sta.cc:2287] update timing start
+I20250227 14:39:46.140476 1105822 StaApplySdc.cc:694] apply sdc start
+I20250227 14:39:46.140554 1105822 StaApplySdc.cc:725] apply sdc end
+I20250227 14:39:46.144502 1105822 StaClockPropagation.cc:320] ideal clock propagation start
+I20250227 14:39:46.144559 1105822 StaClockPropagation.cc:203] clock propagate end to vertex _239_:CK
+I20250227 14:39:46.145414 1105822 StaClockPropagation.cc:416] ideal clock propagation end
+I20250227 14:39:46.145427 1105822 StaCheck.cc:129] found loop fwd start
+I20250227 14:39:46.147058 1105822 StaCheck.cc:148] found loop fwd end
+I20250227 14:39:46.147075 1105822 StaCheck.cc:150] found loop bwd start
+I20250227 14:39:46.149084 1105822 StaCheck.cc:172] found loop bwd end
+I20250227 14:39:46.149124 1105822 StaSlewPropagation.cc:266] slew propagation start
+E20250227 14:39:46.150727 1105888 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+E20250227 14:39:46.150811 1105903 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+E20250227 14:39:46.150800 1105901 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+E20250227 14:39:46.150774 1105898 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+E20250227 14:39:46.150771 1105891 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+E20250227 14:39:46.150727 1105894 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+E20250227 14:39:46.150766 1105899 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+E20250227 14:39:46.150727 1105889 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+E20250227 14:39:46.150727 1105890 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+E20250227 14:39:46.150741 1105897 Lib.cc:174] Warning: val outside table ranges:  val = 0; min_val = 0.00117378; max_val = 0.198535
+I20250227 14:39:46.185550 1105822 StaSlewPropagation.cc:305] slew propagation end
+I20250227 14:39:46.185612 1105822 StaDelayPropagation.cc:268] delay propagation start
+I20250227 14:39:46.211575 1105822 StaDelayPropagation.cc:309] delay propagation end
+I20250227 14:39:46.211644 1105822 StaClockPropagation.cc:322] propagated(kNormal) clock propagation start
+I20250227 14:39:46.211680 1105822 StaClockPropagation.cc:418] propagated(kNormal) clock propagation end
+I20250227 14:39:46.211704 1105822 StaApplySdc.cc:694] apply sdc start
+I20250227 14:39:46.211726 1105822 StaApplySdc.cc:725] apply sdc end
+I20250227 14:39:46.211748 1105822 StaClockPropagation.cc:324] propagated(kGenerated) clock propagation start
+I20250227 14:39:46.211768 1105822 StaClockPropagation.cc:420] propagated(kGenerated) clock propagation end
+I20250227 14:39:46.211789 1105822 StaApplySdc.cc:694] apply sdc start
+I20250227 14:39:46.211810 1105822 StaApplySdc.cc:725] apply sdc end
+I20250227 14:39:46.215550 1105822 StaBuildPropTag.cc:325] build propagation tag start
+I20250227 14:39:46.215600 1105822 StaDataPropagation.cc:589] data fwd propagation start
+I20250227 14:39:46.217293 1105953 StaDataPropagation.cc:529] Thread 125453964674624 date fwd propagate found start vertex.clrn
+I20250227 14:39:46.217322 1105960 StaDataPropagation.cc:529] Thread 125454195361344 date fwd propagate found start vertex._242_:CK
+I20250227 14:39:46.217310 1105956 StaDataPropagation.cc:529] Thread 125454237304384 date fwd propagate found start vertex._240_:CK
+I20250227 14:39:46.217365 1105969 StaDataPropagation.cc:529] Thread 125454100989504 date fwd propagate found start vertex._246_:CK
+I20250227 14:39:46.217327 1105962 StaDataPropagation.cc:529] Thread 125454174389824 date fwd propagate found start vertex._243_:CK
+I20250227 14:39:46.217296 1105952 StaDataPropagation.cc:529] Thread 125453954188864 date fwd propagate found start vertex._249_:CK
+I20250227 14:39:46.217315 1105958 StaDataPropagation.cc:529] Thread 125454216332864 date fwd propagate found start vertex._241_:CK
+I20250227 14:39:46.217341 1105965 StaDataPropagation.cc:529] Thread 125454142932544 date fwd propagate found start vertex._244_:CK
+I20250227 14:39:46.217352 1105967 StaDataPropagation.cc:529] Thread 125454121961024 date fwd propagate found start vertex._245_:CK
+I20250227 14:39:46.217293 1105955 StaDataPropagation.cc:529] Thread 125453985646144 date fwd propagate found start vertex.u0_ps2_kb/_1043_:CK
+I20250227 14:39:46.243048 1105822 StaDataPropagation.cc:632] data fwd propagation end
+I20250227 14:39:46.243103 1105822 StaDataPropagation.cc:589] data fwd propagation start
+I20250227 14:39:46.248837 1105822 StaDataPropagation.cc:632] data fwd propagation end
+I20250227 14:39:46.248883 1105822 StaAnalyze.cc:539] analyze timing path start
+E20250227 14:39:46.250355 1105822 StaAnalyze.cc:324] The output port overflow is not constrained
+E20250227 14:39:46.250399 1105822 StaAnalyze.cc:324] The output port overflow is not constrained
+E20250227 14:39:46.250409 1105822 StaAnalyze.cc:324] The output port seg_out_0[0] is not constrained
+E20250227 14:39:46.250418 1105822 StaAnalyze.cc:324] The output port seg_out_0[0] is not constrained
+E20250227 14:39:46.250427 1105822 StaAnalyze.cc:324] The output port seg_out_0[1] is not constrained
+E20250227 14:39:46.250435 1105822 StaAnalyze.cc:324] The output port seg_out_0[1] is not constrained
+E20250227 14:39:46.250444 1105822 StaAnalyze.cc:324] The output port seg_out_0[2] is not constrained
+E20250227 14:39:46.250453 1105822 StaAnalyze.cc:324] The output port seg_out_0[2] is not constrained
+E20250227 14:39:46.250461 1105822 StaAnalyze.cc:324] The output port seg_out_0[3] is not constrained
+E20250227 14:39:46.250470 1105822 StaAnalyze.cc:324] The output port seg_out_0[3] is not constrained
+I20250227 14:39:46.254096 1105822 StaAnalyze.cc:577] analyze timing path end
+I20250227 14:39:46.254182 1105822 StaApplySdc.cc:694] apply sdc start
+I20250227 14:39:46.254196 1105822 StaApplySdc.cc:725] apply sdc end
+I20250227 14:39:46.254206 1105822 StaDataPropagation.cc:635] data bwd propagation start
+I20250227 14:39:46.256147 1106016 StaDataPropagation.cc:171] Thread 125453954188864 data bwd propagate found end vertex._239_:D
+I20250227 14:39:46.256196 1106018 StaDataPropagation.cc:171] Thread 125453975160384 data bwd propagate found end vertex._241_:D
+I20250227 14:39:46.256125 1106047 StaDataPropagation.cc:171] Thread 125453912245824 data bwd propagate found end vertex._249_:D
+I20250227 14:39:46.256271 1106018 StaDataPropagation.cc:171] Thread 125453975160384 data bwd propagate found end vertex.u1_ps2_dsh/_095_:D
+I20250227 14:39:46.256273 1106047 StaDataPropagation.cc:171] Thread 125453912245824 data bwd propagate found end vertex.seg_out_0[1]
+I20250227 14:39:46.256314 1106020 StaDataPropagation.cc:171] Thread 125454237304384 data bwd propagate found end vertex._242_:D
+I20250227 14:39:46.256338 1106019 StaDataPropagation.cc:171] Thread 125453985646144 data bwd propagate found end vertex._244_:D
+I20250227 14:39:46.256275 1106016 StaDataPropagation.cc:171] Thread 125453954188864 data bwd propagate found end vertex.u0_ps2_kb/_0991_:D
+I20250227 14:39:46.256176 1106017 StaDataPropagation.cc:171] Thread 125453964674624 data bwd propagate found end vertex._240_:D
+I20250227 14:39:46.256320 1106018 StaDataPropagation.cc:171] Thread 125453975160384 data bwd propagate found end vertex.u1_ps2_dsh/_096_:D
+I20250227 14:39:46.266093 1105822 StaDataPropagation.cc:670] data bwd propagation end
+I20250227 14:39:46.266198 1105822 Sta.cc:2316] update timing end
+I20250227 14:39:46.266391 1105822 Sta.cc:2410] start write sta report.
+I20250227 14:39:46.266403 1105822 Sta.cc:2411] output sta report path: /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/result/ps2_top-500MHz
+I20250227 14:39:46.267958 1105822 StaReport.cc:188] report the clock group core_clock 3 timing paths.
+I20250227 14:39:46.269711 1105822 StaReport.cc:188] report the clock group core_clock 3 timing paths.
+I20250227 14:39:46.270187 1105822 StaReport.cc:188] report the clock group core_clock 1 timing paths.
+I20250227 14:39:46.270421 1105822 StaReport.cc:188] report the clock group core_clock 3 timing paths.
+I20250227 14:39:46.271020 1105822 StaReport.cc:188] report the clock group core_clock 3 timing paths.
+I20250227 14:39:46.271317 1105822 StaReport.cc:188] report the clock group core_clock 1 timing paths.
+I20250227 14:39:46.271328 1105822 Sta.cc:1390] 
++--------------------+-------------+------------+------------+---------------+-------+-------+-----------+
+| Endpoint           | Clock Group | Delay Type | Path Delay | Path Required | CPPR  | Slack | Freq(MHz) |
++--------------------+-------------+------------+------------+---------------+-------+-------+-----------+
+| u1_ps2_dsh/_102_:D | core_clock  | max        | 0.660r     | 1.967         | 0.000 | 1.307 | 1442.945  |
+| u1_ps2_dsh/_100_:D | core_clock  | max        | 0.660r     | 1.967         | 0.000 | 1.307 | 1442.945  |
+| u1_ps2_dsh/_098_:D | core_clock  | max        | 0.660r     | 1.967         | 0.000 | 1.307 | 1442.945  |
+| u0_ps2_kb/_1062_:D | core_clock  | min        | 0.079f     | 0.002         | 0.000 | 0.078 | NA        |
+| u0_ps2_kb/_1063_:D | core_clock  | min        | 0.079f     | 0.002         | 0.000 | 0.078 | NA        |
+| _265_:D            | core_clock  | min        | 0.081f     | 0.003         | 0.000 | 0.079 | NA        |
++--------------------+-------------+------------+------------+---------------+-------+-------+-----------+
+I20250227 14:39:46.271425 1105822 Sta.cc:1391] 
++------------+------------+-------+
+| Clock      | Delay Type | TNS   |
++------------+------------+-------+
+| core_clock | max        | 0.000 |
+| core_clock | min        | 0.000 |
++------------+------------+-------+
+I20250227 14:39:46.309849 1105822 NetlistWriter.cc:52] start write verilog file /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/result/ps2_top-500MHz/ps2_top.v
+I20250227 14:39:46.335227 1105822 NetlistWriter.cc:71] finish write verilog file /home/yjx/Mystudy/yjx_learn/Learn_ver/ex7/PS2/yosys-sta/result/ps2_top-500MHz/ps2_top.v
+I20250227 14:39:46.335430 1105822 Sta.cc:2495] The timing engine run success.

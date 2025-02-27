@@ -1,0 +1,311 @@
+
+22. Printing statistics.
+
+=== $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1 ===
+
+   Number of wires:               1348
+   Number of wire bits:           1944
+   Number of public wires:           4
+   Number of public wire bits:     600
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               1352
+     AND2_X1                        15
+     AND2_X2                         4
+     AND2_X4                         2
+     AND3_X1                        12
+     AND3_X2                         1
+     AND4_X1                        53
+     AND4_X2                        40
+     AND4_X4                        15
+     AOI21_X1                        7
+     AOI221_X1                       1
+     AOI221_X4                      13
+     AOI22_X1                       26
+     BUF_X1                        600
+     NAND2_X1                       48
+     NAND3_X1                      170
+     NAND4_X1                       35
+     NAND4_X2                        1
+     NAND4_X4                        1
+     NOR2_X1                         5
+     NOR2_X2                         1
+     NOR2_X4                         4
+     NOR3_X1                         2
+     NOR4_X1                         4
+     NOR4_X4                         1
+     OR2_X1                          2
+     OR4_X4                          1
+     XNOR2_X1                      237
+     XNOR2_X2                       51
+
+   Chip area for module '$paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1': 1641.486000
+
+=== $paramod\MuxKeyWithDefault\NR_KEY=36\KEY_LEN=8\DATA_LEN=8 ===
+
+   Number of wires:                  4
+   Number of wire bits:            600
+   Number of public wires:           4
+   Number of public wire bits:     600
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                  1
+     $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1      1
+
+   Area for cell type $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1 is unknown!
+
+=== ps2_counter ===
+
+   Number of wires:                 74
+   Number of wire bits:             80
+   Number of public wires:           7
+   Number of public wire bits:      13
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 67
+     AND2_X2                         1
+     AND2_X4                         6
+     AND3_X1                         1
+     AND3_X4                         1
+     AND4_X1                         1
+     AOI21_X1                        1
+     AOI22_X1                        1
+     BUF_X1                         20
+     DFFR_X1                         9
+     INV_X1                          4
+     INV_X16                         1
+     INV_X2                          1
+     INV_X32                         3
+     NAND2_X2                        1
+     NAND3_X1                        1
+     NAND4_X1                        1
+     NOR2_X1                         2
+     NOR2_X2                         1
+     NOR2_X4                         1
+     NOR3_X1                         1
+     OAI211_X2                       1
+     OAI21_X1                        3
+     OAI22_X1                        1
+     XNOR2_X1                        4
+
+   Chip area for module '\ps2_counter': 144.970000
+
+=== ps2_distinguish ===
+
+   Number of wires:                 65
+   Number of wire bits:             79
+   Number of public wires:          13
+   Number of public wire bits:      27
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 53
+     $paramod\MuxKeyWithDefault\NR_KEY=36\KEY_LEN=8\DATA_LEN=8      1
+     AND2_X1                         9
+     AND4_X1                         1
+     BUF_X1                         25
+     DFFR_X1                         9
+     LOGIC0_X1                       1
+     LOGIC1_X1                       1
+     NAND2_X1                        2
+     NAND2_X2                        1
+     NOR3_X2                         2
+     NOR4_X2                         1
+
+   Area for cell type $paramod\MuxKeyWithDefault\NR_KEY=36\KEY_LEN=8\DATA_LEN=8 is unknown!
+
+   Chip area for module '\ps2_distinguish': 89.110000
+
+=== ps2_keyboard ===
+
+   Number of wires:                623
+   Number of wire bits:            630
+   Number of public wires:          95
+   Number of public wire bits:     102
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                536
+     AND2_X1                         6
+     AND2_X2                         1
+     AND2_X4                         3
+     AND3_X1                         7
+     AND3_X2                         1
+     AND4_X1                         1
+     AOI211_X2                       2
+     AOI211_X4                       4
+     AOI21_X1                        3
+     AOI221_X4                       1
+     BUF_X1                        195
+     BUF_X2                          1
+     BUF_X4                          1
+     DFF_X1                         89
+     INV_X1                         16
+     INV_X4                          1
+     MUX2_X1                       130
+     NAND2_X1                       12
+     NAND2_X2                        4
+     NAND2_X4                        1
+     NAND3_X1                        3
+     NOR2_X1                        16
+     NOR2_X2                         1
+     NOR2_X4                         4
+     NOR3_X1                         5
+     NOR4_X1                         1
+     OAI211_X2                       2
+     OAI21_X1                        2
+     OR2_X1                          3
+     OR3_X1                          1
+     XNOR2_X1                       10
+     XNOR2_X2                        4
+     XOR2_X1                         4
+     XOR2_X2                         1
+
+   Chip area for module '\ps2_keyboard': 961.058000
+
+=== ps2_top ===
+
+   Number of wires:                197
+   Number of wire bits:            239
+   Number of public wires:          64
+   Number of public wire bits:     106
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                142
+     AOI21_X1                        1
+     BUF_X1                         72
+     BUF_X4                          2
+     DFFR_X1                        26
+     DFFS_X1                         1
+     INV_X1                          2
+     INV_X32                         1
+     LOGIC1_X1                       1
+     MUX2_X1                        24
+     NOR2_X4                         1
+     NOR3_X1                         1
+     OAI22_X1                        1
+     ps2_counter                     1
+     ps2_distinguish                 1
+     ps2_keyboard                    1
+     seg_h                           6
+
+   Area for cell type \ps2_keyboard is unknown!
+   Area for cell type \ps2_distinguish is unknown!
+   Area for cell type \ps2_counter is unknown!
+   Area for cell type \seg_h is unknown!
+
+   Chip area for module '\ps2_top': 265.734000
+
+=== seg_h ===
+
+   Number of wires:                 46
+   Number of wire bits:             56
+   Number of public wires:           3
+   Number of public wire bits:      13
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 51
+     AND2_X1                         2
+     AND2_X2                         1
+     AND2_X4                         1
+     AOI21_X1                        2
+     AOI22_X1                        2
+     BUF_X1                         13
+     INV_X1                          2
+     INV_X16                         1
+     INV_X2                          1
+     INV_X32                         1
+     INV_X4                          1
+     LOGIC1_X1                       1
+     NAND2_X1                        4
+     NAND3_X1                        6
+     NAND4_X1                        4
+     NOR2_X2                         3
+     NOR2_X4                         2
+     NOR3_X1                         1
+     OAI21_X1                        2
+     OR3_X4                          1
+
+   Chip area for module '\seg_h': 67.830000
+
+=== design hierarchy ===
+
+   ps2_top                           1
+     ps2_counter                     1
+     ps2_distinguish                 1
+       $paramod\MuxKeyWithDefault\NR_KEY=36\KEY_LEN=8\DATA_LEN=8      1
+         $paramod\MuxKeyInternal\NR_KEY=36\KEY_LEN=8\DATA_LEN=8\HAS_DEFAULT=1      1
+     ps2_keyboard                    1
+     seg_h                           6
+
+   Number of wires:               2587
+   Number of wire bits:           3908
+   Number of public wires:         205
+   Number of public wire bits:    1526
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               2446
+     AND2_X1                        42
+     AND2_X2                        12
+     AND2_X4                        17
+     AND3_X1                        20
+     AND3_X2                         2
+     AND3_X4                         1
+     AND4_X1                        56
+     AND4_X2                        40
+     AND4_X4                        15
+     AOI211_X2                       2
+     AOI211_X4                       4
+     AOI21_X1                       24
+     AOI221_X1                       1
+     AOI221_X4                      14
+     AOI22_X1                       39
+     BUF_X1                        990
+     BUF_X2                          1
+     BUF_X4                          3
+     DFFR_X1                        44
+     DFFS_X1                         1
+     DFF_X1                         89
+     INV_X1                         34
+     INV_X16                         7
+     INV_X2                          7
+     INV_X32                        10
+     INV_X4                          7
+     LOGIC0_X1                       1
+     LOGIC1_X1                       8
+     MUX2_X1                       154
+     NAND2_X1                       86
+     NAND2_X2                        6
+     NAND2_X4                        1
+     NAND3_X1                      210
+     NAND4_X1                       60
+     NAND4_X2                        1
+     NAND4_X4                        1
+     NOR2_X1                        23
+     NOR2_X2                        21
+     NOR2_X4                        22
+     NOR3_X1                        15
+     NOR3_X2                         2
+     NOR4_X1                         5
+     NOR4_X2                         1
+     NOR4_X4                         1
+     OAI211_X2                       3
+     OAI21_X1                       17
+     OAI22_X1                        2
+     OR2_X1                          5
+     OR3_X1                          1
+     OR3_X4                          6
+     OR4_X4                          1
+     XNOR2_X1                      251
+     XNOR2_X2                       55
+     XOR2_X1                         4
+     XOR2_X2                         1
+
+   Chip area for top module '\ps2_top': 3509.338000
+
