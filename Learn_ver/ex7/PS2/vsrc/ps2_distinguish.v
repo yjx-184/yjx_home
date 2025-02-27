@@ -3,7 +3,7 @@ module ps2_distinguish(clk, clrn, i_data, ascii, key_release);
     input clrn;             //复位信号
     input [7:0] i_data;     //从ps/2传来的扫描码
     output reg [7:0] ascii; //输出对应的ascii字符
-    output reg key_release; //标记是否有按键松开时间
+    output reg key_release; //标记是否有按键松开事件
 
     //松开键盘
     parameter KEY_RELEASE_CODE = 8'hF0;
