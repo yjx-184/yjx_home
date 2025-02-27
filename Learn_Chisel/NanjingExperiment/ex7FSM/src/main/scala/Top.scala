@@ -21,9 +21,23 @@ class Top extends Module {
     keyboard.io.ps2_clk  := io.ps2_clk
     keyboard.io.ps2_data := io.ps2_data
 
+    // nextda_n信号：ready_p1有效时置0，否则为1
+    val nextdata_n = RegInit(true.B)
+    keyboard.io.nextdata_n := nextdata_n
+
+    // 产生ready信号的上升沿检测信号，用于检测数据是否准备好
+    val ready_delay = RegNext(keyboard.io.ready, false.B)
+    val ready_p1 = keyboard.io.ready && !ready_delay
+
+    // 存储从ps2Keyboard模块读取的数据
+    val data_d1 = RegInit(0.U(8.W))
+    when(ready_p1) {
+      data_d1 := keyboard.io.data // 当数据准备好时，存储数据
+    }
+
     // 实例化ps2_decoder模块
     val decoder = Module(new Ps2_decoder)
-    decoder.io.keycode   := keyboard.io.data
+    decoder.io.keycode   := data_d1
     decoder.io.clrn      := io.clrn
 
     // 实例化7段数码管显示模块
@@ -36,37 +50,70 @@ class Top extends Module {
 
     // 实例化Keycount模块
     val counter = Module(new Keycount)
-    counter.io.key_press := decoder.io.pressed
+    counter.io.key_press := ready_p1 && !decoder.io.released  // 当按键按下时增加计数
+    counter.io.key_release := decoder.io.released             // 按键松开时重置计数标记
     counter.io.clrn := io.clrn
 
     // nextdata_n逻辑，确保正确触发数据读取
-    val nextdata_n = RegInit(true.B)
-    keyboard.io.nextdata_n := nextdata_n
-
-    val ready_delay = RegNext(keyboard.io.ready, false.B)
-    when(keyboard.io.ready && !ready_delay) {
-        nextdata_n := false.B
+    when(ready_p1) {
+        nextdata_n := false.B   // 当数据准备好时，允许读取数据
     } .otherwise {
-        nextdata_n := true.B
+        nextdata_n := true.B    // 否则禁止读取数据
     }
 
-    // 按键松开时低四位全灭
-    when(!decoder.io.pressed) {
-        seg0.io.in := 15.U
-        seg1.io.in := 15.U
-        seg2.io.in := 15.U
-        seg3.io.in := 15.U
-    } .otherwise {
-        // 低两位：扫描码
-        seg0.io.in := keyboard.io.data(3, 0)
-        seg1.io.in := keyboard.io.data(7, 4)
+    // 用寄存器保存显示数据和显示使能信号
+    val key_scan_display_reg  = RegInit(0.U(8.W)) // 存储扫描码
+    val key_ascii_display_reg = RegInit(0.U(8.W)) // 存储ASCII码
+    val display_en = RegInit(false.B)             // 显示使能
 
-        // 中间两位：ASCII码
-        seg2.io.in := decoder.io.ascii(3, 0)
-        seg3.io.in := decoder.io.ascii(7, 4)
+    when(!io.clrn) {
+      key_scan_display_reg  := 0.U
+      key_ascii_display_reg := 0.U
+      display_en := false.B
+    } .otherwise {
+      // 按下事件：更新显示数据，并使能显示
+      when(ready_p1) {
+        key_scan_display_reg  := keyboard.io.data // 更新扫描码
+        key_ascii_display_reg := decoder.io.ascii // 更新ASCII码
+        display_en := true.B                      // 使能显示
+      } .elsewhen(decoder.io.released) {
+        display_en := false.B                     // 当按键松开时，禁用显示
+      }
     }
+
+    // 根据 display_en 决定低四位（扫描码、ASCII）的显示内容
+    val seg0_in = WireDefault(0.U(4.W))
+    val seg1_in = WireDefault(0.U(4.W))
+    val seg2_in = WireDefault(0.U(4.W))
+    val seg3_in = WireDefault(0.U(4.W))
+
+    when(display_en) {
+      // 低两位显示扫描码
+      seg0_in := key_scan_display_reg(3, 0)
+      seg1_in := key_scan_display_reg(7, 4)
+      // 中两位显示 ASCII 码
+      seg2_in := key_ascii_display_reg(3, 0)
+      seg3_in := key_ascii_display_reg(7, 4)
+    } .otherwise {
+      seg0_in := 0.U
+      seg1_in := 0.U
+      seg2_in := 0.U
+      seg3_in := 0.U
+    }
+
+    seg0.io.in := seg0_in
+    seg1.io.in := seg1_in
+    seg2.io.in := seg2_in
+    seg3.io.in := seg3_in
+
+    seg0.io.en := display_en
+    seg1.io.en := display_en
+    seg2.io.en := display_en
+    seg3.io.en := display_en
 
     // 高两位：按键计数
+    seg4.io.en := true.B
+    seg5.io.en := true.B
     seg4.io.in := counter.io.ones
     seg5.io.in := counter.io.tens
 
@@ -90,7 +137,7 @@ class PS2Keyboard extends Module {
     val ready      = Output(Bool())   // 数据准备好
     val overflow   = Output(Bool())   // 数据溢出
   })
-
+  // ============ 内部寄存器 =================
   val buffer      = RegInit(0.U(10.W))   // 数据缓存
   val fifo        = RegInit(VecInit(Seq.fill(8)(0.U(8.W))))  // FIFO队列
   val w_ptr       = RegInit(0.U(3.W))    // 写指针
@@ -100,9 +147,11 @@ class PS2Keyboard extends Module {
   val ready       = RegInit(false.B)     // 数据准备好标志
   val ps2_clk_sync= RegInit(0.U(3.W))    // PS/2时钟同步信号
 
+  // ============ PS/2 时钟同步 =================
   ps2_clk_sync := Cat(ps2_clk_sync(1, 0), io.ps2_clk)
   val sampling = ps2_clk_sync(2) && !ps2_clk_sync(1)   // 采样时机
 
+  // ============ 复位逻辑 =================
   when (!io.clrn) {
     // 清零逻辑
     buffer    := 0.U
@@ -113,14 +162,16 @@ class PS2Keyboard extends Module {
     ready     := false.B
     overflow  := false.B
   } .otherwise {
+    // ========== 处理 FIFO 读取 ==========
     // 数据读取触发
     when (ready && !io.nextdata_n) {
-      r_ptr := Mux(r_ptr === 7.U, 0.U, r_ptr + 1.U)
-      ready := !(w_ptr === Mux(r_ptr === 7.U, 0.U, r_ptr + 1.U))
+      r_ptr := r_ptr + 1.U // 读指针前移
+      ready := !(w_ptr === r_ptr + 1.U)// 检测 FIFO 是否为空
     }
 
+    // ========== 处理 PS/2 数据接收 ==========
     // 采样阶段
-    when (sampling) {
+    when (sampling) {         // 仅在 PS/2 时钟下降沿时处理数据
       when (count === 10.U) {
         // 校验数据有效性
         val valid = buffer(0) === 0.B && 
@@ -129,12 +180,9 @@ class PS2Keyboard extends Module {
 
         when (valid) {
           fifo(w_ptr) := buffer(8, 1)
-          w_ptr := Mux(w_ptr === 7.U, 0.U, w_ptr + 1.U)
+          w_ptr := w_ptr + 1.U
           ready := true.B
-
-          when (r_ptr === Mux(w_ptr === 7.U, 0.U, w_ptr + 1.U)) {
-            overflow := true.B
-          }
+          overflow := (r_ptr === Mux(w_ptr === 7.U, 0.U, w_ptr + 1.U))
         }
         count := 0.U
       } .otherwise {
@@ -158,36 +206,67 @@ class Ps2_decoder extends Module {
         val keycode = Input(UInt(8.W))   // 扫描码输入
         val clrn    = Input(Bool())      // 清零信号
         val ascii   = Output(UInt(8.W))  // ASCII码输出
-        val pressed = Output(Bool())     // 按键是否按下
+        val released = Output(Bool())    // 标记松开事件
     })
 
     val isBreakCode = RegInit(false.B)  // 断码检测标志
     val lastKeycode = RegInit(0.U(8.W)) // 上一个按键的扫描码
 
-    io.pressed := false.B
+    io.released := false.B
     io.ascii := 0.U
 
     when(!io.clrn) {
         isBreakCode := false.B
-        lastKeycode := 0.U
-        io.ascii := 0.U
-        io.pressed := false.B
+        io.released := false.B
     } .otherwise {
         when(io.keycode === 0xF0.U) {
             isBreakCode := true.B
         } .otherwise {
             when(isBreakCode) {
                 isBreakCode := false.B
-                io.pressed := false.B
+                io.released := true.B // 发生按键松开事件
             } .otherwise {
                 lastKeycode := io.keycode
-                io.pressed := true.B
+                io.ascii := 0x00.U
 
                 // 根据扫描码转为ASCII码
                 switch(io.keycode) {
                     is(0x45.U) { io.ascii := 0x30.U }  // 0
                     is(0x16.U) { io.ascii := 0x31.U }  // 1
-                    // 其他按键的ASCII码转换...
+                    is(0x1E.U) { io.ascii := 0x32.U }  // 2
+                    is(0x26.U) { io.ascii := 0x33.U }  // 3
+                    is(0x25.U) { io.ascii := 0x34.U }  // 4
+                    is(0x2E.U) { io.ascii := 0x35.U }  // 5
+                    is(0x36.U) { io.ascii := 0x36.U }  // 6
+                    is(0x3D.U) { io.ascii := 0x37.U }  // 7
+                    is(0x3E.U) { io.ascii := 0x38.U }  // 8
+                    is(0x46.U) { io.ascii := 0x39.U }  // 9
+
+                    is(0x1C.U) { io.ascii := 0x41.U }  // A
+                    is(0x32.U) { io.ascii := 0x42.U }  // B
+                    is(0x21.U) { io.ascii := 0x43.U }  // C
+                    is(0x23.U) { io.ascii := 0x44.U }  // D
+                    is(0x24.U) { io.ascii := 0x45.U }  // E
+                    is(0x2B.U) { io.ascii := 0x46.U }  // F
+                    is(0x34.U) { io.ascii := 0x47.U }  // G
+                    is(0x33.U) { io.ascii := 0x48.U }  // H
+                    is(0x43.U) { io.ascii := 0x49.U }  // I
+                    is(0x3B.U) { io.ascii := 0x4A.U }  // J
+                    is(0x42.U) { io.ascii := 0x4B.U }  // K
+                    is(0x4B.U) { io.ascii := 0x4C.U }  // L
+                    is(0x3A.U) { io.ascii := 0x4D.U }  // M
+                    is(0x31.U) { io.ascii := 0x4E.U }  // N
+                    is(0x44.U) { io.ascii := 0x4F.U }  // O
+                    is(0x4D.U) { io.ascii := 0x50.U }  // P
+                    is(0x15.U) { io.ascii := 0x51.U }  // Q
+                    is(0x2D.U) { io.ascii := 0x52.U }  // R
+                    is(0x1B.U) { io.ascii := 0x53.U }  // S
+                    is(0x2C.U) { io.ascii := 0x54.U }  // T
+                    is(0x3C.U) { io.ascii := 0x55.U }  // U
+                    is(0x2A.U) { io.ascii := 0x56.U }  // V
+                    is(0x1D.U) { io.ascii := 0x57.U }  // W
+                    is(0x1A.U) { io.ascii := 0x58.U }  // X
+                    is(0x22.U) { io.ascii := 0x59.U }  // Y
                     is(0x14.U) { io.ascii := 0x5A.U }  // Z
                 }
             }
@@ -198,7 +277,8 @@ class Ps2_decoder extends Module {
 // 7段数码管模块，用于显示4位数字
 class Seg extends Module {
   val io = IO(new Bundle {
-    val in = Input(UInt(4.W))    // 输入的4位数字
+    val in = Input(UInt(5.W))    // 输入的4位数字
+    val en = Input(Bool())       // 使能信号
     val seg = Output(UInt(8.W))  // 7段数码管的显示信号
   })
 
@@ -220,52 +300,75 @@ class Seg extends Module {
   val segE  = "b10011110".U(8.W)
   val segF  = "b10001110".U(8.W)
 
-  io.seg := "b11111111".U // 默认显示关闭状态
+  io.seg := 0xff.U // 默认显示关闭状态
 
   // 根据输入的4位数字选择显示的7段数码管编码
-  switch(io.in) {
-    is(0.U) { io.seg := seg0 }
-    is(1.U) { io.seg := seg1 }
-    is(2.U) { io.seg := seg2 }
-    is(3.U) { io.seg := seg3 }
-    is(4.U) { io.seg := seg4 }
-    is(5.U) { io.seg := seg5 }
-    is(6.U) { io.seg := seg6 }
-    is(7.U) { io.seg := seg7 }
-    is(8.U) { io.seg := seg8 }
-    is(9.U) { io.seg := seg9 }
-    is(10.U) { io.seg := segA }
-    is(11.U) { io.seg := segB }
-    is(12.U) { io.seg := segC }
-    is(13.U) { io.seg := segD }
-    is(14.U) { io.seg := segE }
-    is(15.U) { io.seg := segF }
+  when(!io.en) {
+    io.seg := 0xff.U
+  } .otherwise {
+    switch(io.in) {
+      is(0.U) { io.seg := ~seg0 }
+      is(1.U) { io.seg := ~seg1 }
+      is(2.U) { io.seg := ~seg2 }
+      is(3.U) { io.seg := ~seg3 }
+      is(4.U) { io.seg := ~seg4 }
+      is(5.U) { io.seg := ~seg5 }
+      is(6.U) { io.seg := ~seg6 }
+      is(7.U) { io.seg := ~seg7 }
+      is(8.U) { io.seg := ~seg8 }
+      is(9.U) { io.seg := ~seg9 }
+      is(10.U) { io.seg := ~segA }
+      is(11.U) { io.seg := ~segB }
+      is(12.U) { io.seg := ~segC }
+      is(13.U) { io.seg := ~segD }
+      is(14.U) { io.seg := ~segE }
+      is(15.U) { io.seg := ~segF }
+    }
   }
+  
 }
 
 // 按键计数模块
 class Keycount extends Module {
   val io = IO(new Bundle {
-    val key_press = Input(Bool())  // 按键是否按下
+    val key_press = Input(Bool())  // 按下标记
+    val key_release = Input(Bool())// 松开标记
     val clrn      = Input(Bool())  // 清零信号
     val ones      = Output(UInt(4.W))  // 个位数
     val tens      = Output(UInt(4.W))  // 十位数
   })
 
-  val count = RegInit(0.U(8.W))  // 按键计数器
+    val ones = RegInit(0.U(4.W))
+    val tens = RegInit(0.U(4.W))
+    val counted = RegInit(false.B) // 记录是否已经被计数
 
-  when (!io.clrn) {
-    // 清零逻辑
-    count := 0.U
-  } .elsewhen(io.key_press) {
-    // 按键按下时，计数加1
-    count := count + 1.U
-  }
+    when(!io.clrn) {
+      ones := 0.U
+      tens := 0.U
+      counted := false.B
+    } .otherwise {
+      // 按下事件：增加计数
+      when(io.key_press && !counted) {
+        counted := true.B 
 
-  // 输出个位数和十位数
-  io.ones := count(3, 0)
-  io.tens := count(7, 4)
+        when(ones === 9.U) {
+          ones := 0.U
+          tens := Mux(tens === 9.U, 0.U, tens + 1.U)
+        } .otherwise {
+          ones := ones + 1.U
+        }
+      }
+
+      // 松开事件：重置 counted 标志
+      when(io.key_release) { 
+        counted := false.B
+      }
+    }
+
+    io.ones := ones
+    io.tens := tens
 }
+
 
 
 

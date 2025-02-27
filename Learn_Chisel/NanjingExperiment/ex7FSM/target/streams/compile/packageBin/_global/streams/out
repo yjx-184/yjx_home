@@ -1,27 +1,27 @@
-[0m[[0m[0mdebug[0m] [0m[0mPackaging /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/ex7fsm2_2.12-0.1.0-SNAPSHOT.jar ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mPackaging /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/ex7fsm_2.12-0.1.0-SNAPSHOT.jar ...[0m
 [0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$delayedInit$body.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Top$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Top$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Seg$$anon$4.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Seg$$anon$4.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Seg$$anon$4.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Ps2_decoder$$anon$3.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Ps2_decoder$$anon$3.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Ps2_decoder$$anon$3.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	PS2Keyboard.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/PS2Keyboard.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/PS2Keyboard.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Top$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Top$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top$$anon$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Top$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Top$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Ps2_decoder.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Ps2_decoder.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Ps2_decoder.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	PS2Keyboard$$anon$2.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/PS2Keyboard$$anon$2.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/PS2Keyboard$$anon$2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Seg.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Seg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Seg.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Keycount$$anon$5.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Keycount$$anon$5.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Keycount$$anon$5.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Top.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Top.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Top.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	Keycount.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/target/scala-2.12/classes/Keycount.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/target/scala-2.12/classes/Keycount.class[0m
 [0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m

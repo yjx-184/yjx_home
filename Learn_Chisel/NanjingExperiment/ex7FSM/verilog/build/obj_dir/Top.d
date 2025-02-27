@@ -1,5 +1,5 @@
 Top.o: \
- /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/verilog/csrc/Top.cpp \
+ /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/verilog/csrc/Top.cpp \
  /home/yjx/ysyx-workbench/nvboard/usr/include/nvboard.h \
  /home/yjx/ysyx-workbench/nvboard/usr/include/pins.h VTop.h \
  /usr/local/share/verilator/include/verilated.h \

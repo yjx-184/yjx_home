@@ -4,7 +4,7 @@
 # Execute this makefile from the object directory:
 #    make -f VTop.mk
 
-default: /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/verilog/build/Top
+default: /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/verilog/build/Top
 
 ### Constants...
 # Perl executable (from $PERL)
@@ -56,8 +56,8 @@ VM_USER_CLASSES = \
 
 # User .cpp directories (from .cpp's on Verilator command line)
 VM_USER_DIR = \
-	/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/verilog/build \
-	/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/verilog/csrc \
+	/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/verilog/build \
+	/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/verilog/csrc \
 
 
 ### Default rules...
@@ -69,13 +69,13 @@ include $(VERILATOR_ROOT)/include/verilated.mk
 ### Executable rules... (from --exe)
 VPATH += $(VM_USER_DIR)
 
-auto_bind.o: /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/verilog/build/auto_bind.cpp
+auto_bind.o: /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/verilog/build/auto_bind.cpp
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
-Top.o: /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/verilog/csrc/Top.cpp
+Top.o: /home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/verilog/csrc/Top.cpp
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
 
 ### Link rules... (from --exe)
-/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM2/verilog/build/Top: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a $(VM_HIER_LIBS)
+/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NanjingExperiment/ex7FSM/verilog/build/Top: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a $(VM_HIER_LIBS)
 	$(LINK) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) $(LIBS) $(SC_LIBS) -o $@
 
 

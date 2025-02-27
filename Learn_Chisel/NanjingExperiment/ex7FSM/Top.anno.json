@@ -42,33 +42,5 @@
   {
     "class":"firrtl.transforms.BlackBoxTargetDirAnno",
     "targetDir":"."
-  },
-  {
-    "class":"firrtl.transforms.CombinationalPath",
-    "sink":"~Top|Top>io_seg_out_2",
-    "sources":[
-      "~Top|Top>io_clrn"
-    ]
-  },
-  {
-    "class":"firrtl.transforms.CombinationalPath",
-    "sink":"~Top|Top>io_seg_out_0",
-    "sources":[
-      "~Top|Top>io_clrn"
-    ]
-  },
-  {
-    "class":"firrtl.transforms.CombinationalPath",
-    "sink":"~Top|Top>io_seg_out_1",
-    "sources":[
-      "~Top|Top>io_clrn"
-    ]
-  },
-  {
-    "class":"firrtl.transforms.CombinationalPath",
-    "sink":"~Top|Top>io_seg_out_3",
-    "sources":[
-      "~Top|Top>io_clrn"
-    ]
   }
 ]
