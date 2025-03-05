@@ -21,15 +21,22 @@ class Top extends Module {
     keyboard.io.ps2_clk  := io.ps2_clk
     keyboard.io.ps2_data := io.ps2_data
 
+    // 产生ready信号的上升沿检测信号，用于检测数据是否准备好
+    val readySync = RegNext(keyboard.io.ready, false.B)
+    val ready_p1 = keyboard.io.ready && !readySync
+
     // nextda_n信号：ready_p1有效时置0，否则为1
     val nextdata_n = RegInit(true.B)
     keyboard.io.nextdata_n := nextdata_n
 
-    // 产生ready信号的上升沿检测信号，用于检测数据是否准备好
-    val ready_delay = RegNext(keyboard.io.ready, false.B)
-    val ready_p1 = keyboard.io.ready && !ready_delay
+    // nextdata_n逻辑，确保正确触发数据读取
+    when(ready_p1) {
+        nextdata_n := false.B   // 当数据准备好时，允许读取数据
+    } .otherwise {
+        nextdata_n := true.B    // 否则禁止读取数据
+    }
 
-    // 存储从ps2Keyboard模块读取的数据
+    // 存储从ps2Keyboard模块fifo中读取的数据
     val data_d1 = RegInit(0.U(8.W))
     when(ready_p1) {
       data_d1 := keyboard.io.data // 当数据准备好时，存储数据
@@ -54,26 +61,17 @@ class Top extends Module {
     counter.io.key_release := decoder.io.released             // 按键松开时重置计数标记
     counter.io.clrn := io.clrn
 
-    // nextdata_n逻辑，确保正确触发数据读取
-    when(ready_p1) {
-        nextdata_n := false.B   // 当数据准备好时，允许读取数据
-    } .otherwise {
-        nextdata_n := true.B    // 否则禁止读取数据
-    }
-
     // 用寄存器保存显示数据和显示使能信号
-    val key_scan_display_reg  = RegInit(0.U(8.W)) // 存储扫描码
     val key_ascii_display_reg = RegInit(0.U(8.W)) // 存储ASCII码
     val display_en = RegInit(false.B)             // 显示使能
-
     when(!io.clrn) {
-      key_scan_display_reg  := 0.U
+      data_d1 := 0.U//实验
       key_ascii_display_reg := 0.U
       display_en := false.B
     } .otherwise {
       // 按下事件：更新显示数据，并使能显示
       when(ready_p1) {
-        key_scan_display_reg  := keyboard.io.data // 更新扫描码
+        data_d1 := keyboard.io.data               // 更新扫描码
         key_ascii_display_reg := decoder.io.ascii // 更新ASCII码
         display_en := true.B                      // 使能显示
       } .elsewhen(decoder.io.released) {
@@ -81,30 +79,19 @@ class Top extends Module {
       }
     }
 
-    // 根据 display_en 决定低四位（扫描码、ASCII）的显示内容
-    val seg0_in = WireDefault(0.U(4.W))
-    val seg1_in = WireDefault(0.U(4.W))
-    val seg2_in = WireDefault(0.U(4.W))
-    val seg3_in = WireDefault(0.U(4.W))
-
     when(display_en) {
       // 低两位显示扫描码
-      seg0_in := key_scan_display_reg(3, 0)
-      seg1_in := key_scan_display_reg(7, 4)
+      seg0.io.in := data_d1(3,0)
+      seg1.io.in := data_d1(7,4)
       // 中两位显示 ASCII 码
-      seg2_in := key_ascii_display_reg(3, 0)
-      seg3_in := key_ascii_display_reg(7, 4)
+      seg2.io.in := key_ascii_display_reg(3, 0)
+      seg3.io.in := key_ascii_display_reg(7, 4)
     } .otherwise {
-      seg0_in := 0.U
-      seg1_in := 0.U
-      seg2_in := 0.U
-      seg3_in := 0.U
+      seg0.io.in := 0.U
+      seg1.io.in := 0.U
+      seg2.io.in := 0.U
+      seg3.io.in := 0.U
     }
-
-    seg0.io.in := seg0_in
-    seg1.io.in := seg1_in
-    seg2.io.in := seg2_in
-    seg3.io.in := seg3_in
 
     seg0.io.en := display_en
     seg1.io.en := display_en
@@ -149,7 +136,7 @@ class PS2Keyboard extends Module {
 
   // ============ PS/2 时钟同步 =================
   ps2_clk_sync := Cat(ps2_clk_sync(1, 0), io.ps2_clk)
-  val sampling = ps2_clk_sync(2) && !ps2_clk_sync(1)   // 采样时机
+  val sampling = ps2_clk_sync(2) && !ps2_clk_sync(1)   // 采样下降沿
 
   // ============ 复位逻辑 =================
   when (!io.clrn) {
@@ -210,7 +197,6 @@ class Ps2_decoder extends Module {
     })
 
     val isBreakCode = RegInit(false.B)  // 断码检测标志
-    val lastKeycode = RegInit(0.U(8.W)) // 上一个按键的扫描码
 
     io.released := false.B
     io.ascii := 0.U
@@ -226,7 +212,6 @@ class Ps2_decoder extends Module {
                 isBreakCode := false.B
                 io.released := true.B // 发生按键松开事件
             } .otherwise {
-                lastKeycode := io.keycode
                 io.ascii := 0x00.U
 
                 // 根据扫描码转为ASCII码
@@ -277,7 +262,7 @@ class Ps2_decoder extends Module {
 // 7段数码管模块，用于显示4位数字
 class Seg extends Module {
   val io = IO(new Bundle {
-    val in = Input(UInt(5.W))    // 输入的4位数字
+    val in = Input(UInt(4.W))    // 输入的4位数字
     val en = Input(Bool())       // 使能信号
     val seg = Output(UInt(8.W))  // 7段数码管的显示信号
   })
@@ -331,8 +316,8 @@ class Seg extends Module {
 // 按键计数模块
 class Keycount extends Module {
   val io = IO(new Bundle {
-    val key_press = Input(Bool())  // 按下标记
-    val key_release = Input(Bool())// 松开标记
+    val key_press = Input(Bool())  // 按下
+    val key_release = Input(Bool())// 松开
     val clrn      = Input(Bool())  // 清零信号
     val ones      = Output(UInt(4.W))  // 个位数
     val tens      = Output(UInt(4.W))  // 十位数
@@ -358,13 +343,11 @@ class Keycount extends Module {
           ones := ones + 1.U
         }
       }
-
       // 松开事件：重置 counted 标志
       when(io.key_release) { 
         counted := false.B
       }
     }
-
     io.ones := ones
     io.tens := tens
 }

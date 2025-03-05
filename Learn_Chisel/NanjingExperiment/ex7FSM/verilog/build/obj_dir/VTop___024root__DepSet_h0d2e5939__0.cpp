@@ -337,14 +337,14 @@ VL_INLINE_OPT void VTop___024root___nba_sequent__TOP__0(VTop___024root* vlSelf) 
     VTop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    VTop___024root___nba_sequent__TOP__0\n"); );
     // Init
-    CData/*3:0*/ __VdfgTmp_h5fb714aa__0;
-    __VdfgTmp_h5fb714aa__0 = 0;
-    CData/*3:0*/ __VdfgTmp_hc8e15410__0;
-    __VdfgTmp_hc8e15410__0 = 0;
-    CData/*3:0*/ __VdfgTmp_hed853dd1__0;
-    __VdfgTmp_hed853dd1__0 = 0;
-    CData/*3:0*/ __VdfgTmp_h0b9e7e5b__0;
-    __VdfgTmp_h0b9e7e5b__0 = 0;
+    CData/*3:0*/ Top__DOT__seg0_io_in;
+    Top__DOT__seg0_io_in = 0;
+    CData/*3:0*/ Top__DOT__seg1_io_in;
+    Top__DOT__seg1_io_in = 0;
+    CData/*3:0*/ Top__DOT__seg2_io_in;
+    Top__DOT__seg2_io_in = 0;
+    CData/*3:0*/ Top__DOT__seg3_io_in;
+    Top__DOT__seg3_io_in = 0;
     CData/*3:0*/ __Vdly__Top__DOT__keyboard__DOT__count;
     __Vdly__Top__DOT__keyboard__DOT__count = 0;
     CData/*3:0*/ __Vdly__Top__DOT__counter__DOT__ones;
@@ -363,7 +363,6 @@ VL_INLINE_OPT void VTop___024root___nba_sequent__TOP__0(VTop___024root* vlSelf) 
     if (vlSelf->reset) {
         vlSelf->Top__DOT__keyboard__DOT__ps2_clk_sync = 0U;
         vlSelf->Top__DOT__key_ascii_display_reg = 0U;
-        vlSelf->Top__DOT__key_scan_display_reg = 0U;
         __Vdly__Top__DOT__counter__DOT__ones = 0U;
         vlSelf->Top__DOT__counter__DOT__tens = 0U;
         vlSelf->Top__DOT__keyboard__DOT__r_ptr = 0U;
@@ -386,8 +385,9 @@ VL_INLINE_OPT void VTop___024root___nba_sequent__TOP__0(VTop___024root* vlSelf) 
             if (vlSelf->Top__DOT__ready_p1) {
                 vlSelf->Top__DOT__key_ascii_display_reg 
                     = vlSelf->Top__DOT__decoder_io_ascii;
-                vlSelf->Top__DOT__key_scan_display_reg 
-                    = vlSelf->Top__DOT__keyboard_io_data;
+                vlSelf->Top__DOT__data_d1 = vlSelf->Top__DOT__keyboard_io_data;
+            } else if (vlSelf->Top__DOT__ready_p1) {
+                vlSelf->Top__DOT__data_d1 = vlSelf->Top__DOT__keyboard_io_data;
             }
             if (((IData)(vlSelf->Top__DOT__counter_io_key_press) 
                  & (~ (IData)(vlSelf->Top__DOT__counter__DOT__counted)))) {
@@ -437,10 +437,10 @@ VL_INLINE_OPT void VTop___024root___nba_sequent__TOP__0(VTop___024root* vlSelf) 
             }
         } else {
             vlSelf->Top__DOT__key_ascii_display_reg = 0U;
-            vlSelf->Top__DOT__key_scan_display_reg = 0U;
             __Vdly__Top__DOT__counter__DOT__ones = 0U;
             vlSelf->Top__DOT__counter__DOT__tens = 0U;
             vlSelf->Top__DOT__keyboard__DOT__r_ptr = 0U;
+            vlSelf->Top__DOT__data_d1 = 0U;
             vlSelf->Top__DOT__keyboard__DOT__buffer = 0U;
             vlSelf->Top__DOT__keyboard__DOT__fifo_0 = 0U;
             vlSelf->Top__DOT__keyboard__DOT__fifo_1 = 0U;
@@ -453,244 +453,241 @@ VL_INLINE_OPT void VTop___024root___nba_sequent__TOP__0(VTop___024root* vlSelf) 
             vlSelf->Top__DOT__keyboard__DOT__w_ptr = 0U;
             __Vdly__Top__DOT__keyboard__DOT__count = 0U;
         }
-        if (vlSelf->Top__DOT__ready_p1) {
-            vlSelf->Top__DOT__data_d1 = vlSelf->Top__DOT__keyboard_io_data;
-        }
     }
-    vlSelf->Top__DOT__ready_delay = ((~ (IData)(vlSelf->reset)) 
-                                     & (IData)(vlSelf->Top__DOT__keyboard__DOT__ready));
+    vlSelf->Top__DOT__readySync = ((~ (IData)(vlSelf->reset)) 
+                                   & (IData)(vlSelf->Top__DOT__keyboard__DOT__ready));
     vlSelf->Top__DOT__counter__DOT__ones = __Vdly__Top__DOT__counter__DOT__ones;
     vlSelf->Top__DOT__keyboard__DOT___ps2_clk_sync_T_1 
         = ((6U & ((IData)(vlSelf->Top__DOT__keyboard__DOT__ps2_clk_sync) 
                   << 1U)) | (IData)(vlSelf->io_ps2_clk));
     if (vlSelf->Top__DOT__display_en) {
-        __VdfgTmp_h5fb714aa__0 = (0xfU & (IData)(vlSelf->Top__DOT__key_scan_display_reg));
-        __VdfgTmp_hc8e15410__0 = (0xfU & ((IData)(vlSelf->Top__DOT__key_scan_display_reg) 
-                                          >> 4U));
-        __VdfgTmp_hed853dd1__0 = (0xfU & (IData)(vlSelf->Top__DOT__key_ascii_display_reg));
-        __VdfgTmp_h0b9e7e5b__0 = (0xfU & ((IData)(vlSelf->Top__DOT__key_ascii_display_reg) 
-                                          >> 4U));
-        vlSelf->io_seg_out_0 = ((0U == (IData)(__VdfgTmp_h5fb714aa__0))
-                                 ? 3U : ((1U == (IData)(__VdfgTmp_h5fb714aa__0))
+        Top__DOT__seg2_io_in = (0xfU & (IData)(vlSelf->Top__DOT__key_ascii_display_reg));
+        Top__DOT__seg3_io_in = (0xfU & ((IData)(vlSelf->Top__DOT__key_ascii_display_reg) 
+                                        >> 4U));
+        vlSelf->io_seg_out_2 = ((0U == (IData)(Top__DOT__seg2_io_in))
+                                 ? 3U : ((1U == (IData)(Top__DOT__seg2_io_in))
                                           ? 0x9fU : 
-                                         ((2U == (IData)(__VdfgTmp_h5fb714aa__0))
+                                         ((2U == (IData)(Top__DOT__seg2_io_in))
                                            ? 0x25U : 
-                                          ((3U == (IData)(__VdfgTmp_h5fb714aa__0))
+                                          ((3U == (IData)(Top__DOT__seg2_io_in))
                                             ? 0xdU : 
-                                           ((4U == (IData)(__VdfgTmp_h5fb714aa__0))
+                                           ((4U == (IData)(Top__DOT__seg2_io_in))
                                              ? 0x99U
                                              : ((5U 
-                                                 == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                 == (IData)(Top__DOT__seg2_io_in))
                                                  ? 0x49U
                                                  : 
                                                 ((6U 
-                                                  == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                  == (IData)(Top__DOT__seg2_io_in))
                                                   ? 0x41U
                                                   : 
                                                  ((7U 
-                                                   == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                   == (IData)(Top__DOT__seg2_io_in))
                                                    ? 0x1fU
                                                    : 
                                                   ((8U 
-                                                    == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                    == (IData)(Top__DOT__seg2_io_in))
                                                     ? 1U
                                                     : 
                                                    ((9U 
-                                                     == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                     == (IData)(Top__DOT__seg2_io_in))
                                                      ? 9U
                                                      : 
                                                     ((0xaU 
-                                                      == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                      == (IData)(Top__DOT__seg2_io_in))
                                                       ? 0x11U
                                                       : 
                                                      ((0xbU 
-                                                       == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                       == (IData)(Top__DOT__seg2_io_in))
                                                        ? 0xc1U
                                                        : 
                                                       ((0xcU 
-                                                        == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                        == (IData)(Top__DOT__seg2_io_in))
                                                         ? 0x63U
                                                         : 
                                                        ((0xdU 
-                                                         == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                         == (IData)(Top__DOT__seg2_io_in))
                                                          ? 0x85U
                                                          : 
                                                         ((0xeU 
-                                                          == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                          == (IData)(Top__DOT__seg2_io_in))
                                                           ? 0x61U
                                                           : 
                                                          ((0xfU 
-                                                           == (IData)(__VdfgTmp_h5fb714aa__0))
+                                                           == (IData)(Top__DOT__seg2_io_in))
                                                            ? 0x71U
                                                            : 0xffU))))))))))))))));
-        vlSelf->io_seg_out_1 = ((0U == (IData)(__VdfgTmp_hc8e15410__0))
-                                 ? 3U : ((1U == (IData)(__VdfgTmp_hc8e15410__0))
+        vlSelf->io_seg_out_3 = ((0U == (IData)(Top__DOT__seg3_io_in))
+                                 ? 3U : ((1U == (IData)(Top__DOT__seg3_io_in))
                                           ? 0x9fU : 
-                                         ((2U == (IData)(__VdfgTmp_hc8e15410__0))
+                                         ((2U == (IData)(Top__DOT__seg3_io_in))
                                            ? 0x25U : 
-                                          ((3U == (IData)(__VdfgTmp_hc8e15410__0))
+                                          ((3U == (IData)(Top__DOT__seg3_io_in))
                                             ? 0xdU : 
-                                           ((4U == (IData)(__VdfgTmp_hc8e15410__0))
+                                           ((4U == (IData)(Top__DOT__seg3_io_in))
                                              ? 0x99U
                                              : ((5U 
-                                                 == (IData)(__VdfgTmp_hc8e15410__0))
+                                                 == (IData)(Top__DOT__seg3_io_in))
                                                  ? 0x49U
                                                  : 
                                                 ((6U 
-                                                  == (IData)(__VdfgTmp_hc8e15410__0))
+                                                  == (IData)(Top__DOT__seg3_io_in))
                                                   ? 0x41U
                                                   : 
                                                  ((7U 
-                                                   == (IData)(__VdfgTmp_hc8e15410__0))
+                                                   == (IData)(Top__DOT__seg3_io_in))
                                                    ? 0x1fU
                                                    : 
                                                   ((8U 
-                                                    == (IData)(__VdfgTmp_hc8e15410__0))
+                                                    == (IData)(Top__DOT__seg3_io_in))
                                                     ? 1U
                                                     : 
                                                    ((9U 
-                                                     == (IData)(__VdfgTmp_hc8e15410__0))
+                                                     == (IData)(Top__DOT__seg3_io_in))
                                                      ? 9U
                                                      : 
                                                     ((0xaU 
-                                                      == (IData)(__VdfgTmp_hc8e15410__0))
+                                                      == (IData)(Top__DOT__seg3_io_in))
                                                       ? 0x11U
                                                       : 
                                                      ((0xbU 
-                                                       == (IData)(__VdfgTmp_hc8e15410__0))
+                                                       == (IData)(Top__DOT__seg3_io_in))
                                                        ? 0xc1U
                                                        : 
                                                       ((0xcU 
-                                                        == (IData)(__VdfgTmp_hc8e15410__0))
+                                                        == (IData)(Top__DOT__seg3_io_in))
                                                         ? 0x63U
                                                         : 
                                                        ((0xdU 
-                                                         == (IData)(__VdfgTmp_hc8e15410__0))
+                                                         == (IData)(Top__DOT__seg3_io_in))
                                                          ? 0x85U
                                                          : 
                                                         ((0xeU 
-                                                          == (IData)(__VdfgTmp_hc8e15410__0))
+                                                          == (IData)(Top__DOT__seg3_io_in))
                                                           ? 0x61U
                                                           : 
                                                          ((0xfU 
-                                                           == (IData)(__VdfgTmp_hc8e15410__0))
+                                                           == (IData)(Top__DOT__seg3_io_in))
                                                            ? 0x71U
                                                            : 0xffU))))))))))))))));
-        vlSelf->io_seg_out_2 = ((0U == (IData)(__VdfgTmp_hed853dd1__0))
-                                 ? 3U : ((1U == (IData)(__VdfgTmp_hed853dd1__0))
+        Top__DOT__seg0_io_in = (0xfU & (IData)(vlSelf->Top__DOT__data_d1));
+        Top__DOT__seg1_io_in = (0xfU & ((IData)(vlSelf->Top__DOT__data_d1) 
+                                        >> 4U));
+        vlSelf->io_seg_out_0 = ((0U == (IData)(Top__DOT__seg0_io_in))
+                                 ? 3U : ((1U == (IData)(Top__DOT__seg0_io_in))
                                           ? 0x9fU : 
-                                         ((2U == (IData)(__VdfgTmp_hed853dd1__0))
+                                         ((2U == (IData)(Top__DOT__seg0_io_in))
                                            ? 0x25U : 
-                                          ((3U == (IData)(__VdfgTmp_hed853dd1__0))
+                                          ((3U == (IData)(Top__DOT__seg0_io_in))
                                             ? 0xdU : 
-                                           ((4U == (IData)(__VdfgTmp_hed853dd1__0))
+                                           ((4U == (IData)(Top__DOT__seg0_io_in))
                                              ? 0x99U
                                              : ((5U 
-                                                 == (IData)(__VdfgTmp_hed853dd1__0))
+                                                 == (IData)(Top__DOT__seg0_io_in))
                                                  ? 0x49U
                                                  : 
                                                 ((6U 
-                                                  == (IData)(__VdfgTmp_hed853dd1__0))
+                                                  == (IData)(Top__DOT__seg0_io_in))
                                                   ? 0x41U
                                                   : 
                                                  ((7U 
-                                                   == (IData)(__VdfgTmp_hed853dd1__0))
+                                                   == (IData)(Top__DOT__seg0_io_in))
                                                    ? 0x1fU
                                                    : 
                                                   ((8U 
-                                                    == (IData)(__VdfgTmp_hed853dd1__0))
+                                                    == (IData)(Top__DOT__seg0_io_in))
                                                     ? 1U
                                                     : 
                                                    ((9U 
-                                                     == (IData)(__VdfgTmp_hed853dd1__0))
+                                                     == (IData)(Top__DOT__seg0_io_in))
                                                      ? 9U
                                                      : 
                                                     ((0xaU 
-                                                      == (IData)(__VdfgTmp_hed853dd1__0))
+                                                      == (IData)(Top__DOT__seg0_io_in))
                                                       ? 0x11U
                                                       : 
                                                      ((0xbU 
-                                                       == (IData)(__VdfgTmp_hed853dd1__0))
+                                                       == (IData)(Top__DOT__seg0_io_in))
                                                        ? 0xc1U
                                                        : 
                                                       ((0xcU 
-                                                        == (IData)(__VdfgTmp_hed853dd1__0))
+                                                        == (IData)(Top__DOT__seg0_io_in))
                                                         ? 0x63U
                                                         : 
                                                        ((0xdU 
-                                                         == (IData)(__VdfgTmp_hed853dd1__0))
+                                                         == (IData)(Top__DOT__seg0_io_in))
                                                          ? 0x85U
                                                          : 
                                                         ((0xeU 
-                                                          == (IData)(__VdfgTmp_hed853dd1__0))
+                                                          == (IData)(Top__DOT__seg0_io_in))
                                                           ? 0x61U
                                                           : 
                                                          ((0xfU 
-                                                           == (IData)(__VdfgTmp_hed853dd1__0))
+                                                           == (IData)(Top__DOT__seg0_io_in))
                                                            ? 0x71U
                                                            : 0xffU))))))))))))))));
-        vlSelf->io_seg_out_3 = ((0U == (IData)(__VdfgTmp_h0b9e7e5b__0))
-                                 ? 3U : ((1U == (IData)(__VdfgTmp_h0b9e7e5b__0))
+        vlSelf->io_seg_out_1 = ((0U == (IData)(Top__DOT__seg1_io_in))
+                                 ? 3U : ((1U == (IData)(Top__DOT__seg1_io_in))
                                           ? 0x9fU : 
-                                         ((2U == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                         ((2U == (IData)(Top__DOT__seg1_io_in))
                                            ? 0x25U : 
-                                          ((3U == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                          ((3U == (IData)(Top__DOT__seg1_io_in))
                                             ? 0xdU : 
-                                           ((4U == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                           ((4U == (IData)(Top__DOT__seg1_io_in))
                                              ? 0x99U
                                              : ((5U 
-                                                 == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                 == (IData)(Top__DOT__seg1_io_in))
                                                  ? 0x49U
                                                  : 
                                                 ((6U 
-                                                  == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                  == (IData)(Top__DOT__seg1_io_in))
                                                   ? 0x41U
                                                   : 
                                                  ((7U 
-                                                   == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                   == (IData)(Top__DOT__seg1_io_in))
                                                    ? 0x1fU
                                                    : 
                                                   ((8U 
-                                                    == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                    == (IData)(Top__DOT__seg1_io_in))
                                                     ? 1U
                                                     : 
                                                    ((9U 
-                                                     == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                     == (IData)(Top__DOT__seg1_io_in))
                                                      ? 9U
                                                      : 
                                                     ((0xaU 
-                                                      == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                      == (IData)(Top__DOT__seg1_io_in))
                                                       ? 0x11U
                                                       : 
                                                      ((0xbU 
-                                                       == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                       == (IData)(Top__DOT__seg1_io_in))
                                                        ? 0xc1U
                                                        : 
                                                       ((0xcU 
-                                                        == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                        == (IData)(Top__DOT__seg1_io_in))
                                                         ? 0x63U
                                                         : 
                                                        ((0xdU 
-                                                         == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                         == (IData)(Top__DOT__seg1_io_in))
                                                          ? 0x85U
                                                          : 
                                                         ((0xeU 
-                                                          == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                          == (IData)(Top__DOT__seg1_io_in))
                                                           ? 0x61U
                                                           : 
                                                          ((0xfU 
-                                                           == (IData)(__VdfgTmp_h0b9e7e5b__0))
+                                                           == (IData)(Top__DOT__seg1_io_in))
                                                            ? 0x71U
                                                            : 0xffU))))))))))))))));
     } else {
-        __VdfgTmp_h5fb714aa__0 = 0U;
-        __VdfgTmp_hc8e15410__0 = 0U;
-        __VdfgTmp_hed853dd1__0 = 0U;
-        __VdfgTmp_h0b9e7e5b__0 = 0U;
-        vlSelf->io_seg_out_0 = 0xffU;
-        vlSelf->io_seg_out_1 = 0xffU;
+        Top__DOT__seg2_io_in = 0U;
+        Top__DOT__seg3_io_in = 0U;
         vlSelf->io_seg_out_2 = 0xffU;
         vlSelf->io_seg_out_3 = 0xffU;
+        Top__DOT__seg0_io_in = 0U;
+        Top__DOT__seg1_io_in = 0U;
+        vlSelf->io_seg_out_0 = 0xffU;
+        vlSelf->io_seg_out_1 = 0xffU;
     }
     vlSelf->io_seg_out_4 = ((0U == (IData)(vlSelf->Top__DOT__counter__DOT__ones))
                              ? 3U : ((1U == (IData)(vlSelf->Top__DOT__counter__DOT__ones))
@@ -1029,7 +1026,7 @@ VL_INLINE_OPT void VTop___024root___nba_sequent__TOP__0(VTop___024root* vlSelf) 
                                                        == (IData)(vlSelf->Top__DOT__keyboard__DOT__r_ptr))
                                                        ? (IData)(vlSelf->Top__DOT__keyboard__DOT__fifo_1)
                                                        : (IData)(vlSelf->Top__DOT__keyboard__DOT__fifo_0))))))));
-    vlSelf->Top__DOT__ready_p1 = ((~ (IData)(vlSelf->Top__DOT__ready_delay)) 
+    vlSelf->Top__DOT__ready_p1 = ((~ (IData)(vlSelf->Top__DOT__readySync)) 
                                   & (IData)(vlSelf->Top__DOT__keyboard__DOT__ready));
     vlSelf->Top__DOT__keyboard__DOT___GEN_1 = (((~ (IData)(vlSelf->Top__DOT__nextdata_n)) 
                                                 & (IData)(vlSelf->Top__DOT__keyboard__DOT__ready))
