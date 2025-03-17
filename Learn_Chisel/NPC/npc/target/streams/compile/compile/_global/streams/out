@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NPC/npc/src/main/scala/Npc.scala:41:16: not found: value wire[0m
+[0m[[0m[31merror[0m] [0m[0m  val aluOut = wire(UInt(32.W))[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

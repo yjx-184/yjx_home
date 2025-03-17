@@ -1,0 +1,11 @@
+[0m[[0m[31merror[0m] [0m[0mchisel3.package$ExpectedHardwareException: wire initializer 'UInt<32>' must be hardware, not a bare Chisel type. Perhaps you forgot to wrap it in Wire(_) or IO(_)?[0m
+[0m[[0m[31merror[0m] [0m[0m	at ... ()[0m
+[0m[[0m[31merror[0m] [0m[0m	at Npc.$anonfun$aluOut$2(Npc.scala:41)[0m
+[0m[[0m[31merror[0m] [0m[0m	at chisel3.internal.prefix$.apply(prefix.scala:48)[0m
+[0m[[0m[31merror[0m] [0m[0m	at Npc.$anonfun$aluOut$1(Npc.scala:41)[0m
+[0m[[0m[31merror[0m] [0m[0m	at chisel3.internal.plugin.package$.autoNameRecursively(package.scala:33)[0m
+[0m[[0m[31merror[0m] [0m[0m	at Npc.<init>(Npc.scala:41)[0m
+[0m[[0m[31merror[0m] [0m[0m	at Npc$.$anonfun$new$10(Npc.scala:65)[0m
+[0m[[0m[31merror[0m] [0m[0m	at ... ()[0m
+[0m[[0m[31merror[0m] [0m[0m	at ... (Stack trace trimmed to user code only. Rerun with --full-stacktrace to see the full stack trace)[0m
+[0m[[0m[31merror[0m] [0m[0m(Compile / [31mrun[0m) chisel3.package$ExpectedHardwareException: wire initializer 'UInt<32>' must be hardware, not a bare Chisel type. Perhaps you forgot to wrap it in Wire(_) or IO(_)?[0m
