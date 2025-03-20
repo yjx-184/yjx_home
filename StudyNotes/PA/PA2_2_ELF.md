@@ -7,6 +7,7 @@
     - [宏定义](#宏定义)
   - [重定位表](#重定位表)
   - [字符串表](#字符串表)
+  - [我在PA2\_2中用得上的](#我在pa2_2中用得上的)
 
 
 
@@ -298,3 +299,69 @@ typedef struct {
 ## 字符串表 
 作用：ELF 文件中的许多部分（如符号表、段头）使用字符串表来存储名称。  
 结构体本身没有单独定义，但字符串表通常作为 .strtab 或 .shstrtab 段存储在 ELF 文件中。  
+
+## 我在PA2_2中用得上的
+**ELF 头部（Ehdr）**   
+描述 ELF 文件的基本信息，如类型、架构、入口地址等。  
+```
+typedef struct {
+    unsigned char e_ident[EI_NIDENT]; /* ELF 识别信息 */
+    uint16_t e_type;     /* 文件类型，如可执行文件、共享库 */
+    uint16_t e_machine;  /* 运行架构，如 x86_64 */
+    uint32_t e_version;  /* 版本信息 */
+    Elf32_Addr e_entry;  /* 入口地址 */
+    Elf32_Off  e_phoff;  /* 程序头表偏移 */
+    Elf32_Off  e_shoff;  /* 段头表偏移 */
+    uint32_t e_flags;    /* 特定架构标志 */
+    uint16_t e_ehsize;   /* ELF 头部大小 */
+    uint16_t e_phentsize; /* 每个程序头表项大小 */
+    uint16_t e_phnum;    /* 程序头表项个数 */
+    uint16_t e_shentsize; /* 每个段头表项大小 */
+    uint16_t e_shnum;    /* 段头表项个数 */
+    uint16_t e_shstrndx; /* 段名称字符串表索引 */
+} Elf32_Ehdr;  
+```
+
+我需要使用ELF文件头来定位节表，其中可能会用到的成员是e_shoff（段头表偏移）和e_shnum（段头表项个数）  
+
+**段表（Section Header, Shdr）**  
+描述 ELF 文件中的各个段，如 .text、.data、.bss 等。  
+```
+typedef struct {
+    uint32_t sh_name;      /* 段名称（字符串表索引） */
+    uint32_t sh_type;      /* 段类型，如 SHT_PROGBITS（程序段） */
+    uint32_t sh_flags;     /* 段标志，如可读、可写、可执行 */
+    Elf32_Addr sh_addr;    /* 段在内存中的地址 */
+    Elf32_Off sh_offset;   /* 段在文件中的偏移 */
+    uint32_t sh_size;      /* 段大小 */
+    uint32_t sh_link;      /* 关联段索引（如符号表的字符串表） */
+    uint32_t sh_info;      /* 额外信息（如重定位表关联符号表） */
+    uint32_t sh_addralign; /* 段对齐要求 */
+    uint32_t sh_entsize;   /* 如果是表结构（如符号表），表示每个条目的大小 */
+} Elf32_Shdr;
+```  
+1. sh_type 该成员对节的内容和语义进行分类。
+* SHT_SYMTAB：此节包含符号表。通常，SHT_SYMTAB 提供链接编辑符号，尽管它也可以用于动态链接。作为一个完整的符号表，它可能包含许多对于动态链接不必要的符号。一个目标文件还可以包含一个 SHT_DYNSYM 节。
+* SHT_STRTAB：此节包含字符串表。一个目标文件可能包含多个字符串表节。
+
+我需要这个结构体shdr，因为他包含了我所需要的SHT_SYMTAB（符号表），因此我可能需要用到sh_offset（段在文件中的偏移）和sh_link（关联段索引（如符号表的字符串表））  
+
+**字符串和符号表String and symbol tables**  
+字符串表（String Table）段存储以空字符（null-terminated）结尾的字符序列，通常称为字符串。目标文件使用这些字符串来表示符号和段的名称。字符串的引用是字符串表段中的索引。第一个字节（索引为 0）被定义为存储空字节（\0），同样，字符串表的最后一个字节也必须是空字节，以确保所有字符串都以空字符结尾。  
+
+目标文件的符号表（Symbol Table）存储了用于定位和重定位程序符号定义及引用的信息。符号表索引是该数组的下标。  
+
+作用：描述 ELF 文件中的符号（如变量、函数等）。
+```
+typedef struct {
+    uint32_t st_name;  /* 符号名称（字符串表索引） */
+    Elf32_Addr st_value; /* 符号值（地址或偏移） */
+    uint32_t st_size;  /* 符号大小 */
+    unsigned char st_info;  /* 符号类型（如函数、变量）和绑定信息 */
+    unsigned char st_other; /* 额外信息（通常未使用） */
+    uint16_t st_shndx; /* 关联的段索引 */
+} Elf32_Sym;
+```  
+
+这里面包含我们最终需要的符号类型st_info（此成员指定符号的类型和绑定属性，有我们需要的STT_FUNC（符号与函数或其他可执行代码相关联））。  
+
