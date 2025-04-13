@@ -1,0 +1,201 @@
+import chisel3._
+import chisel3.util._
+
+class EbreakDetector extends BlackBox {
+  val io = IO(new Bundle {
+    val inst = Input(UInt(32.W))
+    val pc = Input(UInt(32.W))
+    val exit = Output(Bool())  
+  })
+}
+
+class MemAccess extends BlackBox {
+  val io = IO(new Bundle {
+    val clk = Input(Clock())
+    val valid = Input(Bool())          // 访存有效信号
+    val wen = Input(Bool())            // 写使能信号
+    val raddr = Input(UInt(32.W))      // 读地址
+    val waddr = Input(UInt(32.W))      // 写地址
+    val wdata = Input(UInt(32.W))      // 写入数据
+    val wmask = Input(UInt(8.W))       // 写掩码
+    val rdata = Output(UInt(32.W))     // 读数据输出
+  })
+}
+
+class Npc extends Module {
+  val io = IO(new Bundle {
+    val pc = Output(UInt(32.W))
+    val nextPC = Output(UInt(32.W))
+    val inst = Input(UInt(32.W))
+    val exit = Output(Bool())
+    val regs = Output(Vec(32, UInt(32.W)))
+  })
+
+
+  // 寄存器定义
+  val pc = RegInit(0x80000000L.U(32.W))
+  val regs = RegInit(VecInit(Seq.fill(32)(0.U(32.W))))
+  regs(0) := 0.U // 强制x0始终为0
+
+  // 更新 instReg
+  val instReg = Reg(UInt(32.W))
+  instReg := io.inst
+
+
+  // 立即数生成函数
+  def immI(inst: UInt) = Cat(Fill(20, inst(31)), inst(31, 20)).asSInt
+  def immS(inst: UInt) = Cat(Fill(20, inst(31)), inst(31, 25), inst(11, 7)).asSInt
+  // def immB(inst: UInt) = Cat(Fill(19, inst(31)), inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W)).asSInt
+  def immU(inst: UInt) = Cat(inst(31, 12), 0.U(12.W)).asSInt
+  def immJ(inst: UInt) = Cat(Fill(11, inst(31)), inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U(1.W)).asSInt
+
+  val opcode = instReg(6, 0)
+
+  // 指令解析函数
+  def decodeInst(inst: UInt): (UInt, UInt, UInt, UInt, UInt, SInt, UInt) = {
+    val opcode = inst(6, 0)
+    val rd = Wire(UInt(5.W))
+    val rs1 = Wire(UInt(5.W))
+    val rs2 = Wire(UInt(5.W))
+    val funct3 = Wire(UInt(3.W))
+    val funct7 = Wire(UInt(7.W))
+    val imm = Wire(SInt(32.W))
+    val wmask = Wire(UInt(4.W))
+
+    rd := 0.U
+    rs1 := 0.U
+    rs2 := 0.U
+    imm := 0.S
+    funct3 := 0.U
+    funct7 := 0.U
+    wmask := "b1111".U
+
+    switch(opcode) {
+      // is("b0110011".U) { // R 型
+      //   rd := inst(11, 7)
+      //   rs1 := inst(19, 15)
+      //   rs2 := inst(24, 20)
+      //   funct3 := inst(14, 12)
+      //   funct7 := inst(31, 25)
+      // }
+      is("b0010011".U) { // I 型
+        rd := inst(11, 7)
+        rs1 := inst(19, 15)
+        imm := immI(inst)
+        funct3 := inst(14, 12)
+      }
+      // is("b0000011".U) { // I 型
+      //   rd := inst(11, 7)
+      //   rs1 := inst(19, 15)
+      //   imm := immI(inst)
+      //   funct3 := inst(14, 12)
+      // }
+      is("b1100111".U) { // I 型
+        rd := inst(11, 7)
+        rs1 := inst(19, 15)
+        imm := immI(inst)
+        funct3 := inst(14, 12)
+      }
+      is("b0100011".U) { // S 型
+        rs1 := inst(19, 15)
+        rs2 := inst(24, 20)
+        imm := immS(inst)
+        funct3 := inst(14, 12)
+
+        switch(funct3) {
+          is("b010".U) {  // SW
+            wmask := "b1111".U  // 全字存储
+          }
+          is("b001".U) { // SH
+            wmask := "b0011".U // 半字存储
+          }
+          is("b000".U) { // SB
+            wmask := "b0001".U // 字节存储
+          }
+        }
+      }
+      // is("b1100011".U) { // B 型
+      //   rs1 := inst(19, 15)
+      //   rs2 := inst(24, 20)
+      //   imm := immB(inst)
+      //   funct3 := inst(14, 12)
+      // }
+      is("b0110111".U) { // U 型（LUI）
+        rd := inst(11, 7)
+        imm := immU(inst)
+      }
+      is("b0010111".U) { // U 型（AUIPC）
+        rd := inst(11, 7)
+        imm := immU(inst)
+      }
+      is("b1101111".U) { // J 型（JAL）
+        rd := inst(11, 7)
+        imm := immJ(inst)
+      }
+    }
+
+    (rd, rs1, rs2, funct3, funct7, imm, wmask)
+  }
+
+  // 使用指令解析函数
+  val (rd, rs1, rs2, funct3, funct7, imm, wmask) = decodeInst(instReg)
+
+  // 存储处理逻辑
+  val is_store = opcode === "b0100011".U
+  val store_addr = (regs(rs1).asSInt + imm.asSInt).asUInt
+  val store_data = regs(rs2)
+
+  // 连接到 MemAccess 模块 SW、SH、SB
+  val mem = Module(new MemAccess)
+  mem.io.clk := clock
+  mem.io.valid := is_store
+  mem.io.wen := is_store
+  mem.io.raddr := regs(rs1)
+  mem.io.waddr := store_addr
+  mem.io.wdata := store_data
+  mem.io.wmask := Cat(wmask, 0.U(4.W))
+
+
+  // 寄存器写入
+  val regWriteData = MuxLookup(opcode, 0.U, Seq(
+    "b0010011".U -> (regs(rs1).asSInt + imm).asUInt, // ADDI
+    "b0110111".U -> (imm.asUInt),                    // LUI
+    "b0010111".U -> (pc + imm.asUInt),               // AUIPC
+    "b1101111".U -> (pc + 4.U),                      // JAL
+    "b1100111".U -> (pc + 4.U)                       // JALR
+  ))
+  when(rd =/= 0.U) { regs(rd) := regWriteData }
+
+  
+  // 计算下一条指令地址
+  val nextPC = Wire(UInt(32.W))
+  nextPC := MuxLookup(opcode, pc + 4.U, Seq(
+    "b1101111".U -> (pc + imm.asUInt), // JAL
+    "b1100111".U -> ((regs(rs1) + imm.asUInt) & ~1.U) // JALR
+  ))
+  
+
+  // 更新PC
+  when(!io.exit) {
+    pc := nextPC
+  }
+
+  // 连接 nextPC 到 IO
+  io.nextPC := nextPC
+  
+  // 输出连接
+  io.pc := pc
+  io.regs := regs
+
+  val ebreakDetector = Module(new EbreakDetector)
+  ebreakDetector.io.inst := instReg
+  ebreakDetector.io.pc := pc
+  io.exit := ebreakDetector.io.exit
+
+  
+
+}
+
+object Npc extends App {
+  (new chisel3.stage.ChiselStage).emitVerilog(new Npc)
+}

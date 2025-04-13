@@ -1,0 +1,7 @@
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NPC/npc3/src/main/scala/ALU.scala:75:9: ')' expected but string literal found.[0m
+[0m[[0m[31merror[0m] [0m[0m        "b1010".U -> sltu.asUInt[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NPC/npc3/src/main/scala/ALU.scala:82:1: ')' expected but '}' found.[0m
+[0m[[0m[31merror[0m] [0m[0m}[0m
+[0m[[0m[31merror[0m] [0m[0m^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

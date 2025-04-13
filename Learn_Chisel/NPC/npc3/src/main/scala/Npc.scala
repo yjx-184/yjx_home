@@ -1,0 +1,194 @@
+import chisel3._
+import chisel3.util._
+
+// ========================== 黑盒模块定义 ============================================
+// 用于检测是否触发EBreak指令
+class EbreakDetector extends BlackBox {
+  val io = IO(new Bundle {
+    val inst = Input(UInt(32.W))
+    val pc = Input(UInt(32.W))
+    val exit = Output(Bool())  
+  })
+}
+
+// 用于获取指令
+class InstFetch extends BlackBox {
+  val io = IO(new Bundle {
+    val clk = Input(Clock())
+    val pc = Input(UInt(32.W))
+    val inst = Output(UInt(32.W))
+    val rst = Input(Bool())
+  })
+}
+
+// 访存模块，支持读写操作
+class DataMem extends BlackBox {
+  val io = IO(new Bundle {
+    val valid = Input(Bool())          // 访存有效信号
+    val wen = Input(Bool())            // 写使能信号
+    val raddr = Input(UInt(32.W))      // 读地址
+    val waddr = Input(UInt(32.W))      // 写地址
+    val wdata = Input(UInt(32.W))      // 写入数据
+    val wmask = Input(UInt(3.W))       // 写掩码
+    val rdata = Output(UInt(32.W))     // 读数据输出
+  })
+}
+
+class GetRegs extends BlackBox {
+  val io = IO(new Bundle {
+    val regs = Input(Vec(16, UInt(32.W)))
+  }) 
+}
+
+
+
+// ==========================  Npc模块定义  ==========================
+class Npc extends Module {
+  val io = IO(new Bundle {
+    val pc = Output(UInt(32.W))            // 当前PC值
+    val inst = Output(UInt(32.W))          // 当前指令
+    val exit = Output(Bool())              // 是否退出信号
+    val regs = Output(Vec(16, UInt(32.W))) // 寄存器值
+    val nextPC = Output(UInt(32.W))        // 下一条指令的PC值
+
+    // val zero   = Output(UInt(1.W))
+    // val less   = Output(UInt(1.W))
+    // val result = Output(UInt(32.W))
+    // val issub  = Output(Bool())
+    // val islbu = Output(Bool())
+    // val wen = Output(Bool())
+    // val busa  = Output(UInt(32.W))  // 读取端口 A 数据
+    // val busb  = Output(UInt(32.W))  // 读取端口 B 数据
+    // val busw  = Output(UInt(32.W))   // 写入地址
+    // val aluaout = Output(UInt(32.W))
+    // val alubout = Output(UInt(32.W))
+    // val reg_rw = Output(UInt(32.W))
+  })
+
+  // ======================= 实例化其他模块 =============================
+  val immgen         = Module(new ImmGen)
+  val regfile        = Module(new RegFile)
+  val alu            = Module(new ALU)
+  val contrgen       = Module(new ContrGen)
+  val mypc           = Module(new Mypc)
+  val mynextpc       = Module(new Mynextpc)
+  val branchcond     = Module(new BranchCond)
+  val datamem        = Module(new DataMem)
+  val instfetch      = Module(new InstFetch)
+  val ebreakdetector = Module(new EbreakDetector)
+  val getregs        = Module(new GetRegs)
+
+  // ======================== 寄存器和连线 =========================
+
+  // 取指模块的连线
+  val instReg = instfetch.io.inst
+  instfetch.io.rst := reset
+  instfetch.io.clk := clock
+  instfetch.io.pc  := mynextpc.io.nextpc
+
+  // 控制模块的连线
+  contrgen.io.opcode := instReg(6,0)
+  contrgen.io.func3 := instReg(14,12)
+  contrgen.io.func7 := instReg(31,25)
+  alu.io.aluctr      := contrgen.io.aluctr
+  regfile.io.regwr   := contrgen.io.regwr
+  immgen.io.immop    := contrgen.io.immop
+  alu.io.alua        := contrgen.io.alua
+  alu.io.alub        := contrgen.io.alub
+  datamem.io.wmask   := contrgen.io.memop
+  datamem.io.wen     := contrgen.io.memwr
+  branchcond.io.branch := contrgen.io.branch
+  
+
+
+  // 立即数
+  immgen.io.instin := instReg
+
+
+  // 处理读取操作的字节
+  val rdata = MuxLookup(contrgen.io.rdmemop, datamem.io.rdata, Seq(  // 默认lw
+  // lb
+  ("b000".U) -> Cat(Fill(24, datamem.io.rdata(7)), datamem.io.rdata(7, 0)),
+  // lh
+  ("b001".U) -> Cat(Fill(16, datamem.io.rdata(15)), datamem.io.rdata(15, 0)),
+  // lbu
+  ("b100".U) -> Cat(Fill(24, 0.U), datamem.io.rdata(7, 0)),
+  // lhu
+  ("b101".U) -> Cat(Fill(16, 0.U), datamem.io.rdata(15, 0))
+))
+ 
+  // 寄存器
+  regfile.io.ra := instReg(19,15)(3,0)
+  regfile.io.rb := instReg(24,20)(3,0)
+  regfile.io.rw := instReg(11,7)(3,0)
+  regfile.io.busw := Mux(contrgen.io.memreg === "b0".U, alu.io.result, rdata)
+  // regfile.io.wrclk := clock
+
+  // Alu
+  alu.io.rs1 := regfile.io.busa
+  alu.io.pc  := mypc.io.pc
+  alu.io.rs2 := regfile.io.busb
+  alu.io.imm := immgen.io.immout
+
+  // nextpc
+  mynextpc.io.imm := immgen.io.immout
+  mynextpc.io.rs1 := regfile.io.busa
+  mynextpc.io.pc  := mypc.io.pc
+  mynextpc.io.pcasrc := branchcond.io.pcasrc
+  mynextpc.io.pcbsrc := branchcond.io.pcbsrc
+
+  // mypc
+  mypc.io.nextpc  := mynextpc.io.nextpc
+  mypc.io.wrclk     := clock
+
+  // branch cond
+  branchcond.io.less := alu.io.less
+  branchcond.io.zero := alu.io.zero
+
+  // data mem
+  // datamem.io.clk :=  clock
+  datamem.io.raddr := alu.io.result
+  datamem.io.waddr := alu.io.result
+  datamem.io.wdata := regfile.io.busb 
+  datamem.io.valid := contrgen.io.memwr.asBool || (contrgen.io.memreg === "b1".U)
+
+
+  // GetRegs
+  getregs.io.regs := regfile.io.regsout
+
+
+  // 顶层模块Npc
+  io.pc := mypc.io.pc
+  io.nextPC := mynextpc.io.nextpc
+  io.regs := regfile.io.regsout
+  io.inst := instReg
+
+  // ebreakdetector
+  val exitReg = RegInit(false.B)
+  ebreakdetector.io.inst := instReg
+  ebreakdetector.io.pc := mypc.io.pc
+
+  when(ebreakdetector.io.exit) {
+    exitReg := true.B
+  }
+
+  io.exit := exitReg
+
+  // io.zero := alu.io.zero
+  // io.less := alu.io.less
+  // io.result := alu.io.result
+  // io.issub := alu.io.issub
+  // io.islbu := (contrgen.io.rdmemop === "b100".U)
+  // io.wen := contrgen.io.memwr
+  // io.busa := regfile.io.busa
+  // io.busb := regfile.io.busb
+  // io.busw := Mux(contrgen.io.memreg === "b0".U, alu.io.result, rdata)
+  // io.aluaout := alu.io.aluaout
+  // io.alubout := alu.io.alubout
+  // io.reg_rw := regfile.io.reg_rw
+}
+
+// ==========================  生成Verilog  ==========================
+object Npc extends App {
+  (new chisel3.stage.ChiselStage).emitVerilog(new Npc)
+}

@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NPC/npc/src/main/scala/Npc.scala:41:16: not found: value wire[0m
-[0m[[0m[31merror[0m] [0m[0m  val aluOut = wire(UInt(32.W))[0m
-[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/yjx/Mystudy/yjx_learn/Learn_Chisel/NPC/npc2/src/main/scala/Npc.scala:175:10: value valid is not a member of chisel3.Bundle{val clk: chisel3.Clock; val wen: chisel3.Bool; val raddr: chisel3.UInt; val waddr: chisel3.UInt; val wdata: chisel3.UInt; val wmask: chisel3.UInt; val rdata: chisel3.UInt}[0m
+[0m[[0m[31merror[0m] [0m[0m  mem.io.valid := is_store[0m
+[0m[[0m[31merror[0m] [0m[0m         ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

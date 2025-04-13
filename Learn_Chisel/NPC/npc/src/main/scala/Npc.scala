@@ -5,7 +5,7 @@ class Npc extends Module {
   val io = IO(new Bundle {
     val exit = Output(Bool())
     val pc   = Output(UInt(32.W))
-    val regFileOut = Output(Vec(32, UInt(32.W)))  // 新增接口输出寄存器值
+    val regFileOut = Output(Vec(32, UInt(32.W)))
   })
 
   // 定义常量

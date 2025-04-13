@@ -1,0 +1,21 @@
+[
+  {
+    "class":"firrtl.EmitCircuitAnnotation",
+    "emitter":"firrtl.VerilogEmitter"
+  },
+  {
+    "class":"firrtl.transforms.BlackBoxTargetDirAnno",
+    "targetDir":"."
+  },
+  {
+    "class":"firrtl.transforms.CombinationalPath",
+    "sink":"~Mynextpc|Mynextpc>io_nextpc",
+    "sources":[
+      "~Mynextpc|Mynextpc>io_rs1",
+      "~Mynextpc|Mynextpc>io_pc",
+      "~Mynextpc|Mynextpc>io_pcasrc",
+      "~Mynextpc|Mynextpc>io_imm",
+      "~Mynextpc|Mynextpc>io_pcbsrc"
+    ]
+  }
+]
